@@ -23,7 +23,7 @@ jobs:
       run: xcodegen generate
 
     - name: Build
-      run: xcodebuild -project VaultETH.xcodeproj -scheme VaultETH -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
+      run: xcodebuild -project VaultETH.xcodeproj -scheme VaultETH -destination 'platform=iOS Simulator,name=iPhone 15 Pro' build
 
     - name: Run tests
-      run: xcodebuild -project VaultETH.xcodeproj -scheme VaultETH -destination 'platform=iOS Simulator,name=iPhone 16 Pro' test
+      run: xcodebuild -project VaultETH.xcodeproj -scheme VaultETH -destination 'platform=iOS Simulator,name=iPhone 15 Pro' test
