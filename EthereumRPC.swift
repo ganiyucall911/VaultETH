@@ -32,7 +32,18 @@ struct EthereumRPC: Sendable {
                     throw WalletError.rpcMalformedResult
                 }
                 if let err = object["error"] as? [String: Any] {
-                    throw NodeError(message: err["message"] as? String ?? "RPC error")
+                    let msg = err["message"] as? String ?? "RPC error"
+                    let code = err["code"] as? Int ?? 0
+                    // Fall through to the backup endpoint if this node is rate-limited or unavailable
+                    let isTransientNodeIssue = code == 429 || code == -32005 || code == -32603 ||
+                        msg.localizedCaseInsensitiveContains("rate limit") ||
+                        msg.localizedCaseInsensitiveContains("too many requests") ||
+                        msg.localizedCaseInsensitiveContains("syncing") ||
+                        msg.localizedCaseInsensitiveContains("internal")
+                    if isTransientNodeIssue {
+                        throw WalletError.rpcFailure(msg)
+                    }
+                    throw NodeError(message: msg)
                 }
                 guard let result = object["result"] else { throw WalletError.rpcMalformedResult }
                 return result            // may be NSNull (e.g. receipt not yet available)
@@ -60,16 +71,41 @@ struct EthereumRPC: Sendable {
         guard let code = try await call("eth_getCode", [address, "latest"]) as? String else {
             throw WalletError.rpcMalformedResult
         }
-        return code != "0x"
+        guard let data = Data(vaultHex: code) else { return false }
+        return !Wei.isZero(data)
     }
 
     /// EIP-1559 fee quote. maxFee = 2 x baseFee + tip, a common headroom rule that survives a few full blocks.
     func feeQuote(from: String, to: String, value: Data) async throws -> FeeQuote {
-        let gasLimit = try await quantity("eth_estimateGas", [["from": from, "to": to, "value": value.rpcQuantity]])
+        let standardGasLimit = Data(vaultHex: "5208")! // 21,000 protocol minimum
+        let estimatedGas: Data
+        do {
+            estimatedGas = try await quantity("eth_estimateGas", [["from": from, "to": to, "value": value.rpcQuantity]])
+        } catch {
+            // If the recipient is not a contract, gas is mathematically guaranteed to be 21,000.
+            // Nodes often fail eth_estimateGas if the sender has insufficient balance to cover value + fee.
+            // Using 21,000 for standard transfers lets the wallet calculate the fee and surface an exact
+            // insufficientBalance error instead of a confusing raw node revert message.
+            if let isContract = try? await isContract(address: to), !isContract {
+                estimatedGas = standardGasLimit
+            } else if let fallbackGas = try? await quantity("eth_estimateGas", [["to": to, "value": value.rpcQuantity]]) {
+                estimatedGas = fallbackGas
+            } else {
+                throw error
+            }
+        }
+        let gasLimit = Wei.compare(estimatedGas, standardGasLimit) == .orderedAscending ? standardGasLimit : estimatedGas
+
         guard let block = try await call("eth_getBlockByNumber", ["latest", false]) as? [String: Any],
               let baseHex = block["baseFeePerGas"] as? String,
               let baseFee = Data(vaultHex: baseHex) else { throw WalletError.rpcMalformedResult }
-        let tip = (try? await quantity("eth_maxPriorityFeePerGas", [])) ?? Data(vaultHex: "0x59682f00")!  // 1.5 gwei fallback
+
+        let minTip = Data(vaultHex: "3b9aca00")! // 1.0 gwei minimum tip floor to prevent stuck transactions
+        var tip = (try? await quantity("eth_maxPriorityFeePerGas", [])) ?? Data(vaultHex: "59682f00")!  // 1.5 gwei fallback
+        if Wei.compare(tip, minTip) == .orderedAscending {
+            tip = minTip
+        }
+
         let maxFee = Wei.add(Wei.multiply(baseFee, Wei.from(2)), tip)
         return FeeQuote(gasLimit: gasLimit, maxFeePerGas: maxFee, maxPriorityFeePerGas: tip)
     }
@@ -82,7 +118,10 @@ struct EthereumRPC: Sendable {
 
     /// nil while the transaction is still pending.
     func receipt(hash: String) async throws -> ReceiptStatus? {
-        guard let object = try await call("eth_getTransactionReceipt", [hash]) as? [String: Any] else { return nil }
-        return (object["status"] as? String) == "0x1" ? .success : .failed
+        guard let object = try await call("eth_getTransactionReceipt", [hash]) as? [String: Any],
+              let statusHex = object["status"] as? String,
+              let statusData = Data(vaultHex: statusHex) else { return nil }
+        // Accommodates both "0x1" (quantity) and "0x01" (fixed data) status representations
+        return !Wei.isZero(statusData) ? .success : .failed
     }
 }

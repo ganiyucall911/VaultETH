@@ -10,8 +10,18 @@ final class WalletEngine: @unchecked Sendable {
 
     /// Validates a recipient and returns its canonical EIP-55 checksummed form.
     /// All-lowercase or all-uppercase input is accepted; mixed case must carry a valid checksum.
+    /// Also supports standard `ethereum:` URIs and `0X` hex prefix.
     static func validateRecipient(_ raw: String) throws -> String {
-        let s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        var s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.lowercased().hasPrefix("ethereum:") {
+            s = String(s.dropFirst("ethereum:".count))
+            if s.hasPrefix("//") { s = String(s.dropFirst(2)) }
+            if let queryIndex = s.firstIndex(of: "?") { s = String(s[..<queryIndex]) }
+            if let atIndex = s.firstIndex(of: "@") { s = String(s[..<atIndex]) }
+        }
+        if s.hasPrefix("0X") {
+            s = "0x" + s.dropFirst(2)
+        }
         guard s.hasPrefix("0x"), s.count == 42, s.dropFirst(2).allSatisfy({ $0.isHexDigit }) else {
             throw WalletError.invalidAddress
         }
@@ -84,16 +94,16 @@ final class WalletEngine: @unchecked Sendable {
     /// Pure signing step (EIP-1559, type 0x02 envelope). Exposed for deterministic unit tests.
     static func sign(_ transfer: PreparedTransfer, privateKey: Data) throws -> String {
         let input = EthereumSigningInput.with {
-            $0.chainID = transfer.chainID
-            $0.nonce = transfer.nonce
+            $0.chainID = Data(Wei.normalize(transfer.chainID))
+            $0.nonce = Data(Wei.normalize(transfer.nonce))
             $0.txMode = .enveloped
-            $0.gasLimit = transfer.fee.gasLimit
-            $0.maxFeePerGas = transfer.fee.maxFeePerGas
-            $0.maxInclusionFeePerGas = transfer.fee.maxPriorityFeePerGas
+            $0.gasLimit = Data(Wei.normalize(transfer.fee.gasLimit))
+            $0.maxFeePerGas = Data(Wei.normalize(transfer.fee.maxFeePerGas))
+            $0.maxInclusionFeePerGas = Data(Wei.normalize(transfer.fee.maxPriorityFeePerGas))
             $0.toAddress = transfer.to
             $0.privateKey = privateKey
             $0.transaction = EthereumTransaction.with {
-                $0.transfer = EthereumTransaction.Transfer.with { $0.amount = transfer.valueWei }
+                $0.transfer = EthereumTransaction.Transfer.with { $0.amount = Data(Wei.normalize(transfer.valueWei)) }
             }
         }
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)

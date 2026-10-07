@@ -68,4 +68,13 @@ final class WeiMathTests: XCTestCase {
         let fee = Wei.multiply(Wei.from(21_000), Wei.from(30_000_000_000))
         XCTAssertEqual(ETHAmount.format(wei: fee), "0.00063")
     }
+
+    func testSubtract() {
+        XCTAssertEqual(Wei.subtract(Data([10]), Data([3]))?.vaultHexPlain, "07")
+        XCTAssertEqual(Wei.subtract(Data([5]), Data([5]))?.count, 0)
+        XCTAssertNil(Wei.subtract(Data([3]), Data([5])))
+        XCTAssertEqual(Wei.subtract(Data(vaultHex: "0100")!, Data([1]))?.vaultHexPlain, "ff")
+        let a = Data(vaultHex: "010000000000000000")!
+        XCTAssertEqual(Wei.subtract(a, Data([1]))?.vaultHexPlain, "ffffffffffffffff")
+    }
 }

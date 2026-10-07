@@ -43,4 +43,22 @@ enum Wei {
         while v > 0 { out.append(UInt8(v & 0xff)); v >>= 8 }
         return Data(out.reversed())
     }
+
+    /// Unsigned subtraction (a - b). Returns nil on underflow (when a < b).
+    static func subtract(_ a: Data, _ b: Data) -> Data? {
+        guard compare(a, b) != .orderedAscending else { return nil }
+        let x = Array(normalize(a).reversed()), y = Array(normalize(b).reversed())
+        var out = [UInt8](); var borrow = 0
+        for i in 0..<x.count {
+            let sub = Int(x[i]) - (i < y.count ? Int(y[i]) : 0) - borrow
+            if sub < 0 {
+                out.append(UInt8(sub + 256))
+                borrow = 1
+            } else {
+                out.append(UInt8(sub))
+                borrow = 0
+            }
+        }
+        return Data(normalize(Data(out.reversed())))
+    }
 }
