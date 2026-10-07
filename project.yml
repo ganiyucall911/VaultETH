@@ -17,7 +17,18 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: VaultETH
+      - path: .
+        excludes:
+          - .github
+          - README.md
+          - REVIEW.md
+          - APP_STORE_CHECKLIST.md
+          - SECURITY.md
+          - project.yml
+          - Info.plist
+          - PrivacyInfo.xcprivacy
+          - "*.md"
+          - "*Tests.swift"
     info:
       path: Info.plist
       properties:
@@ -38,7 +49,19 @@ targets:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - path: Tests/VaultETHTests
+      - path: .
+        includes:
+          - "*Tests.swift"
+        excludes:
+          - .github
+          - README.md
+          - REVIEW.md
+          - APP_STORE_CHECKLIST.md
+          - SECURITY.md
+          - project.yml
+          - Info.plist
+          - PrivacyInfo.xcprivacy
+          - "*.md"
     dependencies:
       - target: VaultETH
 schemes:
