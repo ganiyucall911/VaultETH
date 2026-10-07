@@ -30,9 +30,9 @@ enum Wei {
     static func multiply(_ a: Data, _ b: Data) -> Data {
         let x = Array(normalize(a).reversed()), y = Array(normalize(b).reversed())
         if x.isEmpty || y.isEmpty { return Data() }
-        var acc = [Int](repeating: 0, count: x.count + y.count)
-        for i in 0..<x.count { for j in 0..<y.count { acc[i + j] += Int(x[i]) * Int(y[j]) } }
-        var out = [UInt8](); var carry = 0
+        var acc = [UInt64](repeating: 0, count: x.count + y.count)
+        for i in 0..<x.count { for j in 0..<y.count { acc[i + j] += UInt64(x[i]) * UInt64(y[j]) } }
+        var out = [UInt8](); var carry: UInt64 = 0
         for v in acc { let t = v + carry; out.append(UInt8(t & 0xff)); carry = t >> 8 }
         while carry > 0 { out.append(UInt8(carry & 0xff)); carry >>= 8 }
         return Data(normalize(Data(out.reversed())))

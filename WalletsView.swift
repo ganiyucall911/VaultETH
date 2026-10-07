@@ -157,9 +157,11 @@ struct RecoveryPhraseView: View {
             Spacer()
         }
         .padding()
-        // Hide a revealed phrase as soon as the app leaves the foreground (app switcher snapshot).
+        // Hide the recovery phrase as soon as the app leaves the foreground so it does not
+        // appear in the iOS app-switcher snapshot — regardless of whether it was passed in
+        // directly (after wallet creation) or revealed on demand via Face ID.
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase != .active && initialMnemonic == nil { phrase = nil }
+            if newPhase != .active { phrase = nil }
         }
     }
 

@@ -41,9 +41,13 @@ final class KeychainVault: @unchecked Sendable {
 
         SecItemDelete(baseQuery(id) as CFDictionary)
         var add = baseQuery(id)
-        add[kSecValueData as String] = Data(mnemonic.utf8)
+        var mnemonicData = Data(mnemonic.utf8)
+        add[kSecValueData as String] = mnemonicData
         add[kSecAttrAccessControl as String] = access
         let status = SecItemAdd(add as CFDictionary, nil)
+        // Zero the mnemonic bytes as soon as they're handed to the Keychain.
+        // The Swift String source itself cannot be zeroed (a documented limitation).
+        mnemonicData.resetBytes(in: 0..<mnemonicData.count)
         guard status == errSecSuccess else { throw WalletError.keychain(status) }
     }
 

@@ -25,7 +25,28 @@ fee quote, contract check -> review screen (recipient, amount, maximum fee, tota
 on key load -> verify derived address equals the sending wallet -> sign (EIP-1559) -> broadcast -> poll for receipt.
 The review screen cannot be dismissed while sending, to avoid double sends.
 
-## Remaining risks (not solved here)
+## Second pass fixes (session 2)
+| Where | Problem | Fix |
+|---|---|------|
+| `project.yml` | `SWIFT_VERSION: "5.0"` — too old for modern concurrency features used throughout the codebase | bumped to `"5.9"` |
+| `project.yml` | `PrivacyInfo.xcprivacy` was excluded from the app target's sources; it must be bundled as a resource for App Store review | added as an explicit `buildPhase: resources` entry |
+| `project.yml` | Missing `ITSAppUsesNonExemptEncryption` key — required for all apps using cryptography to pass App Store export-compliance | set to `false` (the signing is done by Trust Wallet Core, a library; the app itself does not implement its own encryption algorithms) |
+| `project.yml` | `.antigravity/` directory not excluded from source scanning | excluded |
+| `WalletsView` (`RecoveryPhraseView`) | Recovery phrase remained visible in the iOS app-switcher snapshot when shown immediately after wallet creation (`initialMnemonic != nil`) | removed the `initialMnemonic == nil` guard; phrase is now always cleared on foreground loss |
+| `SendView` (`ReviewTransferView`) | Receipt-polling `Task` ran for up to 2 minutes after the user dismissed the review sheet | stored polling task in `@State receiptTask`; cancelled on sheet close |
+| `Wei.multiply` | Accumulator used `[Int]` — technically safe on 64-bit iOS but misleading; product of many UInt8 pairs would overflow on 32-bit | changed accumulator and carry to `UInt64` |
+| `KeychainVault.saveSync` | Intermediate `Data(mnemonic.utf8)` buffer remained in process memory after `SecItemAdd` | call `mnemonicData.resetBytes(in:)` immediately after saving |
+| `SettingsView` | No refresh button, no RPC endpoint disclosure, only a bare version string | added refresh balance button, listed both RPC providers with a privacy note, added build number |
+| `HomeView` | No way to switch wallets without leaving the Home tab | added a toolbar `Menu` wallet switcher (only shown when >1 wallet exists) |
+| `SendView` | No real-time validation feedback while typing | added `recipientHint` and `amountHint` computed properties that show red captions when the input looks wrong |
+
+## Remaining risks (unchanged)
+- Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
+- Public RPC providers see the user's IP and address; their data is trusted, not verified.
+- Sends to contracts are allowed with a warning only; no simulation, no ERC-20, no ENS, no approvals handling.
+- A Keychain item with user-presence protection is deleted if the device passcode is removed: backup is essential.
+- No replace-by-fee / cancel, no custom gas, no multi-chain.
+
 - Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
 - Public RPC providers see the user's IP and address, and their data (balance, nonce, fees) is trusted, not verified.
 - Sends to contracts are allowed with a warning only; no simulation, no ERC-20, no ENS, no approvals handling.

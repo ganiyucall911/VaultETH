@@ -59,6 +59,27 @@ struct HomeView: View {
         }
         .refreshable { await store.refreshBalance() }
         .navigationTitle(store.selectedAccount?.name ?? "VaultETH")
+        .toolbar {
+            if store.accounts.count > 1 {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        ForEach(store.accounts) { account in
+                            Button {
+                                store.select(account)
+                            } label: {
+                                if account.id == store.selectedAccountID {
+                                    Label(account.name, systemImage: "checkmark.circle.fill")
+                                } else {
+                                    Text(account.name)
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Switch wallet", systemImage: "wallet.pass")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -85,16 +106,36 @@ struct ReceiveView: View {
 }
 
 struct SettingsView: View {
+    @EnvironmentObject private var store: WalletStore
+
+    private var version: String {
+        let v = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+        let b = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
+        return "\(v) (\(b))"
+    }
+
     var body: some View {
         List {
             Section("Security") {
                 Label("Non-custodial Keychain vault", systemImage: "lock.fill")
-                Text("Recovery phrases stay on this device, protected by Face ID or your passcode.")
+                Text("Recovery phrases stay on this device, protected by Face ID or your passcode. They are never uploaded or backed up to iCloud.")
                     .font(.footnote).foregroundStyle(.secondary)
             }
-            Section("Network") { Text("Ethereum Mainnet") }
+            Section("Network") {
+                LabeledContent("Chain", value: "Ethereum Mainnet")
+                LabeledContent("Primary RPC", value: "publicnode.com")
+                LabeledContent("Fallback RPC", value: "cloudflare-eth.com")
+                Text("These providers see your IP address and public wallet address when the app fetches balances or broadcasts transactions.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                Button("Refresh balance", systemImage: "arrow.clockwise") {
+                    Task { await store.refreshBalance() }
+                }
+            }
             Section("About") {
-                Text("VaultETH \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")")
+                LabeledContent("Version", value: version)
+                if let url = URL(string: "https://github.com/ganiyucall911/VaultETH") {
+                    Link("Source code on GitHub", destination: url)
+                }
             }
         }
         .navigationTitle("Settings")

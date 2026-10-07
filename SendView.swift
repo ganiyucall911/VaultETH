@@ -8,6 +8,25 @@ struct SendView: View {
     @State private var prepared: PreparedTransfer?
     @State private var errorMessage: String?
 
+    /// Non-nil when the recipient field contains something that looks like an address but is invalid.
+    private var recipientHint: String? {
+        let s = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !s.isEmpty, s.count >= 40 else { return nil }
+        do {
+            _ = try WalletEngine.validateRecipient(s)
+            return nil      // valid — no hint needed
+        } catch {
+            return (error as? WalletError)?.errorDescription
+        }
+    }
+
+    private var amountHint: String? {
+        let s = amount.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !s.isEmpty else { return nil }
+        do { _ = try ETHAmount.wei(from: s) } catch { return WalletError.invalidAmount.errorDescription }
+        return nil
+    }
+
     var body: some View {
         Form {
             Section("From") {
@@ -22,11 +41,17 @@ struct SendView: View {
                 Button("Paste", systemImage: "doc.on.clipboard") {
                     if let s = UIPasteboard.general.string { recipient = s.trimmingCharacters(in: .whitespacesAndNewlines) }
                 }
+                if let hint = recipientHint {
+                    Text(hint).font(.caption).foregroundStyle(.red)
+                }
             }
             Section("Amount") {
                 HStack {
                     TextField("0.0", text: $amount).keyboardType(.decimalPad)
                     Text("ETH").foregroundStyle(.secondary)
+                }
+                if let hint = amountHint {
+                    Text(hint).font(.caption).foregroundStyle(.red)
                 }
             }
             Section {
@@ -72,6 +97,7 @@ struct ReviewTransferView: View {
 
     private enum Phase { case review, sending, sent(hash: String, status: ReceiptStatus?), failed(String) }
     @State private var phase: Phase = .review
+    @State private var receiptTask: Task<Void, Never>?
 
     private var isSending: Bool { if case .sending = phase { return true } else { return false } }
 
@@ -101,7 +127,7 @@ struct ReviewTransferView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(closeLabel) { onClose() }.disabled(isSending)
+                    Button(closeLabel) { receiptTask?.cancel(); onClose() }.disabled(isSending)
                 }
             }
         }
@@ -141,8 +167,12 @@ struct ReviewTransferView: View {
         do {
             let hash = try await store.send(transfer)
             phase = .sent(hash: hash, status: nil)
-            let status = await store.waitForReceipt(hash: hash)
-            phase = .sent(hash: hash, status: status)
+            receiptTask = Task {
+                let status = await store.waitForReceipt(hash: hash)
+                if !Task.isCancelled {
+                    phase = .sent(hash: hash, status: status)
+                }
+            }
         } catch {
             phase = .failed(error.localizedDescription)
         }
