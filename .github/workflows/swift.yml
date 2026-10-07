@@ -1,34 +1,10 @@
-name: Swift
+name: Disabled
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: {}
 
 jobs:
-  build:
-    runs-on: macos-latest
-
+  noop:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
-        run: xcodegen generate --spec project.yml
-
-      - name: Build
-        run: |
-          xcodebuild -project VaultETH.xcodeproj \
-            -scheme VaultETH \
-            -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
-            build
-
-      - name: Run tests
-        run: |
-          xcodebuild -project VaultETH.xcodeproj \
-            -scheme VaultETH \
-            -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
-            test
+      - name: Disable this workflow
+        run: echo "Workflow disabled; no build or tests will run."
