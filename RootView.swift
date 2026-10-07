@@ -13,6 +13,8 @@ struct RootView: View {
                 .tabItem { Label("Send", systemImage: "arrow.up.right") }
             NavigationStack { ReceiveView() }
                 .tabItem { Label("Receive", systemImage: "arrow.down.left") }
+            NavigationStack { TransactionHistoryView() }
+                .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
             NavigationStack { SettingsView() }
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }

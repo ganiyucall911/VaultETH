@@ -124,4 +124,13 @@ struct EthereumRPC: Sendable {
         // Accommodates both "0x1" (quantity) and "0x01" (fixed data) status representations
         return !Wei.isZero(statusData) ? .success : .failed
     }
+
+    /// Executes a read-only `eth_call` and returns the raw ABI-encoded hex result.
+    /// Used by `ENSResolver` for registry and resolver lookups.
+    func ethCall(to: String, data: String) async throws -> String {
+        guard let result = try await call("eth_call", [["to": to, "data": data], "latest"]) as? String else {
+            throw WalletError.rpcMalformedResult
+        }
+        return result
+    }
 }

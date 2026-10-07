@@ -7,10 +7,12 @@ final class WalletStore: ObservableObject {
     @Published private(set) var balanceETH = "—"
     @Published private(set) var isLoadingBalance = false
     @Published var balanceError: String?
+    @Published private(set) var sentTransactions: [SentTransaction] = []
 
     private let engine = WalletEngine()
     private let rpc = EthereumRPC()
-    private let defaultsKey = "accounts"        // public metadata only (name + address); secrets stay in Keychain
+    private let defaultsKey = "accounts"           // public metadata only (name + address); secrets stay in Keychain
+    private let historyKey  = "sentTransactions"   // sent-transaction history (no secrets)
 
     var selectedAccount: WalletAccount? { accounts.first { $0.id == selectedAccountID } }
 
@@ -19,6 +21,10 @@ final class WalletStore: ObservableObject {
            let saved = try? JSONDecoder().decode([WalletAccount].self, from: data) {
             accounts = saved
             selectedAccountID = saved.first?.id
+        }
+        if let data = UserDefaults.standard.data(forKey: historyKey),
+           let saved = try? JSONDecoder().decode([SentTransaction].self, from: data) {
+            sentTransactions = saved
         }
     }
 
@@ -95,25 +101,52 @@ final class WalletStore: ObservableObject {
     }
 
     /// Signs (after Face ID / passcode) and broadcasts. Returns the transaction hash.
-    func send(_ transfer: PreparedTransfer) async throws -> String {
+    /// Pass `ensName` when the user typed an ENS name so it appears in history.
+    func send(_ transfer: PreparedTransfer, ensName: String? = nil) async throws -> String {
         guard let account = accounts.first(where: { $0.address.lowercased() == transfer.from.lowercased() }) else {
             throw WalletError.keyNotFound
         }
         let raw = try await engine.signTransfer(transfer, accountID: account.id)
-        return try await rpc.sendRaw(raw)
+        let hash = try await rpc.sendRaw(raw)
+        recordSent(transfer, hash: hash, ensName: ensName)
+        return hash
     }
 
-    /// Polls for a receipt for about two minutes. Returns nil if still pending.
+    /// Polls for a receipt for about two minutes. Returns nil if still pending after that.
     func waitForReceipt(hash: String) async -> ReceiptStatus? {
         for _ in 0..<24 {
             if Task.isCancelled { return nil }
             if let status = try? await rpc.receipt(hash: hash) {
                 await refreshBalance()
+                updateTransactionStatus(hash: hash,
+                                        status: status == .success ? .confirmed : .failed)
                 return status
             }
             try? await Task.sleep(for: .seconds(5))
         }
         return nil
+    }
+
+    // MARK: - Transaction history
+
+    private func recordSent(_ transfer: PreparedTransfer, hash: String, ensName: String?) {
+        let tx = SentTransaction(
+            id: UUID(),
+            walletAddress: transfer.from,
+            toAddress: transfer.to,
+            toENSName: ensName,
+            amountETH: ETHAmount.format(wei: transfer.valueWei),
+            hash: hash,
+            date: Date(),
+            status: .pending)
+        sentTransactions.insert(tx, at: 0)
+        persistHistory()
+    }
+
+    func updateTransactionStatus(hash: String, status: SentTransaction.TxStatus) {
+        guard let i = sentTransactions.firstIndex(where: { $0.hash == hash }) else { return }
+        sentTransactions[i].status = status
+        persistHistory()
     }
 
     // MARK: - Persistence
@@ -134,5 +167,9 @@ final class WalletStore: ObservableObject {
 
     private func persist() {
         if let data = try? JSONEncoder().encode(accounts) { UserDefaults.standard.set(data, forKey: defaultsKey) }
+    }
+
+    private func persistHistory() {
+        if let data = try? JSONEncoder().encode(sentTransactions) { UserDefaults.standard.set(data, forKey: historyKey) }
     }
 }

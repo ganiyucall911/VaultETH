@@ -52,6 +52,66 @@
       "created_at": "2026-10-07T02:45:15.032Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "52ffb7f6-f67a-4c3b-8df4-6eadf3423527",
+      "role": "agent",
+      "content": "Now let me read all the Swift source files to understand the current state:\nNow I have a comprehensive view of the entire project. Let me analyze what's missing or incomplete, and what issues remain to be fixed. Let me also check the QRCodeView:\nNow I have a complete picture of the codebase. Let me identify all remaining issues and areas to improve:\nNow let me fix all the issues I found:\nNow fix the `RecoveryPhraseView` — clear the phrase whenever the scene goes inactive (not just for non-initial phrases):\nNow fix the receipt-polling task leak in `ReviewTransferView` — store and cancel it on dismiss:\nNow update the toolbar close button and the `send()` function to cancel the task on dismiss:\nNow update the `send()` function to use `receiptTask`:\nNow fix the `Wei.multiply` accumulator to use `UInt64` elements to prevent potential overflow when the accumulator gets many contributions:\nNow let me improve the `KeychainVault` to zero out the mnemonic data after saving to minimise its time in memory:\nNow let's enhance the `SettingsView` with some useful additions — an RPC endpoint display, a refresh button, and the app version:\nNow let's add inline amount/address validation feedback to `SendView` to help users before they tap \"Review\":\nThe `recipientHint` computed property has a syntax oddity from my edit — the `try?` block syntax is odd. Let me check and fix it:\nLine 17-19 has a dead code pattern (`if let err = try?...`) that will never compile correctly. Let me fix the `recipientHint` property:\nNow let's also add a `HomeView` wallet picker — when there are multiple wallets the user should be able to quickly switch without navigating to the Wallets tab:\nNow let me update the REVIEW.md to document the new fixes:\nGood. Now let me verify the final state of the key changed files looks correct:\nEverything looks great. Let me do a final check of all the files to make sure they're consistent:\nAll changes look good. Let me commit:\nAll changes have been committed and pushed. Here's a summary of everything fixed and improved in this session:\n\n---\n\n## Changes Made\n\n### 🔒 Security Fixes\n\n| File | Problem | Fix |\n|------|---------|-----|\n| [`WalletsView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletsView.swift#L160-L165) | Recovery phrase remained visible in the iOS **app-switcher snapshot** when shown immediately after wallet creation | Removed the `initialMnemonic == nil` guard — phrase is now always cleared when the app leaves the foreground |\n| [`KeychainVault.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/KeychainVault.swift#L42-L51) | Intermediate `Data(mnemonic.utf8)` buffer stayed in process memory after `SecItemAdd` | Call `mnemonicData.resetBytes(in:)` immediately after saving to Keychain |\n| [`Wei.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/Wei.swift#L30-L39) | `multiply` accumulator used `[Int]` — would theoretically overflow on 32-bit targets | Changed to `[UInt64]` arithmetic throughout |\n\n### 🐛 Bug Fixes\n\n| File | Problem | Fix |\n|------|---------|-----|\n| [`SendView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/SendView.swift#L165-L179) | Receipt-polling `Task` kept running for ~2 minutes after the user closed the review sheet | Stored task in `@State receiptTask`; cancelled on sheet close |\n\n### 📦 Project / App Store Fixes\n\n| File | Problem | Fix |\n|------|---------|-----|\n| [`project.yml`](https://github.com/ganiyucall911/VaultETH/blob/main/project.yml) | `SWIFT_VERSION: \"5.0\"` — too old for modern concurrency | Bumped to `\"5.9\"` |\n| [`project.yml`](https://github.com/ganiyucall911/VaultETH/blob/main/project.yml) | `PrivacyInfo.xcprivacy` was **excluded** from sources — it would not be bundled with the app | Added as an explicit `buildPhase: resources` entry |\n| [`project.yml`](https://github.com/ganiyucall911/VaultETH/blob/main/project.yml) | Missing `ITSAppUsesNonExemptEncryption` — App Store **export compliance** requirement | Set to `false` |\n\n### ✨ UX Improvements\n\n- **[`SendView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/SendView.swift#L11-L28)** — Inline validation: red caption appears below the recipient field when the address looks wrong (bad checksum, burn address, etc.) and below the amount field when the value is invalid\n- **[`RootView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/RootView.swift#L62-L83)** — `HomeView` gets a wallet-switcher `Menu` in the toolbar when multiple wallets exist\n- **[`RootView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/RootView.swift#L87-L121)** — `SettingsView` shows RPC endpoint names with a privacy note, a manual refresh button, and the full build version",
+      "status": "completed",
+      "model": "claude-sonnet-4-6",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "d8a1d34d-0b1b-460a-aa17-840cbde24477",
+      "created_at": "2026-10-07T02:50:10.272Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "7468f99e-439e-4c9d-b589-3e49135daef6",
+      "role": "user",
+      "content": "What’s next",
+      "status": "pending",
+      "model": "claude-sonnet-4-6",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-07T02:51:53.305Z",
+      "sender": "ios",
+      "is_cancelled": false
+    },
+    {
+      "id": "cbff8101-43ff-493c-8a93-5d33e8de4627",
+      "role": "agent",
+      "content": "Here's where the project stands and what the logical next steps are:\n\n---\n\n## VaultETH — What's Next\n\n### 🔴 Blockers (must-do before real funds)\n\nThese are the [SECURITY.md](https://github.com/ganiyucall911/VaultETH/blob/main/SECURITY.md) release gates — none are skippable:\n\n1. **CI must pass** — The GitHub Actions workflow builds and runs tests. It needs a Mac runner with Xcode + `xcodegen`. Check the [swift.yml](https://github.com/ganiyucall911/VaultETH/blob/main/.github/workflows/swift.yml) workflow to confirm it's using a recent enough Xcode (needs 15+ for iOS 17 deployment target). The unit tests for signing, address derivation, and wei math should pass on first run since they use independently verified vectors.\n\n2. **Physical device testing** — Simulator can't test Face ID or real Keychain. Needs:\n   - Create → back up → delete → reinstall → import (verify same address)\n   - Face ID and passcode-only device paths\n   - A test mainnet send from a throwaway wallet\n\n3. **Independent security review** — Especially the signing path ([`WalletEngine.sign`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletEngine.swift#L95-L112)) and Keychain access control setup ([`KeychainVault`](https://github.com/ganiyucall911/VaultETH/blob/main/KeychainVault.swift))\n\n---\n\n### 🟡 App Store prep (do before submission)\n\n| Task | Notes |\n|------|-------|\n| **Privacy policy URL** | RPC providers see user IP + address — must be disclosed |\n| **Apple Developer account** | Organisation account likely required for crypto wallet category |\n| **App icons** | None exist yet — required for App Store submission |\n| **Screenshot set** | Required for App Store listing |\n| **Export compliance** | `ITSAppUsesNonExemptEncryption = false` is set — verify with Apple's questions |\n| **Trust Wallet Core dependency review** | Pinned at 4.2.9 — check for CVEs or newer stable release |\n\n---\n\n### 🟢 Features worth adding (post-v1 or as time allows)\n\n| Feature | Effort | Value |\n|---------|--------|-------|\n| **Transaction history** | Medium | High — users expect to see past txs |\n| **ENS resolution** | Medium | High — `vitalik.eth` is much safer to type than 42 hex chars |\n| **Custom gas / RBF / cancel** | High | Medium — stuck transactions are a pain point |\n| **ERC-20 token display** | High | High — most users hold tokens, not just ETH |\n| **QR scanner for recipient** | Low | High — avoids manual address entry entirely |\n| **Multiple RPC failover tuning** | Low | Medium — could add more reliable fallbacks (Infura, Alchemy) |\n| **WalletConnect v2** | High | High — enables dApp interaction |\n\n---\n\n### What I can do right now\n\n- **Add app icons** (generate a placeholder set so CI doesn't warn)\n- **Add a QR code scanner** to the Send screen (big UX/safety win, low risk)\n- **Check and fix the CI workflow** file to ensure it uses a correct Xcode version and simulator\n- **Add ENS resolution** stub to the recipient validation flow\n- **Write more unit tests** (RPC parsing, edge-case wei math, recipient validation URIs)\n\nWhich of these would you like me to tackle?",
+      "status": "completed",
+      "model": "claude-sonnet-4-6",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "7468f99e-439e-4c9d-b589-3e49135daef6",
+      "created_at": "2026-10-07T02:52:17.868Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "0ce79a7b-6e1b-49cd-b0be-1dd917e618a7",
+      "role": "user",
+      "content": "Do what you can and add features that you can",
+      "status": "cancelled",
+      "model": "claude-sonnet-4-6",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-07T02:54:48.249Z",
+      "sender": "ios",
+      "is_cancelled": true
+    },
+    {
+      "id": "5e9f3f3e-76fd-4cc4-a334-1138b2c6777a",
+      "role": "user",
+      "content": "Do what you can and add features that you can",
+      "status": "pending",
+      "model": "claude-sonnet-4-6",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-07T02:56:21.677Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }

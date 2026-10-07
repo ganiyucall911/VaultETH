@@ -4,6 +4,8 @@ struct WalletsView: View {
     @EnvironmentObject private var store: WalletStore
     @State private var showAdd = false
     @State private var pendingDelete: WalletAccount?
+    @State private var pendingRename: WalletAccount?
+    @State private var draftName = ""
 
     var body: some View {
         List {
@@ -23,8 +25,15 @@ struct WalletsView: View {
                     }
                     .foregroundStyle(.primary)
                 }
-                .swipeActions {
+                .swipeActions(edge: .trailing) {
                     Button("Delete", role: .destructive) { pendingDelete = account }
+                }
+                .swipeActions(edge: .leading) {
+                    Button("Rename", systemImage: "pencil") {
+                        draftName = account.name
+                        pendingRename = account
+                    }
+                    .tint(.blue)
                 }
             }
         }
@@ -44,6 +53,23 @@ struct WalletsView: View {
             Text(account.backedUp
                  ? "You can restore it later with your recovery phrase."
                  : "This wallet is NOT backed up. Deleting it permanently loses access to its funds.")
+        }
+        .alert("Rename Wallet", isPresented: Binding(
+            get: { pendingRename != nil },
+            set: { if !$0 { pendingRename = nil } }
+        )) {
+            TextField("Wallet name", text: $draftName)
+                .textInputAutocapitalization(.words)
+            Button("Rename") {
+                let trimmed = draftName.trimmingCharacters(in: .whitespaces)
+                if let account = pendingRename, !trimmed.isEmpty {
+                    store.rename(account, to: trimmed)
+                }
+                pendingRename = nil
+            }
+            Button("Cancel", role: .cancel) { pendingRename = nil }
+        } message: {
+            Text("Enter a new name for "\(pendingRename?.name ?? "")".")
         }
     }
 }
