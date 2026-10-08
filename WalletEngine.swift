@@ -113,19 +113,40 @@ final class WalletEngine: @unchecked Sendable {
     func createWallet(name: String) async throws -> (account: WalletAccount, mnemonic: String) {
         guard let wallet = HDWallet(strength: 128, passphrase: "") else { throw WalletError.walletCreationFailed }
         let phrase = wallet.mnemonic
-        let account = WalletAccount(id: UUID(), name: name,
-                                    address: wallet.getAddressForCoin(coin: .ethereum), backedUp: false)
+        let evmAddress = wallet.getAddressForCoin(coin: .ethereum)
+        let solanaAddress = wallet.getAddressForCoin(coin: .solana)
+        let bitcoinAddress = wallet.getAddressForCoin(coin: .bitcoin)
+
+        let account = WalletAccount(
+            id: UUID(),
+            name: name,
+            address: evmAddress,
+            solanaAddress: solanaAddress,
+            bitcoinAddress: bitcoinAddress,
+            backedUp: false
+        )
         try await vault.save(phrase, id: account.id)
         return (account, phrase)
     }
 
     func importWallet(name: String, mnemonic: String, existingAddresses: [String]) async throws -> WalletAccount {
         let phrase = Self.normalize(mnemonic: mnemonic)
-        guard let address = Self.address(forMnemonic: phrase) else { throw WalletError.invalidMnemonic }
-        guard !existingAddresses.contains(where: { $0.lowercased() == address.lowercased() }) else {
+        guard let wallet = HDWallet(mnemonic: phrase, passphrase: "") else { throw WalletError.invalidMnemonic }
+        let evmAddress = wallet.getAddressForCoin(coin: .ethereum)
+        guard !existingAddresses.contains(where: { $0.lowercased() == evmAddress.lowercased() }) else {
             throw WalletError.duplicateWallet
         }
-        let account = WalletAccount(id: UUID(), name: name, address: address, backedUp: true)
+        let solanaAddress = wallet.getAddressForCoin(coin: .solana)
+        let bitcoinAddress = wallet.getAddressForCoin(coin: .bitcoin)
+
+        let account = WalletAccount(
+            id: UUID(),
+            name: name,
+            address: evmAddress,
+            solanaAddress: solanaAddress,
+            bitcoinAddress: bitcoinAddress,
+            backedUp: true
+        )
         try await vault.save(phrase, id: account.id)
         return account
     }

@@ -10,10 +10,26 @@ final class WalletStore: ObservableObject {
     @Published private(set) var selectedENSName: String?
     @Published private(set) var sentTransactions: [SentTransaction] = []
 
+    // Multi-Chain State
+    @Published var selectedNetwork: BlockchainNetwork = .ethereum {
+        didSet {
+            rpc = EthereumRPC(network: selectedNetwork)
+            UserDefaults.standard.set(selectedNetwork.id, forKey: selectedNetworkKey)
+        }
+    }
+    @Published var customNetworks: [BlockchainNetwork] = []
+
     private let engine = WalletEngine()
-    private let rpc = EthereumRPC()
-    private let defaultsKey = "accounts"           // public metadata only (name + address); secrets stay in Keychain
-    private let historyKey  = "sentTransactions"   // sent-transaction history (no secrets)
+    private var rpc = EthereumRPC(network: .ethereum)
+
+    private let defaultsKey = "accounts"
+    private let historyKey  = "sentTransactions"
+    private let selectedNetworkKey = "selectedNetworkID"
+    private let customNetworksKey = "customNetworks"
+
+    var supportedNetworks: [BlockchainNetwork] {
+        BlockchainNetwork.defaultNetworks + customNetworks
+    }
 
     var selectedAccount: WalletAccount? { accounts.first { $0.id == selectedAccountID } }
 
@@ -27,6 +43,51 @@ final class WalletStore: ObservableObject {
            let saved = try? JSONDecoder().decode([SentTransaction].self, from: data) {
             sentTransactions = saved
         }
+        if let customData = UserDefaults.standard.data(forKey: customNetworksKey),
+           let savedCustom = try? JSONDecoder().decode([BlockchainNetwork].self, from: customData) {
+            customNetworks = savedCustom
+        }
+        if let savedNetID = UserDefaults.standard.string(forKey: selectedNetworkKey),
+           let match = (BlockchainNetwork.defaultNetworks + customNetworks).first(where: { $0.id == savedNetID }) {
+            selectedNetwork = match
+            rpc = EthereumRPC(network: match)
+        }
+    }
+
+    // MARK: - Network Selection & Custom Chains
+
+    func selectNetwork(_ network: BlockchainNetwork) {
+        selectedNetwork = network
+        rpc = EthereumRPC(network: network)
+        balanceETH = "—"
+        Task {
+            await refreshBalance()
+            if network.chainID == 1 {
+                await refreshENS()
+            } else {
+                selectedENSName = nil
+            }
+            await refreshPendingTransactions()
+        }
+    }
+
+    func addCustomNetwork(name: String, chainID: UInt64, symbol: String, rpcURL: String, explorerURL: String) {
+        let net = BlockchainNetwork(
+            id: "custom-\(chainID)",
+            name: name,
+            chainID: chainID,
+            symbol: symbol.uppercased(),
+            decimals: 18,
+            rpcEndpoints: [rpcURL],
+            blockExplorerURL: explorerURL.isEmpty ? "https://etherscan.io" : explorerURL,
+            isTestnet: false,
+            accentColorHex: "#00F0FF"
+        )
+        customNetworks.append(net)
+        if let data = try? JSONEncoder().encode(customNetworks) {
+            UserDefaults.standard.set(data, forKey: customNetworksKey)
+        }
+        selectNetwork(net)
     }
 
     // MARK: - Wallets
@@ -54,7 +115,9 @@ final class WalletStore: ObservableObject {
         selectedENSName = nil
         Task {
             await refreshBalance()
-            await refreshENS()
+            if selectedNetwork.chainID == 1 {
+                await refreshENS()
+            }
         }
     }
 
@@ -77,8 +140,8 @@ final class WalletStore: ObservableObject {
         defer { isLoadingBalance = false }
         do {
             let wei = try await rpc.balance(address: account.address)
-            guard account.id == selectedAccountID else { return }      // user switched wallets mid-request
-            balanceETH = ETHAmount.format(wei: wei) + " ETH"
+            guard account.id == selectedAccountID else { return }
+            balanceETH = "\(ETHAmount.format(wei: wei)) \(selectedNetwork.symbol)"
             balanceError = nil
         } catch {
             balanceError = error.localizedDescription
@@ -86,9 +149,14 @@ final class WalletStore: ObservableObject {
     }
 
     func refreshENS() async {
+        guard selectedNetwork.chainID == 1 else {
+            selectedENSName = nil
+            return
+        }
         guard let account = selectedAccount else { selectedENSName = nil; return }
         do {
-            let ens = try await ENSResolver.resolveAddress(account.address, rpc: rpc)
+            let ensRPC = EthereumRPC(network: .ethereum)
+            let ens = try await ENSResolver.resolveAddress(account.address, rpc: ensRPC)
             guard account.id == selectedAccountID else { return }
             selectedENSName = ens
         } catch {
@@ -99,30 +167,32 @@ final class WalletStore: ObservableObject {
 
     // MARK: - Sending
 
-    /// Validates everything and builds the exact transaction the user will review. Nothing is signed here.
+    /// Prepares a transaction on the currently selected blockchain network.
     func prepareTransfer(to rawRecipient: String, amountText: String) async throws -> PreparedTransfer {
         guard let account = selectedAccount else { throw WalletError.keyNotFound }
         let recipient = try WalletEngine.validateRecipient(rawRecipient)
         let value = try ETHAmount.wei(from: amountText)
 
-        guard Wei.compare(try await rpc.chainID(), EthereumRPC.mainnetChainID) == .orderedSame else {
+        let targetChainIDData = selectedNetwork.chainIDData
+        let nodeChainID = try await rpc.chainID()
+        guard Wei.compare(nodeChainID, targetChainIDData) == .orderedSame else {
             throw WalletError.wrongNetwork
         }
+
         let balance = try await rpc.balance(address: account.address)
         let nonce = try await rpc.nonce(address: account.address)
         let fee = try await rpc.feeQuote(from: account.address, to: recipient, value: value)
         let isContract = try await rpc.isContract(address: recipient)
 
         let transfer = PreparedTransfer(from: account.address, to: recipient, valueWei: value, nonce: nonce,
-                                        chainID: EthereumRPC.mainnetChainID, fee: fee, recipientIsContract: isContract)
+                                        chainID: targetChainIDData, fee: fee, recipientIsContract: isContract)
         guard Wei.compare(balance, transfer.maxTotalWei) != .orderedAscending else {
             throw WalletError.insufficientBalance
         }
         return transfer
     }
 
-    /// Signs (after Face ID / passcode) and broadcasts. Returns the transaction hash.
-    /// Pass `ensName` when the user typed an ENS name so it appears in history.
+    /// Signs and broadcasts across the selected blockchain.
     func send(_ transfer: PreparedTransfer, ensName: String? = nil) async throws -> String {
         guard let account = accounts.first(where: { $0.address.lowercased() == transfer.from.lowercased() }) else {
             throw WalletError.keyNotFound
@@ -133,7 +203,7 @@ final class WalletStore: ObservableObject {
         return hash
     }
 
-    /// Polls for a receipt for about two minutes. Returns nil if still pending after that.
+    /// Polls for receipt on the network where the transaction was broadcast.
     func waitForReceipt(hash: String) async -> ReceiptStatus? {
         for _ in 0..<24 {
             if Task.isCancelled { return nil }
@@ -148,7 +218,7 @@ final class WalletStore: ObservableObject {
         return nil
     }
 
-    // MARK: - Transaction history
+    // MARK: - Transaction History
 
     private func recordSent(_ transfer: PreparedTransfer, hash: String, ensName: String?) {
         let tx = SentTransaction(
@@ -159,7 +229,12 @@ final class WalletStore: ObservableObject {
             amountETH: ETHAmount.format(wei: transfer.valueWei),
             hash: hash,
             date: Date(),
-            status: .pending)
+            status: .pending,
+            networkID: selectedNetwork.id,
+            networkName: selectedNetwork.name,
+            symbol: selectedNetwork.symbol,
+            blockExplorerURL: selectedNetwork.blockExplorerURL
+        )
         sentTransactions.insert(tx, at: 0)
         persistHistory()
     }
@@ -170,12 +245,17 @@ final class WalletStore: ObservableObject {
         persistHistory()
     }
 
-    /// Checks the on-chain receipt status for any currently pending transactions.
     func refreshPendingTransactions() async {
         let pending = sentTransactions.filter { $0.status == .pending }
         guard !pending.isEmpty else { return }
         for tx in pending {
-            if let status = try? await rpc.receipt(hash: tx.hash) {
+            let txRPC: EthereumRPC
+            if let netID = tx.networkID, let net = supportedNetworks.first(where: { $0.id == netID }) {
+                txRPC = EthereumRPC(network: net)
+            } else {
+                txRPC = rpc
+            }
+            if let status = try? await txRPC.receipt(hash: tx.hash) {
                 updateTransactionStatus(hash: tx.hash,
                                         status: status == .success ? .confirmed : .failed)
             }

@@ -66,12 +66,22 @@ The review screen cannot be dismissed while sending, to avoid double sends.
 | **Activity Feed** | **Activity Hub & Filters** | Added segmented status filtering (`All`, `Confirmed`, `Pending`) in `TransactionHistoryView`, with recipient identicons, live status beacons, and a dedicated transaction detail modal sheet. |
 | **Onboarding** | **Sovereign Welcome Screen** | Revamped `WelcomeView` with floating glowing diamond motif, key pillar disclosures (Secure Enclave, zero tracking, direct on-chain), and prominent creation actions. |
 
+## Fifth pass: Universal Multi-Chain Architecture (session 5)
+| Area | Enhancement | Technical Details |
+|---|---|---|
+| **Multi-Chain Networks** | **`BlockchainNetwork` Engine** | Introduced first-class multi-chain definitions for Ethereum Mainnet (1), Arbitrum One (42161), Base (8453), Optimism (10), Polygon PoS (137), BNB Smart Chain (56), Avalanche C-Chain (43114), Linea (59144), Sepolia Testnet (11155111), plus custom EVM network addition. |
+| **RPC Client** | **Dynamic Multi-Chain JSON-RPC** | Enhanced `EthereumRPC.swift` to dynamically instantiate with any `BlockchainNetwork`. Implemented resilient dual-model gas estimation supporting modern EIP-1559 base fee queries and graceful fallback to `eth_gasPrice` for BNB Chain and legacy EVM networks. |
+| **Cross-Chain Derivation** | **EVM, Solana & Bitcoin** | Updated `WalletEngine` to derive native addresses for EVM (all chains), Solana (`wallet.getAddressForCoin(coin: .solana)`), and Bitcoin SegWit (`wallet.getAddressForCoin(coin: .bitcoin)`) from a single 12-word seed phrase. |
+| **Network Selector UI** | **Interactive Network Pill & Sheet** | Added interactive network beacon button to `HomeView` header and `NetworkPickerSheet` allowing one-tap switching between all supported chains and instant adding of custom RPC networks. |
+| **Multi-Chain Receive** | **Segmented Digital Vault Pass** | Redesigned `ReceiveView` with a segmented control to toggle between EVM Chains, Solana, and Bitcoin, generating live respective QR codes and copy actions. |
+| **Dynamic Sending & History** | **Multi-Chain Execution** | Updated `SendView` and `TransactionHistoryView` to adapt symbols (`ETH`, `BNB`, `POL`, `AVAX`), validate against target network chain ID, and deep-link directly to each network's official block explorer (Basescan, Arbiscan, Polygonscan, BscScan, Snowtrace, Etherscan). |
+
 ## Remaining risks
 - Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
 - Public RPC providers see the user's IP and address, and their data (balance, nonce, fees) is trusted, not verified.
 - Sends to contracts are allowed with a warning only; no simulation, no ERC-20, no approvals handling.
 - A Keychain item with user-presence protection is deleted if the device passcode is removed: backup is essential.
 - Imported wallets are marked "backed up" (the user already has the phrase). Deleting a wallet warns when not backed up.
-- No replace-by-fee / cancel, no custom gas, no multi-chain.
+- Non-EVM chains (Solana, Bitcoin) currently support address derivation and receiving; outgoing broadcast is enabled for all EVM chains.
 - Native build and UI tests run in Xcode / macOS; pure logic and unit vectors verified.
 

@@ -68,13 +68,14 @@ struct HomeView: View {
     @State private var showSendSheet = false
     @State private var showReceiveSheet = false
     @State private var showScanner = false
+    @State private var showNetworkPicker = false
     @State private var copiedToast = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Live Network Beacon
-                networkStatusBar
+                // Interactive Multi-Chain Network Beacon
+                networkSelectorButton
 
                 // Hero Vault Card
                 vaultHeroCard
@@ -89,7 +90,7 @@ struct HomeView: View {
                     securityHealthPill
                 }
 
-                // Recent Activity Snapshot
+                // Recent Multi-Chain Activity Snapshot
                 recentActivitySection
             }
             .padding(.horizontal, 18)
@@ -98,7 +99,9 @@ struct HomeView: View {
         .background(Color.vaultBackground.ignoresSafeArea())
         .refreshable {
             await store.refreshBalance()
-            await store.refreshENS()
+            if store.selectedNetwork.chainID == 1 {
+                await store.refreshENS()
+            }
             await store.refreshPendingTransactions()
         }
         .navigationTitle(store.selectedAccount?.name ?? "VaultETH")
@@ -136,6 +139,9 @@ struct HomeView: View {
         .sheet(isPresented: $showReceiveSheet) {
             NavigationStack { ReceiveView() }
         }
+        .sheet(isPresented: $showNetworkPicker) {
+            NavigationStack { NetworkPickerSheet() }
+        }
         .sheet(isPresented: $showScanner) {
             QRScannerView { scanned in
                 let parsed = WalletEngine.parsePaymentURI(scanned)
@@ -161,31 +167,40 @@ struct HomeView: View {
 
     // MARK: - Subviews
 
-    private var networkStatusBar: some View {
-        HStack(spacing: 8) {
-            Circle()
-                .fill(Color.vaultEmerald)
-                .frame(width: 8, height: 8)
-                .shadow(color: Color.vaultEmerald.opacity(0.8), radius: 4)
+    private var networkSelectorButton: some View {
+        Button {
+            showNetworkPicker = true
+        } label: {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(Color(hex: store.selectedNetwork.accentColorHex))
+                    .frame(width: 8, height: 8)
+                    .shadow(color: Color(hex: store.selectedNetwork.accentColorHex).opacity(0.8), radius: 4)
 
-            Text("Ethereum Mainnet")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                Text(store.selectedNetwork.name)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary)
 
-            Spacer()
+                Image(systemName: "chevron.down")
+                    .font(.caption2.bold())
+                    .foregroundStyle(.secondary)
 
-            if store.isLoadingBalance {
-                ProgressView()
-                    .controlSize(.mini)
-            } else {
-                Text("Block Synced")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                Spacer()
+
+                if store.isLoadingBalance {
+                    ProgressView()
+                        .controlSize(.mini)
+                } else {
+                    Text("Chain \(store.selectedNetwork.chainID)")
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.tertiary)
+                }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 9)
+            .vaultGlass(cornerRadius: 14)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .vaultGlass(cornerRadius: 14)
+        .buttonStyle(.plain)
     }
 
     private var vaultHeroCard: some View {
@@ -211,7 +226,7 @@ struct HomeView: View {
                         }
                     }
 
-                    if let ens = store.selectedENSName {
+                    if let ens = store.selectedENSName, store.selectedNetwork.chainID == 1 {
                         HStack(spacing: 4) {
                             Text(ens)
                                 .font(.subheadline.bold())
@@ -240,28 +255,30 @@ struct HomeView: View {
                 }
 
                 Spacer()
+
+                // Network Tag Badge
+                Text(store.selectedNetwork.symbol)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(hex: store.selectedNetwork.accentColorHex).opacity(0.18), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Color(hex: store.selectedNetwork.accentColorHex).opacity(0.4), lineWidth: 1))
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Total Balance")
+                Text("Balance on \(store.selectedNetwork.name)")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
 
                 if isDiscreetMode {
-                    Text("•••••••• ETH")
+                    Text("•••••••• \(store.selectedNetwork.symbol)")
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.vaultCyan)
                 } else {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        Text(store.balanceETH)
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
-                            .minimumScaleFactor(0.4)
-                            .lineLimit(1)
-
-                        Text("ETH")
-                            .font(.title3.weight(.medium))
-                            .foregroundStyle(.secondary)
-                    }
+                    Text(store.balanceETH)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
                 }
 
                 if let error = store.balanceError {
@@ -361,7 +378,7 @@ struct HomeView: View {
         HStack(spacing: 10) {
             Image(systemName: "lock.shield.fill")
                 .foregroundStyle(Color.vaultEmerald)
-            Text("Hardware-Backed Secure Enclave Active")
+            Text("Multi-Chain Enclave Active • \(store.supportedNetworks.count) Blockchains Ready")
                 .font(.caption.weight(.medium))
                 .foregroundStyle(.secondary)
             Spacer()
@@ -405,8 +422,10 @@ struct HomeView: View {
                                 HStack(spacing: 4) {
                                     Text("Sent")
                                         .font(.subheadline.bold())
-                                    if let ens = tx.toENSName {
-                                        Text("to \(ens)").font(.caption).foregroundStyle(Color.vaultCyan)
+                                    if let netName = tx.networkName {
+                                        Text("on \(netName)")
+                                            .font(.caption2.bold())
+                                            .foregroundStyle(Color.secondary)
                                     }
                                 }
                                 Text(shortAddress(tx.toAddress))
@@ -415,7 +434,7 @@ struct HomeView: View {
                             }
                             Spacer()
                             VStack(alignment: .trailing, spacing: 2) {
-                                Text("\(tx.amountETH) ETH")
+                                Text("\(tx.amountETH) \(tx.symbol ?? "ETH")")
                                     .font(.subheadline.weight(.semibold))
                                 Text(tx.status.rawValue.capitalized)
                                     .font(.caption2)
@@ -467,47 +486,198 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Receive View (The Digital Vault Pass)
+// MARK: - Multi-Chain Network Picker Sheet
+
+struct NetworkPickerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: WalletStore
+    @State private var showAddCustom = false
+
+    var body: some View {
+        List {
+            Section("Supported Blockchains") {
+                ForEach(store.supportedNetworks) { net in
+                    Button {
+                        store.selectNetwork(net)
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(Color(hex: net.accentColorHex))
+                                .frame(width: 12, height: 12)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 6) {
+                                    Text(net.name)
+                                        .font(.headline)
+                                        .foregroundStyle(.primary)
+
+                                    if net.isTestnet {
+                                        Text("Testnet")
+                                            .font(.caption2.bold())
+                                            .foregroundStyle(.orange)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.orange.opacity(0.12), in: Capsule())
+                                    }
+                                }
+
+                                Text("Native Currency: \(net.symbol) • Chain ID: \(net.chainID)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            if net.id == store.selectedNetwork.id {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(Color.vaultCyan)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Section {
+                Button {
+                    showAddCustom = true
+                } label: {
+                    Label("Add Custom EVM Chain", systemImage: "plus.circle.fill")
+                        .foregroundStyle(Color.vaultCyan)
+                }
+            }
+        }
+        .navigationTitle("Select Blockchain")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Done") { dismiss() }
+            }
+        }
+        .sheet(isPresented: $showAddCustom) {
+            NavigationStack { AddCustomNetworkSheet() }
+        }
+    }
+}
+
+struct AddCustomNetworkSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: WalletStore
+
+    @State private var name = ""
+    @State private var chainID = ""
+    @State private var symbol = ""
+    @State private var rpcURL = ""
+    @State private var explorerURL = ""
+    @State private var errorMessage: String?
+
+    var body: some View {
+        Form {
+            Section("Network Details") {
+                TextField("Network Name (e.g. Scroll, Blast)", text: $name)
+                TextField("Chain ID (e.g. 534352, 81457)", text: $chainID)
+                    .keyboardType(.numberPad)
+                TextField("Currency Symbol (e.g. ETH, BLAST)", text: $symbol)
+                TextField("RPC URL (https://...)", text: $rpcURL)
+                    .keyboardType(.URL)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                TextField("Block Explorer URL (Optional)", text: $explorerURL)
+                    .keyboardType(.URL)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+            }
+
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(.red).font(.caption)
+            }
+
+            Button("Add & Switch Network") {
+                guard let id = UInt64(chainID), !name.isEmpty, !symbol.isEmpty, !rpcURL.isEmpty else {
+                    errorMessage = "Please enter valid network information."
+                    return
+                }
+                store.addCustomNetwork(name: name, chainID: id, symbol: symbol, rpcURL: rpcURL, explorerURL: explorerURL)
+                dismiss()
+            }
+            .disabled(name.isEmpty || chainID.isEmpty || symbol.isEmpty || rpcURL.isEmpty)
+        }
+        .navigationTitle("Add EVM Network")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { dismiss() }
+            }
+        }
+    }
+}
+
+// MARK: - Multi-Chain Receive View (The Digital Vault Pass)
 
 struct ReceiveView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var store: WalletStore
+
+    enum ReceiveChain: String, CaseIterable, Identifiable {
+        case evm = "EVM Chains"
+        case solana = "Solana"
+        case bitcoin = "Bitcoin"
+        var id: String { rawValue }
+    }
+
+    @State private var selectedChain: ReceiveChain = .evm
     @State private var copied = false
 
+    private var activeAddress: String {
+        guard let account = store.selectedAccount else { return "" }
+        switch selectedChain {
+        case .evm: return account.address
+        case .solana: return account.solanaAddress ?? account.address
+        case .bitcoin: return account.bitcoinAddress ?? account.address
+        }
+    }
+
     var body: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 20) {
+            // Chain Switcher Segmented Control
+            Picker("Chain Format", selection: $selectedChain) {
+                ForEach(ReceiveChain.allCases) { chain in
+                    Text(chain.rawValue).tag(chain)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.top, 4)
+
             if let account = store.selectedAccount {
                 // Digital Identity Card
                 VStack(spacing: 16) {
-                    VaultIdenticon(address: account.address, size: 76, showGlow: true)
-                        .padding(.top, 8)
+                    VaultIdenticon(address: account.address, size: 70, showGlow: true)
+                        .padding(.top, 4)
 
                     VStack(spacing: 4) {
                         Text(account.name)
                             .font(.title3.bold())
 
-                        if let ens = store.selectedENSName {
-                            Text(ens)
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(Color.vaultCyan)
-                        }
+                        Text(chainDescription)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.vaultCyan)
                     }
 
                     // Frosted QR Card
                     ZStack {
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
                             .fill(Color.white)
-                            .frame(width: 230, height: 230)
+                            .frame(width: 220, height: 220)
                             .shadow(color: Color.black.opacity(0.2), radius: 12)
 
-                        QRCodeView(text: account.address)
-                            .frame(width: 200, height: 200)
+                        QRCodeView(text: activeAddress)
+                            .frame(width: 190, height: 190)
                     }
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 4)
 
                     // Address Pill
                     Button {
-                        UIPasteboard.general.string = account.address
+                        UIPasteboard.general.string = activeAddress
                         withAnimation { copied = true }
                         Task {
                             try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -515,7 +685,7 @@ struct ReceiveView: View {
                         }
                     } label: {
                         HStack(spacing: 8) {
-                            Text(account.address)
+                            Text(activeAddress)
                                 .font(.caption.monospaced())
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
@@ -531,23 +701,21 @@ struct ReceiveView: View {
                     }
                     .buttonStyle(.plain)
 
-                    if let shareURL = URL(string: "ethereum:\(account.address)") {
-                        ShareLink("Share Vault Address", item: shareURL)
-                            .vaultButton(.glass, cornerRadius: 14)
-                    }
+                    ShareLink("Share Vault Address", item: activeAddress)
+                        .vaultButton(.glass, cornerRadius: 14)
                 }
-                .padding(24)
-                .vaultCard(cornerRadius: 28)
+                .padding(22)
+                .vaultCard(cornerRadius: 26)
 
-                // Network Security Notice
+                // Network Guidance Notice
                 HStack(spacing: 10) {
                     Image(systemName: "info.circle.fill")
                         .foregroundStyle(Color.vaultCyan)
-                    Text("Only send Ethereum Mainnet assets (ETH, ERC-20) to this address. Cross-chain assets sent here may be permanently lost.")
+                    Text(chainNotice)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                .padding(16)
+                .padding(14)
                 .vaultGlass(cornerRadius: 16)
             } else {
                 Text("Please create or select a wallet first.")
@@ -566,12 +734,32 @@ struct ReceiveView: View {
             }
         }
     }
+
+    private var chainDescription: String {
+        switch selectedChain {
+        case .evm: return "Ethereum, Arbitrum, Base, Polygon, BSC, Avalanche & EVMs"
+        case .solana: return "Solana Native & SPL Tokens"
+        case .bitcoin: return "Bitcoin Native SegWit (Bech32)"
+        }
+    }
+
+    private var chainNotice: String {
+        switch selectedChain {
+        case .evm:
+            return "This address receives native coins and tokens across all EVM blockchains (ETH, BNB, POL, AVAX, L2s)."
+        case .solana:
+            return "Send only Solana (SOL) and Solana SPL tokens to this derived address."
+        case .bitcoin:
+            return "Send only Bitcoin (BTC) to this derived SegWit address."
+        }
+    }
 }
 
 // MARK: - Settings View
 
 struct SettingsView: View {
     @EnvironmentObject private var store: WalletStore
+    @State private var showNetworkPicker = false
 
     private var version: String {
         let v = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
@@ -581,26 +769,28 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            Section("Vault Security") {
-                HStack(spacing: 12) {
-                    Image(systemName: "lock.shield.fill")
-                        .font(.title2)
-                        .foregroundStyle(Color.vaultEmerald)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Hardware-Backed Enclave")
-                            .font(.headline)
-                        Text("Recovery phrases are stored exclusively in the iOS Secure Keychain with biometric gating.")
-                            .font(.caption)
+            Section("Multi-Chain Network") {
+                Button {
+                    showNetworkPicker = true
+                } label: {
+                    HStack {
+                        Circle()
+                            .fill(Color(hex: store.selectedNetwork.accentColorHex))
+                            .frame(width: 10, height: 10)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(store.selectedNetwork.name)
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Text("Active Network • Chain ID \(store.selectedNetwork.chainID)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
                             .foregroundStyle(.secondary)
                     }
                 }
-                .padding(.vertical, 4)
-            }
-
-            Section("Network Infrastructure") {
-                LabeledContent("Blockchain", value: "Ethereum Mainnet (ID 1)")
-                LabeledContent("Primary RPC", value: "publicnode.com")
-                LabeledContent("Fallback RPC", value: "cloudflare-eth.com")
 
                 Button {
                     Task { await store.refreshBalance() }
@@ -609,7 +799,23 @@ struct SettingsView: View {
                 }
             }
 
-            Section("Legal & App Store Compliance") {
+            Section("Vault Security") {
+                HStack(spacing: 12) {
+                    Image(systemName: "lock.shield.fill")
+                        .font(.title2)
+                        .foregroundStyle(Color.vaultEmerald)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Multi-Chain Secure Enclave")
+                            .font(.headline)
+                        Text("BIP-39 phrases derive keys for all EVM blockchains, Solana, and Bitcoin, locked behind Face ID.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+
+            Section("Legal & Compliance") {
                 if let privacyURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/PRIVACY_POLICY.md") {
                     Link("Privacy Policy", destination: privacyURL)
                 }
@@ -617,19 +823,23 @@ struct SettingsView: View {
                     Link("Support & FAQ", destination: supportURL)
                 }
                 if let checklistURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/APP_STORE_CHECKLIST.md") {
-                    Link("App Store Review Checklist", destination: checklistURL)
+                    Link("App Store Submission Checklist", destination: checklistURL)
                 }
             }
 
             Section("About VaultETH") {
                 LabeledContent("Version", value: version)
-                LabeledContent("Architecture", value: "100% Non-Custodial")
+                LabeledContent("Supported Chains", value: "\(store.supportedNetworks.count) Blockchains")
+                LabeledContent("Custody", value: "100% Self-Custodial")
                 if let url = URL(string: "https://github.com/ganiyucall911/VaultETH") {
                     Link("Open Source Repository", destination: url)
                 }
             }
         }
         .navigationTitle("Settings")
+        .sheet(isPresented: $showNetworkPicker) {
+            NavigationStack { NetworkPickerSheet() }
+        }
     }
 }
 
@@ -670,11 +880,11 @@ struct WelcomeView: View {
                 Text("VaultETH")
                     .font(.system(size: 38, weight: .bold, design: .rounded))
 
-                Text("The Sovereign Ethereum Vault")
+                Text("The Sovereign Multi-Chain Vault")
                     .font(.title3.weight(.medium))
                     .foregroundStyle(Color.vaultCyan)
 
-                Text("Self-custody reimagined with cryptographic elegance, hardware-backed security, and zero compromise.")
+                Text("One phrase unlocks Ethereum, Arbitrum, Base, Polygon, BNB Chain, Avalanche, Solana, and Bitcoin.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -683,9 +893,9 @@ struct WelcomeView: View {
 
             // Pillar Highlights
             VStack(spacing: 12) {
+                featureRow(icon: "network", color: Color.vaultCyan, title: "Universal Multi-Chain", subtitle: "Seamlessly switch between Ethereum, L2s, and alternate chains")
                 featureRow(icon: "lock.shield.fill", color: Color.vaultEmerald, title: "Hardware-Protected", subtitle: "Keys sealed in iOS Keychain with Face ID")
-                featureRow(icon: "eye.slash.fill", color: Color.vaultCyan, title: "Zero Tracking", subtitle: "No analytics, no data collection, no telemetry")
-                featureRow(icon: "bolt.shield.fill", color: Color.vaultViolet, title: "Direct On-Chain", subtitle: "Instant EIP-1559 execution via decentralized RPCs")
+                featureRow(icon: "eye.slash.fill", color: Color.vaultViolet, title: "Zero Tracking", subtitle: "No analytics, no data collection, no telemetry")
             }
             .padding(.horizontal, 24)
 
@@ -724,5 +934,27 @@ struct WelcomeView: View {
         }
         .padding(14)
         .vaultGlass(cornerRadius: 16)
+    }
+}
+
+// MARK: - Color Hex Helper
+
+extension Color {
+    init(hex: String) {
+        let clean = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: clean).scanHexInt64(&int)
+        let r, g, b: UInt64
+        switch clean.count {
+        case 6:
+            (r, g, b) = (int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (r, g, b) = (0, 240, 255)
+        }
+        self.init(
+            red: Double(r) / 255.0,
+            green: Double(g) / 255.0,
+            blue: Double(b) / 255.0
+        )
     }
 }

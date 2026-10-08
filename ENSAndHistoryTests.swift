@@ -69,4 +69,17 @@ final class ENSAndHistoryTests: XCTestCase {
         XCTAssertEqual(decoded.hash, tx.hash)
         XCTAssertEqual(decoded.status, .pending)
     }
+
+    func testBlockchainNetworkDefaults() {
+        let networks = BlockchainNetwork.defaultNetworks
+        XCTAssertTrue(networks.contains(where: { $0.id == "ethereum" && $0.chainID == 1 }))
+        XCTAssertTrue(networks.contains(where: { $0.id == "arbitrum" && $0.chainID == 42161 }))
+        XCTAssertTrue(networks.contains(where: { $0.id == "base" && $0.chainID == 8453 }))
+        XCTAssertTrue(networks.contains(where: { $0.id == "polygon" && $0.chainID == 137 }))
+        XCTAssertTrue(networks.contains(where: { $0.id == "bsc" && $0.chainID == 56 }))
+        XCTAssertTrue(networks.contains(where: { $0.id == "avalanche" && $0.chainID == 43114 }))
+
+        // Chain ID data serialization check
+        XCTAssertEqual(BlockchainNetwork.ethereum.chainIDData, Data([1]))
+    }
 }

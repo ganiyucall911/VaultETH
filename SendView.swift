@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Send Entry View
+// MARK: - Multi-Chain Send Entry View
 
 struct SendView: View {
     @Environment(\.dismiss) private var dismiss
@@ -33,7 +33,7 @@ struct SendView: View {
         guard !s.isEmpty, s.count >= 40, !ENSResolver.looksLikeENS(s) else { return nil }
         do {
             _ = try WalletEngine.validateRecipient(s)
-            return ("Valid Ethereum checksum", false)
+            return ("Valid checksum", false)
         } catch {
             return ((error as? WalletError)?.errorDescription ?? "Invalid address", true)
         }
@@ -50,6 +50,9 @@ struct SendView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                // Active Blockchain Network Banner
+                networkBanner
+
                 // Sender Vault Pill
                 if let account = store.selectedAccount {
                     senderVaultCard(account: account)
@@ -68,7 +71,7 @@ struct SendView: View {
             .padding(.vertical, 12)
         }
         .background(Color.vaultBackground.ignoresSafeArea())
-        .navigationTitle("Send ETH")
+        .navigationTitle("Send \(store.selectedNetwork.symbol)")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -92,11 +95,11 @@ struct SendView: View {
             Button("OK") {}
         } message: { Text(errorMessage ?? "") }
         .sheet(item: Binding(
-            get: { prepared.map { IdentifiedTransfer($0, ensName: resolvedENSName) } },
+            get: { prepared.map { IdentifiedTransfer($0, ensName: resolvedENSName, network: store.selectedNetwork) } },
             set: { if $0 == nil { prepared = nil } }
         )) { item in
             NavigationStack {
-                ReviewTransferView(transfer: item.transfer, ensName: item.ensName) {
+                ReviewTransferView(transfer: item.transfer, ensName: item.ensName, network: item.network) {
                     prepared = nil
                     recipient = ""
                     amount = ""
@@ -108,13 +111,34 @@ struct SendView: View {
 
     // MARK: - Subviews
 
+    private var networkBanner: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(Color(hex: store.selectedNetwork.accentColorHex))
+                .frame(width: 8, height: 8)
+
+            Text("Transferring on \(store.selectedNetwork.name)")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary)
+
+            Spacer()
+
+            Text("Chain ID \(store.selectedNetwork.chainID)")
+                .font(.caption2.monospaced())
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .vaultGlass(cornerRadius: 12)
+    }
+
     private func senderVaultCard(account: WalletAccount) -> some View {
         HStack(spacing: 12) {
             VaultIdenticon(address: account.address, size: 38)
             VStack(alignment: .leading, spacing: 2) {
                 Text(account.name)
                     .font(.subheadline.bold())
-                Text("Available: \(store.balanceETH) ETH")
+                Text("Available: \(store.balanceETH)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -131,7 +155,7 @@ struct SendView: View {
                 .foregroundStyle(.secondary)
 
             HStack {
-                TextField("0x… or name.eth", text: $recipient)
+                TextField("0x… address or name.eth", text: $recipient)
                     .font(.body.monospaced())
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
@@ -190,7 +214,7 @@ struct SendView: View {
 
     private var amountCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Amount")
+            Text("Amount (\(store.selectedNetwork.symbol))")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
 
@@ -200,9 +224,9 @@ struct SendView: View {
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .keyboardType(.decimalPad)
 
-                    Text("ETH")
+                    Text(store.selectedNetwork.symbol)
                         .font(.title3.bold())
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color(hex: store.selectedNetwork.accentColorHex))
                 }
 
                 // Amount Presets
@@ -224,7 +248,8 @@ struct SendView: View {
 
     private func presetButton(title: String, factor: Double) -> some View {
         Button {
-            guard let bal = Double(store.balanceETH), bal > 0 else { return }
+            let numericString = store.balanceETH.components(separatedBy: " ").first ?? "0"
+            guard let bal = Double(numericString), bal > 0 else { return }
             let computed = max(0.0, factor == 1.0 ? max(0.0, bal - 0.001) : bal * factor)
             amount = String(format: "%.4f", computed).replacingOccurrences(of: "0+$", with: "", options: .regularExpression)
             if amount.hasSuffix(".") { amount.removeLast() }
@@ -274,11 +299,11 @@ struct SendView: View {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard ENSResolver.looksLikeENS(trimmed) else { return }
         isResolvingENS = true
-        let rpc = EthereumRPC()
+        let ensRPC = EthereumRPC(network: .ethereum)
         ensTask = Task { @MainActor in
             do {
                 try await Task.sleep(for: .milliseconds(600))
-                let addr = try await ENSResolver.resolve(name: trimmed, rpc: rpc)
+                let addr = try await ENSResolver.resolve(name: trimmed, rpc: ensRPC)
                 resolvedENSAddress = addr
                 resolvedENSName = trimmed
                 isResolvingENS = false
@@ -302,7 +327,7 @@ struct SendView: View {
                 if let resolved = resolvedENSAddress {
                     targetRecipient = resolved
                 } else {
-                    let addr = try await ENSResolver.resolve(name: targetRecipient, rpc: EthereumRPC())
+                    let addr = try await ENSResolver.resolve(name: targetRecipient, rpc: EthereumRPC(network: .ethereum))
                     resolvedENSAddress = addr
                     resolvedENSName = targetRecipient
                     targetRecipient = addr
@@ -322,18 +347,24 @@ struct SendView: View {
 private struct IdentifiedTransfer: Identifiable {
     let transfer: PreparedTransfer
     let ensName: String?
+    let network: BlockchainNetwork
     var id: String {
         transfer.from + transfer.to + transfer.nonce.vaultHexPlain + transfer.valueWei.vaultHexPlain
     }
-    init(_ t: PreparedTransfer, ensName: String? = nil) { transfer = t; self.ensName = ensName }
+    init(_ t: PreparedTransfer, ensName: String? = nil, network: BlockchainNetwork) {
+        transfer = t
+        self.ensName = ensName
+        self.network = network
+    }
 }
 
-// MARK: - Review & Send Sheet
+// MARK: - Multi-Chain Review & Send Sheet
 
 struct ReviewTransferView: View {
     @EnvironmentObject private var store: WalletStore
     let transfer: PreparedTransfer
     let ensName: String?
+    let network: BlockchainNetwork
     let onClose: () -> Void
 
     private enum Phase { case review, sending, sent(hash: String, status: ReceiptStatus?), failed(String) }
@@ -368,10 +399,10 @@ struct ReviewTransferView: View {
                 // Transfer Details Card
                 VStack(spacing: 16) {
                     VStack(spacing: 4) {
-                        Text("Sending Amount")
+                        Text("Sending on \(network.name)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text(ETHAmount.format(wei: transfer.valueWei) + " ETH")
+                        Text(ETHAmount.format(wei: transfer.valueWei) + " " + network.symbol)
                             .font(.system(size: 34, weight: .bold, design: .rounded))
                             .foregroundStyle(.primary)
                     }
@@ -383,8 +414,9 @@ struct ReviewTransferView: View {
                         if let ens = ensName {
                             detailRow(title: "ENS Domain", value: ens, isMonospace: false)
                         }
-                        detailRow(title: "Max Network Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " ETH", isMonospace: true)
-                        detailRow(title: "Max Total Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " ETH", isMonospace: true)
+                        detailRow(title: "Network", value: "\(network.name) (ID \(network.chainID))", isMonospace: false)
+                        detailRow(title: "Estimated Gas Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " " + network.symbol, isMonospace: true)
+                        detailRow(title: "Max Total Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
                     }
                 }
                 .padding(20)
@@ -393,7 +425,7 @@ struct ReviewTransferView: View {
                 if transfer.recipientIsContract {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Color.vaultAmber)
-                        Text("Recipient is an Ethereum smart contract. Verify it can receive plain ETH.").font(.caption).foregroundStyle(.secondary)
+                        Text("Recipient is a verified smart contract. Ensure it accepts direct native asset transfers.").font(.caption).foregroundStyle(.secondary)
                     }
                     .padding(14)
                     .vaultGlass(cornerRadius: 14)
@@ -444,7 +476,7 @@ struct ReviewTransferView: View {
         case .sending:
             HStack(spacing: 12) {
                 ProgressView().tint(.white)
-                Text("Signing with Key Enclave & Broadcasting…").font(.subheadline)
+                Text("Signing for \(network.name) & Broadcasting…").font(.subheadline)
             }
             .padding(16)
             .vaultGlass(cornerRadius: 16)
@@ -455,20 +487,20 @@ struct ReviewTransferView: View {
                     switch status {
                     case .some(.success):
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.vaultEmerald)
-                        Text("Confirmed on Ethereum").font(.headline).foregroundStyle(Color.vaultEmerald)
+                        Text("Confirmed on \(network.name)").font(.headline).foregroundStyle(Color.vaultEmerald)
                     case .some(.failed):
                         Image(systemName: "xmark.octagon.fill").foregroundStyle(.red)
                         Text("Failed On-Chain").font(.headline).foregroundStyle(.red)
                     case .none:
                         ProgressView().controlSize(.small)
-                        Text("Broadcasted • Polling Receipt…").font(.headline).foregroundStyle(Color.vaultCyan)
+                        Text("Broadcasted • Awaiting Block Receipt…").font(.headline).foregroundStyle(Color.vaultCyan)
                     }
                 }
 
                 Text(hash).font(.caption2.monospaced()).foregroundStyle(.secondary).textSelection(.enabled)
 
-                if let url = URL(string: "https://etherscan.io/tx/\(hash)") {
-                    Link("View on Etherscan ↗", destination: url)
+                if let url = URL(string: "\(network.blockExplorerURL)/tx/\(hash)") {
+                    Link("View on \(network.name) Explorer ↗", destination: url)
                         .font(.caption.bold())
                         .foregroundStyle(Color.vaultCyan)
                 }

@@ -141,8 +141,20 @@ private struct VaultCardRow: View {
                     Menu {
                         Button("View Recovery Phrase", systemImage: "key.fill", action: onShowPhrase)
                         Button("Rename Vault", systemImage: "pencil", action: onRename)
-                        Button("Copy Address", systemImage: "doc.on.doc") {
-                            UIPasteboard.general.string = account.address
+                        Menu("Copy Address") {
+                            Button("Copy EVM Address (0x…)", systemImage: "doc.on.doc") {
+                                UIPasteboard.general.string = account.address
+                            }
+                            if let sol = account.solanaAddress {
+                                Button("Copy Solana Address", systemImage: "doc.on.doc") {
+                                    UIPasteboard.general.string = sol
+                                }
+                            }
+                            if let btc = account.bitcoinAddress {
+                                Button("Copy Bitcoin Address", systemImage: "doc.on.doc") {
+                                    UIPasteboard.general.string = btc
+                                }
+                            }
                         }
                         Divider()
                         Button(role: .destructive, action: onDelete) {
@@ -179,9 +191,9 @@ private struct VaultCardRow: View {
 
                     Spacer()
 
-                    Text("Ethereum Mainnet")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                    Text("All Blockchains")
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(Color.vaultCyan)
                 }
             }
             .padding(18)

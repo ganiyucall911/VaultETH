@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shows all transactions sent from the currently selected wallet with filtering and identicons.
+/// Shows all transactions sent from the currently selected wallet across all blockchains.
 struct TransactionHistoryView: View {
     @EnvironmentObject private var store: WalletStore
 
@@ -42,7 +42,7 @@ struct TransactionHistoryView: View {
                         .foregroundStyle(.tertiary)
                     Text("No Activity Yet")
                         .font(.title3.bold())
-                    Text("Transactions broadcast from this vault will be tracked here in real-time.")
+                    Text("Broadcasted multi-chain transfers will appear here in real-time.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -77,8 +77,9 @@ struct TransactionHistoryView: View {
                                 Button("Copy Recipient", systemImage: "wallet.pass") {
                                     UIPasteboard.general.string = tx.toAddress
                                 }
-                                if let url = URL(string: "https://etherscan.io/tx/\(tx.hash)") {
-                                    ShareLink("Share on Etherscan", item: url)
+                                if let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io",
+                                   let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {
+                                    ShareLink("Share on Explorer", item: url)
                                 }
                                 Divider()
                                 Button(role: .destructive) {
@@ -108,7 +109,7 @@ struct TransactionHistoryView: View {
                     Button {
                         Task { await store.refreshPendingTransactions() }
                     } label: {
-                        Label("Refresh On-Chain Status", systemImage: "arrow.clockwise")
+                        Label("Refresh On-Chain Receipts", systemImage: "arrow.clockwise")
                     }
                     if !allTransactions.isEmpty {
                         Divider()
@@ -140,7 +141,7 @@ struct TransactionHistoryView: View {
                 }
             }
         } message: {
-            Text("This deletes the cached history on this device only. Past on-chain blockchain records are permanent.")
+            Text("This deletes cached records on this device only. Public blockchain records are permanent.")
         }
     }
 }
@@ -156,26 +157,35 @@ private struct ModernTxCard: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
-                    Text("Sent ETH")
+                    Text("Sent")
                         .font(.subheadline.bold())
                         .foregroundStyle(.primary)
 
-                    if let ens = tx.toENSName {
-                        Text("(\(ens))")
+                    if let netName = tx.networkName {
+                        Text(netName)
                             .font(.caption2.bold())
                             .foregroundStyle(Color.vaultCyan)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.vaultCyan.opacity(0.12), in: Capsule())
                     }
                 }
 
-                Text(shortAddress(tx.toAddress))
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
+                if let ens = tx.toENSName {
+                    Text(ens)
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(shortAddress(tx.toAddress))
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 3) {
-                Text("-\(tx.amountETH) ETH")
+                Text("-\(tx.amountETH) \(tx.symbol ?? "ETH")")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
 
@@ -230,7 +240,7 @@ private struct TransactionDetailSheet: View {
                     .padding(.top, 10)
 
                 VStack(spacing: 4) {
-                    Text("-\(tx.amountETH) ETH")
+                    Text("-\(tx.amountETH) \(tx.symbol ?? "ETH")")
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                     Text(tx.status.rawValue.capitalized)
                         .font(.caption.bold())
@@ -241,19 +251,21 @@ private struct TransactionDetailSheet: View {
                 }
 
                 VStack(spacing: 12) {
-                    detailItem(title: "Recipient", value: tx.toAddress, monospaced: true)
+                    detailItem(title: "Blockchain Network", value: tx.networkName ?? "Ethereum", monospaced: false)
+                    detailItem(title: "Recipient Address", value: tx.toAddress, monospaced: true)
                     if let ens = tx.toENSName {
-                        detailItem(title: "ENS Name", value: ens, monospaced: false)
+                        detailItem(title: "ENS Domain", value: ens, monospaced: false)
                     }
-                    detailItem(title: "Date & Time", value: tx.date.formatted(date: .long, time: .standard), monospaced: false)
+                    detailItem(title: "Timestamp", value: tx.date.formatted(date: .long, time: .standard), monospaced: false)
                     detailItem(title: "Transaction Hash", value: tx.hash, monospaced: true)
                 }
                 .padding(18)
                 .vaultGlass(cornerRadius: 18)
 
-                if let url = URL(string: "https://etherscan.io/tx/\(tx.hash)") {
+                if let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io",
+                   let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {
                     Link(destination: url) {
-                        Label("Inspect on Etherscan ↗", systemImage: "safari")
+                        Label("Inspect on \(tx.networkName ?? "Block") Explorer ↗", systemImage: "safari")
                             .frame(maxWidth: .infinity)
                     }
                     .vaultButton(.glass, cornerRadius: 14)
@@ -262,7 +274,7 @@ private struct TransactionDetailSheet: View {
             .padding(20)
         }
         .background(Color.vaultBackground.ignoresSafeArea())
-        .navigationTitle("Transaction Record")
+        .navigationTitle("Transaction Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
