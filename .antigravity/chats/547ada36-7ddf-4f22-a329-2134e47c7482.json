@@ -3,6 +3,19 @@
   "name": "Status?",
   "createdAt": "2026-10-08T20:06:52.370Z",
   "filename": "547ada36-7ddf-4f22-a329-2134e47c7482.json",
-  "geminiStarted": false,
-  "messages": []
+  "geminiStarted": true,
+  "messages": [
+    {
+      "id": "d12ae4b8-c3cd-41af-933c-9ca6805b337c",
+      "role": "user",
+      "content": "Status?",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T20:06:54.949Z",
+      "sender": "ios",
+      "is_cancelled": false
+    }
+  ]
 }
