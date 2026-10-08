@@ -141,6 +141,14 @@ struct SettingsView: View {
                     Task { await store.refreshBalance() }
                 }
             }
+            Section("Legal & Support") {
+                if let privacyURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/PRIVACY_POLICY.md") {
+                    Link("Privacy Policy", destination: privacyURL)
+                }
+                if let supportURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/SUPPORT.md") {
+                    Link("Support & FAQ", destination: supportURL)
+                }
+            }
             Section("About") {
                 LabeledContent("Version", value: version)
                 if let url = URL(string: "https://github.com/ganiyucall911/VaultETH") {

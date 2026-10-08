@@ -148,6 +148,30 @@
       "created_at": "2026-10-08T12:59:19.771Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "a16b174f-7363-4ac5-99d0-3169547e76e2",
+      "role": "agent",
+      "content": "I have picked up from where you left off, resolved critical bugs, added key features, and updated the repository. All changes are saved.\n\n### Summary of Updates\n\n#### 1. 🛡️ Crash Prevention & App Store Compliance\n- **[`project.yml`](https://github.com/ganiyucall911/VaultETH/blob/main/project.yml)**: Added `NSCameraUsageDescription`. Without this key in `Info.plist`, iOS triggers an immediate runtime crash when attempting to open the camera scanner, and App Store review automatically rejects the binary.\n- **[`APP_STORE_CHECKLIST.md`](https://github.com/ganiyucall911/VaultETH/blob/main/APP_STORE_CHECKLIST.md)**: Updated checklist verifying `NSCameraUsageDescription` and `ITSAppUsesNonExemptEncryption`.\n\n#### 2. 📷 Enhanced QR Code Scanner\n- **[`QRScannerView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/QRScannerView.swift)**:\n  - Added a dedicated Close (`xmark.circle.fill`) button in the top bar.\n  - Added a Flashlight/Torch toggle button (`bolt.circle.fill`) with automatic cleanup on view exit.\n  - Added a centered viewfinder reticle target frame to visually assist scanning.\n\n#### 3. 💳 Payment URI Parsing (EIP-681 / EIP-831)\n- **[`WalletEngine.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletEngine.swift)**: Added [`PaymentURI`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletEngine.swift#L13-L16) and [`parsePaymentURI(_:)`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletEngine.swift#L19-L55). Supports parsing `ethereum:`, `pay-`, `@chainId`, `?value=` (wei integer digits and scientific notation `1e18`), and `?amount=` (ETH decimal).\n- **[`SendView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/SendView.swift)**:\n  - When scanning a QR code or tapping **Paste**, both recipient and ETH amount are now automatically extracted and populated.\n  - Made the transaction review step proactively resolve ENS names before preparation if typing debouncing had not finished.\n\n#### 4. 🌐 Reverse ENS Resolution & Home View Display\n- **[`ENSResolver.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/ENSResolver.swift)**:\n  - Added [`resolveAddress(_:rpc:)`](https://github.com/ganiyucall911/VaultETH/blob/main/ENSResolver.swift#L67-L100) for primary ENS reverse lookup via `<addr>.addr.reverse`.\n  - Added safe ABI dynamic string decoding ([`decodeABIString`](https://github.com/ganiyucall911/VaultETH/blob/main/ENSResolver.swift#L103-L120)).\n  - Implemented reverse spoofing protection: reverse results are forward-verified against the source address.\n  - Updated [`looksLikeENS`](https://github.com/ganiyucall911/VaultETH/blob/main/ENSResolver.swift#L16-L23) to support short domains (`a.eth`, `ab.eth`) and subdomains.\n- **[`WalletStore.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletStore.swift)**: Added `selectedENSName` and `refreshENS()`.\n- **[`RootView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/RootView.swift)**: Displayed the reverse-resolved ENS name on the balance card in `HomeView`.\n\n#### 5. 📜 Transaction History Management\n- **[`WalletStore.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletStore.swift)**: Added `refreshPendingTransactions()`, `deleteTransaction(id:)`, and `clearHistory(for:)`.\n- **[`TransactionHistoryView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/TransactionHistoryView.swift)**: Added `.refreshable`, automatic `.task` status check, swipe-to-delete, and a toolbar menu with a confirmation dialog to clear local history.\n\n#### 6. 🧪 Comprehensive Unit Tests & Documentation\n- **[`ENSAndHistoryTests.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/ENSAndHistoryTests.swift)**: Added test cases covering ENS detection, ABI string decoding, EIP-137 empty namehash, and `SentTransaction` serialization.\n- **[`WalletEngineTests.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletEngineTests.swift)**: Added payment URI parsing test vectors.\n- **[`REVIEW.md`](https://github.com/ganiyucall911/VaultETH/blob/main/REVIEW.md)**: Updated review notes with all changes and resolved items.",
+      "status": "completed",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "fd4e1b9e-c746-4436-b9c9-90de03ce65d5",
+      "created_at": "2026-10-08T13:11:26.022Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "eadaf521-9a69-4ef9-8a43-aa6bf0c095f6",
+      "role": "user",
+      "content": "What of the APP STORE CHECKLIST",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T13:14:03.349Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }
