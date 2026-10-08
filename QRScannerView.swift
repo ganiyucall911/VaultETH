@@ -50,6 +50,8 @@ final class ScannerViewController: UIViewController {
     private var captureSession: AVCaptureSession?
     private var previewLayer: AVCaptureVideoPreviewLayer?
 
+    private var isTorchOn = false
+
     init(coordinator: QRScannerView.Coordinator) {
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -60,7 +62,9 @@ final class ScannerViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         checkPermissionAndSetup()
+        addReticle()
         addHintLabel()
+        addControls()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -71,6 +75,12 @@ final class ScannerViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         DispatchQueue.global(qos: .userInitiated).async { self.captureSession?.stopRunning() }
+        if isTorchOn, let device = AVCaptureDevice.default(for: .video), device.hasTorch {
+            try? device.lockForConfiguration()
+            device.torchMode = .off
+            device.unlockForConfiguration()
+            isTorchOn = false
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -126,6 +136,71 @@ final class ScannerViewController: UIViewController {
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             label.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32)
         ])
+    }
+
+    private func addReticle() {
+        let reticle = UIView()
+        reticle.layer.borderColor = UIColor.white.withAlphaComponent(0.6).cgColor
+        reticle.layer.borderWidth = 2
+        reticle.layer.cornerRadius = 16
+        reticle.translatesAutoresizingMaskIntoConstraints = false
+        reticle.isUserInteractionEnabled = false
+        view.addSubview(reticle)
+        NSLayoutConstraint.activate([
+            reticle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            reticle.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            reticle.widthAnchor.constraint(equalToConstant: 240),
+            reticle.heightAnchor.constraint(equalToConstant: 240)
+        ])
+    }
+
+    private func addControls() {
+        let closeButton = UIButton(type: .system)
+        let closeImage = UIImage(systemName: "xmark.circle.fill",
+                                 withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .semibold))
+        closeButton.setImage(closeImage, for: .normal)
+        closeButton.tintColor = .white
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.addAction(UIAction { [weak self] _ in
+            let d = self?.coordinator.dismiss
+            Task { @MainActor in d?() }
+        }, for: .touchUpInside)
+        view.addSubview(closeButton)
+
+        if let device = AVCaptureDevice.default(for: .video), device.hasTorch {
+            let torchButton = UIButton(type: .system)
+            let torchImage = UIImage(systemName: "bolt.circle.fill",
+                                     withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .semibold))
+            torchButton.setImage(torchImage, for: .normal)
+            torchButton.tintColor = .white
+            torchButton.translatesAutoresizingMaskIntoConstraints = false
+            torchButton.addAction(UIAction { [weak self, weak torchButton] _ in
+                guard let self = self else { return }
+                self.toggleTorch(button: torchButton)
+            }, for: .touchUpInside)
+            view.addSubview(torchButton)
+
+            NSLayoutConstraint.activate([
+                torchButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+                torchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+            ])
+        }
+
+        NSLayoutConstraint.activate([
+            closeButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+        ])
+    }
+
+    private func toggleTorch(button: UIButton?) {
+        guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
+        do {
+            try device.lockForConfiguration()
+            isTorchOn.toggle()
+            device.torchMode = isTorchOn ? .on : .off
+            device.unlockForConfiguration()
+            button?.tintColor = isTorchOn ? .yellow : .white
+        } catch {}
     }
 
     private func showDenied() {

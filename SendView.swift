@@ -66,7 +66,11 @@ struct SendView: View {
                 }
                 Button("Paste", systemImage: "doc.on.clipboard") {
                     if let s = UIPasteboard.general.string {
-                        recipient = s.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let parsed = WalletEngine.parsePaymentURI(s)
+                        recipient = parsed.recipient
+                        if let amt = parsed.amountETH {
+                            amount = amt
+                        }
                     }
                 }
                 if let hint = recipientHint {
@@ -105,7 +109,11 @@ struct SendView: View {
         }
         .sheet(isPresented: $showScanner) {
             QRScannerView { scanned in
-                recipient = scanned.trimmingCharacters(in: .whitespacesAndNewlines)
+                let parsed = WalletEngine.parsePaymentURI(scanned)
+                recipient = parsed.recipient
+                if let amt = parsed.amountETH {
+                    amount = amt
+                }
             }
         }
         .alert("Cannot continue",
@@ -155,8 +163,24 @@ struct SendView: View {
     private func review() async {
         isPreparing = true
         defer { isPreparing = false }
-        do { prepared = try await store.prepareTransfer(to: effectiveRecipient, amountText: amount) }
-        catch { errorMessage = error.localizedDescription }
+        do {
+            var targetRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+            if ENSResolver.looksLikeENS(targetRecipient) {
+                if let resolved = resolvedENSAddress {
+                    targetRecipient = resolved
+                } else {
+                    let addr = try await ENSResolver.resolve(name: targetRecipient, rpc: EthereumRPC())
+                    resolvedENSAddress = addr
+                    resolvedENSName = targetRecipient
+                    targetRecipient = addr
+                }
+            } else {
+                targetRecipient = effectiveRecipient
+            }
+            prepared = try await store.prepareTransfer(to: targetRecipient, amountText: amount)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }
 

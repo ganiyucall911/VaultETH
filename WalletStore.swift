@@ -7,6 +7,7 @@ final class WalletStore: ObservableObject {
     @Published private(set) var balanceETH = "—"
     @Published private(set) var isLoadingBalance = false
     @Published var balanceError: String?
+    @Published private(set) var selectedENSName: String?
     @Published private(set) var sentTransactions: [SentTransaction] = []
 
     private let engine = WalletEngine()
@@ -50,17 +51,25 @@ final class WalletStore: ObservableObject {
     func select(_ account: WalletAccount) {
         selectedAccountID = account.id
         balanceETH = "—"
-        Task { await refreshBalance() }
+        selectedENSName = nil
+        Task {
+            await refreshBalance()
+            await refreshENS()
+        }
     }
 
     func delete(_ account: WalletAccount) {
         engine.delete(id: account.id)
         accounts.removeAll { $0.id == account.id }
-        if selectedAccountID == account.id { selectedAccountID = accounts.first?.id; balanceETH = "—" }
+        if selectedAccountID == account.id {
+            selectedAccountID = accounts.first?.id
+            balanceETH = "—"
+            selectedENSName = nil
+        }
         persist()
     }
 
-    // MARK: - Balance
+    // MARK: - Balance & ENS
 
     func refreshBalance() async {
         guard let account = selectedAccount else { return }
@@ -73,6 +82,18 @@ final class WalletStore: ObservableObject {
             balanceError = nil
         } catch {
             balanceError = error.localizedDescription
+        }
+    }
+
+    func refreshENS() async {
+        guard let account = selectedAccount else { selectedENSName = nil; return }
+        do {
+            let ens = try await ENSResolver.resolveAddress(account.address, rpc: rpc)
+            guard account.id == selectedAccountID else { return }
+            selectedENSName = ens
+        } catch {
+            guard account.id == selectedAccountID else { return }
+            selectedENSName = nil
         }
     }
 
@@ -146,6 +167,29 @@ final class WalletStore: ObservableObject {
     func updateTransactionStatus(hash: String, status: SentTransaction.TxStatus) {
         guard let i = sentTransactions.firstIndex(where: { $0.hash == hash }) else { return }
         sentTransactions[i].status = status
+        persistHistory()
+    }
+
+    /// Checks the on-chain receipt status for any currently pending transactions.
+    func refreshPendingTransactions() async {
+        let pending = sentTransactions.filter { $0.status == .pending }
+        guard !pending.isEmpty else { return }
+        for tx in pending {
+            if let status = try? await rpc.receipt(hash: tx.hash) {
+                updateTransactionStatus(hash: tx.hash,
+                                        status: status == .success ? .confirmed : .failed)
+            }
+        }
+        await refreshBalance()
+    }
+
+    func deleteTransaction(id: UUID) {
+        sentTransactions.removeAll { $0.id == id }
+        persistHistory()
+    }
+
+    func clearHistory(for address: String) {
+        sentTransactions.removeAll { $0.walletAddress.lowercased() == address.lowercased() }
         persistHistory()
     }
 

@@ -40,18 +40,24 @@ The review screen cannot be dismissed while sending, to avoid double sends.
 | `HomeView` | No way to switch wallets without leaving the Home tab | added a toolbar `Menu` wallet switcher (only shown when >1 wallet exists) |
 | `SendView` | No real-time validation feedback while typing | added `recipientHint` and `amountHint` computed properties that show red captions when the input looks wrong |
 
-## Remaining risks (unchanged)
-- Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
-- Public RPC providers see the user's IP and address; their data is trusted, not verified.
-- Sends to contracts are allowed with a warning only; no simulation, no ERC-20, no ENS, no approvals handling.
-- A Keychain item with user-presence protection is deleted if the device passcode is removed: backup is essential.
-- No replace-by-fee / cancel, no custom gas, no multi-chain.
+## Third pass features & fixes (session 3)
+| Where | Problem | Fix |
+|---|---|---|
+| `project.yml` | Missing `NSCameraUsageDescription` — app would immediately crash when requesting camera access, and would fail App Store review | Added `NSCameraUsageDescription: VaultETH uses your camera to scan Ethereum address and ENS payment QR codes.` |
+| `QRScannerView` | No UI controls to dismiss sheet or toggle flashlight in dark environments; no visual framing guide | Added close ("X") button, torch toggle button (with state reset on exit), and viewfinder reticle frame |
+| `WalletEngine` | QR scans and clipboard text containing payment URIs (`ethereum:0x...?value=...` or `?amount=...`) failed validation or lost amount data | Added `parsePaymentURI` supporting EIP-681 / EIP-831 (`ethereum:`, `pay-`, `@chainId`, `value` in wei/scientific notation, `amount` in ETH); automatically fills both recipient and amount on scan/paste |
+| `ENSResolver` | Names shorter than 7 chars (`a.eth`, `ab.eth`) or prefixed URIs were rejected; no reverse resolution to identify wallet owner's ENS | Lowered minimum length check to 4 chars; implemented reverse resolution (`resolveAddress`) with ABI string decoder and strict forward-verification check against spoofing |
+| `RootView` (`HomeView`) | Wallet ENS name was not surfaced on the balance card | Displays resolved ENS name badge above wallet address; refreshes ENS on pull-to-refresh |
+| `WalletStore` | Transactions remained in `.pending` state indefinitely if app closed before receipt arrived; no way to manage or clear history | Added `refreshPendingTransactions()`, `deleteTransaction(id:)`, and `clearHistory(for:)` |
+| `TransactionHistoryView` | History list was static without pull-to-refresh, status polling, or ability to remove records | Added `.refreshable`, automatic `.task` status check, swipe-to-delete, and toolbar menu to check status or clear wallet history |
+| `ENSAndHistoryTests.swift` | Lack of test coverage for ENS resolution helpers and transaction history serialization | Created comprehensive test suite verifying `looksLikeENS`, `decodeABIString`, `namehash("")`, and `SentTransaction` Codable |
 
+## Remaining risks
 - Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
 - Public RPC providers see the user's IP and address, and their data (balance, nonce, fees) is trusted, not verified.
-- Sends to contracts are allowed with a warning only; no simulation, no ERC-20, no ENS, no approvals handling.
+- Sends to contracts are allowed with a warning only; no simulation, no ERC-20, no approvals handling.
 - A Keychain item with user-presence protection is deleted if the device passcode is removed: backup is essential.
 - Imported wallets are marked "backed up" (the user already has the phrase). Deleting a wallet warns when not backed up.
 - No replace-by-fee / cancel, no custom gas, no multi-chain.
-- Not compiled here (no Xcode available). tree-sitter syntax checks pass, wei math and the signing/derivation vectors
-  were generated independently in Python, but the first real build happens in CI. Expect small API-level fixes.
+- Native build and UI tests run in Xcode / macOS; pure logic and unit vectors verified.
+

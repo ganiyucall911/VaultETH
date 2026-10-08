@@ -35,6 +35,11 @@ struct HomeView: View {
                     Text(store.balanceETH)
                         .font(.system(size: 38, weight: .semibold, design: .rounded))
                         .minimumScaleFactor(0.5).lineLimit(1)
+                    if let ens = store.selectedENSName {
+                        Text(ens)
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.tint)
+                    }
                     Text(store.selectedAccount?.address ?? "No wallet")
                         .font(.caption.monospaced()).lineLimit(1).truncationMode(.middle)
                     if let error = store.balanceError {
@@ -59,7 +64,10 @@ struct HomeView: View {
             }
             .padding()
         }
-        .refreshable { await store.refreshBalance() }
+        .refreshable {
+            await store.refreshBalance()
+            await store.refreshENS()
+        }
         .navigationTitle(store.selectedAccount?.name ?? "VaultETH")
         .toolbar {
             if store.accounts.count > 1 {

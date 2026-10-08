@@ -14,8 +14,8 @@ enum ENSResolver {
     /// Returns `true` when the trimmed string looks like an ENS name the app should
     /// attempt to resolve (has a dot, no 0x prefix, letters-only TLD).
     static func looksLikeENS(_ raw: String) -> Bool {
-        let s = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !s.hasPrefix("0x"), s.contains("."), s.count >= 7 else { return false }
+        let s = WalletEngine.parsePaymentURI(raw).recipient.lowercased()
+        guard !s.hasPrefix("0x"), s.contains("."), s.count >= 4 else { return false }
         let tld = s.split(separator: ".").last ?? Substring("")
         return !tld.isEmpty && tld.allSatisfy(\.isLetter)
     }
@@ -29,7 +29,8 @@ enum ENSResolver {
     ///
     /// Throws `WalletError.ensNotFound` if the name is unregistered or has no address record.
     static func resolve(name: String, rpc: EthereumRPC) async throws -> String {
-        let normalised = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let target = WalletEngine.parsePaymentURI(name).recipient
+        let normalised = target.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let nodeHex = namehash(normalised).vaultHexPlain   // 64 lower-hex chars
 
         // Step 1: resolver(bytes32 node) → address   (selector 0x0178b8bf)
@@ -56,6 +57,68 @@ enum ENSResolver {
 
         // Canonicalise through WalletEngine: EIP-55 checksum + burn-address guard.
         return try WalletEngine.validateRecipient(rawAddress)
+    }
+
+    /// Resolves an Ethereum address to its primary ENS name (reverse resolution).
+    ///
+    /// Steps:
+    ///   1. Query `<address_without_0x>.addr.reverse` on the ENS registry for the resolver.
+    ///   2. Call `name(bytes32)` (selector `0x691f3431`) on the resolver.
+    ///   3. Decode the returned ABI string.
+    ///   4. Verify forward resolution to protect against reverse record spoofing.
+    ///
+    /// Returns `nil` when no reverse record exists or when forward verification fails.
+    static func resolveAddress(_ rawAddress: String, rpc: EthereumRPC) async throws -> String? {
+        let clean = rawAddress.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let body = clean.hasPrefix("0x") ? String(clean.dropFirst(2)) : clean
+        guard body.count == 40 else { return nil }
+        let reverseName = body + ".addr.reverse"
+        let nodeHex = namehash(reverseName).vaultHexPlain
+
+        // Step 1: resolver(bytes32 node) on registry
+        guard let resolverResult = try? await rpc.ethCall(to: registryAddress, data: "0x0178b8bf" + nodeHex),
+              let resolverData = Data(vaultHex: resolverResult), resolverData.count >= 20 else {
+            return nil
+        }
+        let resolverBytes = resolverData.suffix(20)
+        guard !resolverBytes.allSatisfy({ $0 == 0 }) else { return nil }
+        let resolverAddress = "0x" + resolverBytes.vaultHexPlain
+
+        // Step 2: name(bytes32 node) on resolver (selector 0x691f3431)
+        guard let nameResult = try? await rpc.ethCall(to: resolverAddress, data: "0x691f3431" + nodeHex),
+              let candidate = decodeABIString(nameResult),
+              !candidate.isEmpty else {
+            return nil
+        }
+
+        // Step 3: Forward resolution check (crucial security against reverse spoofing)
+        do {
+            let forwardAddress = try await resolve(name: candidate, rpc: rpc)
+            guard forwardAddress.lowercased() == ("0x" + body).lowercased() else { return nil }
+            return candidate
+        } catch {
+            return nil
+        }
+    }
+
+    /// Decodes an ABI-encoded dynamic string returned from an eth_call.
+    static func decodeABIString(_ hexString: String) -> String? {
+        guard let data = Data(vaultHex: hexString), data.count >= 64 else { return nil }
+        var offset: Int = 0
+        for b in data[0..<32] {
+            offset = (offset << 8) | Int(b)
+            if offset > 1024 { break }
+        }
+        let lengthOffset = (offset > 0 && offset + 32 <= data.count) ? offset : 32
+        guard data.count >= lengthOffset + 32 else { return nil }
+        var length: Int = 0
+        for b in data[lengthOffset..<(lengthOffset + 32)] {
+            length = (length << 8) | Int(b)
+            if length > 512 { return nil }
+        }
+        guard length > 0, data.count >= lengthOffset + 32 + length else { return nil }
+        let stringData = data[(lengthOffset + 32)..<(lengthOffset + 32 + length)]
+        return String(data: stringData, encoding: .utf8)
     }
 
     // MARK: - Namehash (EIP-137)

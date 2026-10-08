@@ -8,17 +8,75 @@ final class WalletEngine: @unchecked Sendable {
 
     // MARK: - Address validation
 
+    // MARK: - Payment URI & Recipient Parsing
+
+    struct PaymentURI: Equatable {
+        let recipient: String
+        let amountETH: String?
+    }
+
+    /// Parses Ethereum payment URIs (EIP-681 / EIP-831), QR code contents, or bare addresses/ENS names.
+    /// Extracts the recipient and an optional ETH amount if encoded in query params (e.g. ?value=... or ?amount=...).
+    static func parsePaymentURI(_ raw: String) -> PaymentURI {
+        var s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        var amountETH: String?
+
+        if s.lowercased().hasPrefix("ethereum:") {
+            s = String(s.dropFirst("ethereum:".count))
+            if s.hasPrefix("//") { s = String(s.dropFirst(2)) }
+            if s.lowercased().hasPrefix("pay-") { s = String(s.dropFirst(4)) }
+
+            if let queryIndex = s.firstIndex(of: "?") {
+                let queryString = String(s[s.index(after: queryIndex)...])
+                s = String(s[..<queryIndex])
+
+                for item in queryString.split(separator: "&") {
+                    let pair = item.split(separator: "=", maxSplits: 1)
+                    guard pair.count == 2 else { continue }
+                    let key = pair[0].lowercased()
+                    let val = String(pair[1])
+                    if key == "amount" {
+                        if (try? ETHAmount.wei(from: val)) != nil {
+                            amountETH = val
+                        }
+                    } else if key == "value" {
+                        if let formatted = parseWeiValue(val) {
+                            amountETH = formatted
+                        }
+                    }
+                }
+            }
+
+            if let atIndex = s.firstIndex(of: "@") {
+                s = String(s[..<atIndex])
+            }
+        }
+
+        return PaymentURI(recipient: s, amountETH: amountETH)
+    }
+
+    private static func parseWeiValue(_ val: String) -> String? {
+        let v = val.lowercased()
+        if v.contains("e") {
+            let parts = v.split(separator: "e")
+            guard parts.count == 2, let exp = Int(parts[1]), exp == 18 else { return nil }
+            let base = String(parts[0])
+            if (try? ETHAmount.wei(from: base)) != nil { return base }
+            return nil
+        }
+        guard v.allSatisfy({ $0.isNumber }), !v.isEmpty else { return nil }
+        let padded = v.count <= 18 ? String(repeating: "0", count: 19 - v.count) + v : v
+        let whole = String(padded.dropLast(18))
+        let frac = String(padded.suffix(18)).replacingOccurrences(of: "0+$", with: "", options: .regularExpression)
+        let result = frac.isEmpty ? whole : "\(whole).\(frac)"
+        return (try? ETHAmount.wei(from: result)) != nil ? result : nil
+    }
+
     /// Validates a recipient and returns its canonical EIP-55 checksummed form.
     /// All-lowercase or all-uppercase input is accepted; mixed case must carry a valid checksum.
     /// Also supports standard `ethereum:` URIs and `0X` hex prefix.
     static func validateRecipient(_ raw: String) throws -> String {
-        var s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        if s.lowercased().hasPrefix("ethereum:") {
-            s = String(s.dropFirst("ethereum:".count))
-            if s.hasPrefix("//") { s = String(s.dropFirst(2)) }
-            if let queryIndex = s.firstIndex(of: "?") { s = String(s[..<queryIndex]) }
-            if let atIndex = s.firstIndex(of: "@") { s = String(s[..<atIndex]) }
-        }
+        var s = parsePaymentURI(raw).recipient
         if s.hasPrefix("0X") {
             s = "0x" + s.dropFirst(2)
         }

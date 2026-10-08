@@ -16,11 +16,35 @@ final class WalletEngineTests: XCTestCase {
         XCTAssertNil(WalletEngine.address(forMnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon")) // bad checksum
     }
 
+    func testParsePaymentURI() {
+        let uri1 = WalletEngine.parsePaymentURI("ethereum:0x9858EfFD232B4033E47d90003D41EC34EcaEda94?value=1000000000000000000")
+        XCTAssertEqual(uri1.recipient, "0x9858EfFD232B4033E47d90003D41EC34EcaEda94")
+        XCTAssertEqual(uri1.amountETH, "1")
+
+        let uri2 = WalletEngine.parsePaymentURI("ethereum:pay-0x9858EfFD232B4033E47d90003D41EC34EcaEda94@1?value=500000000000000000")
+        XCTAssertEqual(uri2.recipient, "0x9858EfFD232B4033E47d90003D41EC34EcaEda94")
+        XCTAssertEqual(uri2.amountETH, "0.5")
+
+        let uri3 = WalletEngine.parsePaymentURI("ethereum:vitalik.eth?amount=2.5")
+        XCTAssertEqual(uri3.recipient, "vitalik.eth")
+        XCTAssertEqual(uri3.amountETH, "2.5")
+
+        let uri4 = WalletEngine.parsePaymentURI("ethereum:0x1234?value=1.5e18")
+        XCTAssertEqual(uri4.recipient, "0x1234")
+        XCTAssertEqual(uri4.amountETH, "1.5")
+
+        let uri5 = WalletEngine.parsePaymentURI("0x9858EfFD232B4033E47d90003D41EC34EcaEda94")
+        XCTAssertEqual(uri5.recipient, "0x9858EfFD232B4033E47d90003D41EC34EcaEda94")
+        XCTAssertNil(uri5.amountETH)
+    }
+
     func testRecipientValidation() throws {
         let checksummed = "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F"
         XCTAssertEqual(try WalletEngine.validateRecipient(checksummed), checksummed)
         XCTAssertEqual(try WalletEngine.validateRecipient(checksummed.lowercased()), checksummed)  // all-lowercase accepted, canonicalised
         XCTAssertEqual(try WalletEngine.validateRecipient("  \(checksummed)\n"), checksummed)
+        XCTAssertEqual(try WalletEngine.validateRecipient("ethereum:\(checksummed)"), checksummed)
+        XCTAssertEqual(try WalletEngine.validateRecipient("ethereum:pay-\(checksummed)@1?value=1e18"), checksummed)
 
         XCTAssertThrowsError(try WalletEngine.validateRecipient("0x9D8A62f656a8d1615C1294fd71e9CFb3E4855A4F")) {   // one letter's case flipped
             XCTAssertEqual($0 as? WalletError, .invalidChecksum)

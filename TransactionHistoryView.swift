@@ -11,6 +11,8 @@ struct TransactionHistoryView: View {
         }
     }
 
+    @State private var showClearConfirmation = false
+
     var body: some View {
         Group {
             if transactions.isEmpty {
@@ -20,24 +22,71 @@ struct TransactionHistoryView: View {
                     description: Text("Transactions sent from this wallet appear here.")
                 )
             } else {
-                List(transactions) { tx in
-                    TxRow(tx: tx)
-                        .contextMenu {
-                            Button("Copy transaction hash", systemImage: "doc.on.doc") {
-                                UIPasteboard.general.string = tx.hash
+                List {
+                    ForEach(transactions) { tx in
+                        TxRow(tx: tx)
+                            .contextMenu {
+                                Button("Copy transaction hash", systemImage: "doc.on.doc") {
+                                    UIPasteboard.general.string = tx.hash
+                                }
+                                Button("Copy recipient address", systemImage: "wallet.pass") {
+                                    UIPasteboard.general.string = tx.toAddress
+                                }
+                                if let url = URL(string: "https://etherscan.io/tx/\(tx.hash)") {
+                                    ShareLink("Share on Etherscan", item: url)
+                                }
                             }
-                            Button("Copy recipient address", systemImage: "wallet.pass") {
-                                UIPasteboard.general.string = tx.toAddress
-                            }
-                            if let url = URL(string: "https://etherscan.io/tx/\(tx.hash)") {
-                                ShareLink("Share on Etherscan", item: url)
-                            }
+                    }
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            let tx = transactions[index]
+                            store.deleteTransaction(id: tx.id)
                         }
+                    }
                 }
                 .listStyle(.insetGrouped)
             }
         }
         .navigationTitle("History")
+        .refreshable {
+            await store.refreshPendingTransactions()
+        }
+        .task {
+            await store.refreshPendingTransactions()
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        Task { await store.refreshPendingTransactions() }
+                    } label: {
+                        Label("Check status", systemImage: "arrow.clockwise")
+                    }
+                    if !transactions.isEmpty {
+                        Button(role: .destructive) {
+                            showClearConfirmation = true
+                        } label: {
+                            Label("Clear wallet history", systemImage: "trash")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
+        .confirmationDialog(
+            "Clear transaction history for this wallet?",
+            isPresented: $showClearConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Clear history", role: .destructive) {
+                if let addr = store.selectedAccount?.address {
+                    store.clearHistory(for: addr)
+                }
+            }
+        } message: {
+            Text("This only deletes the local record on this device. Past on-chain transactions cannot be deleted.")
+        }
     }
 }
 

@@ -43,6 +43,7 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         NSFaceIDUsageDescription: VaultETH uses Face ID to protect your recovery phrase and to authorize sending ETH.
+        NSCameraUsageDescription: VaultETH uses your camera to scan Ethereum address and ENS payment QR codes.
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:
