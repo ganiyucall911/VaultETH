@@ -3,6 +3,19 @@
   "name": "1. I need this app to",
   "createdAt": "2026-10-08T19:49:17.666Z",
   "filename": "f235506f-15d3-41e1-bd85-7d8a7a5ed280.json",
-  "geminiStarted": false,
-  "messages": []
+  "geminiStarted": true,
+  "messages": [
+    {
+      "id": "58912960-6f62-4b43-8a34-6b27903c5dbc",
+      "role": "user",
+      "content": "Go",
+      "status": "cancelled",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:57:37.840Z",
+      "sender": "ios",
+      "is_cancelled": true
+    }
+  ]
 }
