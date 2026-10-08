@@ -172,6 +172,54 @@
       "created_at": "2026-10-08T13:14:03.349Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "a1a6c08a-f15e-40c8-b192-901bfcb36b23",
+      "role": "user",
+      "content": "Why can’t they be saved??",
+      "status": "cancelled",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:01:29.364Z",
+      "sender": "ios",
+      "is_cancelled": true
+    },
+    {
+      "id": "a83cffa1-dfc1-4606-b163-241e61425e67",
+      "role": "user",
+      "content": "Why can’t they be saved??",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:02:37.618Z",
+      "sender": "ios",
+      "is_cancelled": false
+    },
+    {
+      "id": "bbb900ff-2e00-4995-a375-46d573a6f925",
+      "role": "agent",
+      "content": "Depending on whether you are referring to **recovery seed words**, **code changes**, or **App Store checklist items**, here is why:\n\n---\n\n### 1. 🔑 If you mean the Recovery Phrase (12 Words)\nIn VaultETH and crypto wallets generally, **recovery phrases cannot and should not be saved digitally** (in iCloud, Notes, photo albums, or cloud servers) for critical security reasons:\n\n* **Complete Wallet Ownership:** Anyone who obtains those 12 words has permanent, unrestricted access to all funds in the wallet across any device or wallet software.\n* **Cloud & Screenshot Vulnerabilities:** Cloud backups (iCloud/Google Drive), photo libraries, clipboards, and note apps are frequently targeted by malware, SIM-swap attacks, and data breaches. If saved digitally, funds can be drained silently.\n* **Device-Only Keychain Enclosure:** In [`KeychainVault.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/KeychainVault.swift#L31-L52), VaultETH explicitly marks the recovery phrase with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`. It never syncs to iCloud backups and is guarded behind Face ID / Touch ID / device passcode.\n* **App-Switcher Privacy:** In [`WalletsView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletsView.swift#L189-L192), the recovery phrase is wiped from memory as soon as you switch away from the app so iOS cannot save a screenshot preview of it in the multitasking switcher.\n* **Paper / Metal Backup:** This is why users must write the words down on physical paper or stamped metal and store them offline.\n\n---\n\n### 2. 💻 If you mean Repository Code & Files\nIf you are asking whether your project code, files, or commits are being saved:\n* **They are saved!** Every change made is automatically committed and pushed directly to your GitHub repository ([ganiyucall911/VaultETH](https://github.com/ganiyucall911/VaultETH)).\n* The latest commits containing the [`APP_STORE_CHECKLIST.md`](https://github.com/ganiyucall911/VaultETH/blob/main/APP_STORE_CHECKLIST.md), app icons, [`PRIVACY_POLICY.md`](https://github.com/ganiyucall911/VaultETH/blob/main/PRIVACY_POLICY.md), and [`SUPPORT.md`](https://github.com/ganiyucall911/VaultETH/blob/main/SUPPORT.md) are already saved and pushed to `main`.\n\n---\n\n### 3. 📋 If you mean App Store Submission Checklist Items\nIn [`APP_STORE_CHECKLIST.md`](https://github.com/ganiyucall911/VaultETH/blob/main/APP_STORE_CHECKLIST.md):\n* **Code & Asset items (Section 1)**: These *are* fully implemented and saved in the repository (privacy manifest, camera/biometric descriptions, app icons, legal documents).\n* **Apple Developer & App Store Connect items (Section 2)**: These cannot be automated or saved directly in Git because they require signing into your personal/organization Apple Developer portal with your Apple ID credentials to upload builds, configure banking/tax information, and submit for review.\n\n---\n\n*(If you meant something else specific by \"they\", let me know and I will help you with it right away!)*",
+      "status": "completed",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "a83cffa1-dfc1-4606-b163-241e61425e67",
+      "created_at": "2026-10-08T19:03:03.862Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "fe353429-9436-42fb-9d5d-83a59104bf65",
+      "role": "user",
+      "content": "I need the improvement of the app ui/ux and concept of identity different from others and better in every form than others and also the app icon",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:07:55.229Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }

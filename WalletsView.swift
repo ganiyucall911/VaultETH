@@ -6,44 +6,67 @@ struct WalletsView: View {
     @State private var pendingDelete: WalletAccount?
     @State private var pendingRename: WalletAccount?
     @State private var draftName = ""
+    @State private var viewingRecoveryPhraseFor: WalletAccount?
 
     var body: some View {
-        List {
-            ForEach(store.accounts) { account in
-                Button { store.select(account) } label: {
-                    HStack {
-                        Image(systemName: account.id == store.selectedAccountID ? "checkmark.circle.fill" : "circle")
-                        VStack(alignment: .leading) {
-                            Text(account.name)
-                            Text(account.address).font(.caption.monospaced())
-                                .foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
-                        }
-                        Spacer()
-                        if !account.backedUp {
-                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                        }
+        ScrollView {
+            VStack(spacing: 16) {
+                // Header overview
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(store.accounts.count) Active \(store.accounts.count == 1 ? "Vault" : "Vaults")")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
-                    .foregroundStyle(.primary)
-                }
-                .swipeActions(edge: .trailing) {
-                    Button("Delete", role: .destructive) { pendingDelete = account }
-                }
-                .swipeActions(edge: .leading) {
-                    Button("Rename", systemImage: "pencil") {
-                        draftName = account.name
-                        pendingRename = account
+                    Spacer()
+                    Button {
+                        showAdd = true
+                    } label: {
+                        Label("New Vault", systemImage: "plus.circle.fill")
+                            .font(.subheadline.bold())
                     }
-                    .tint(.blue)
+                    .foregroundStyle(Color.vaultCyan)
+                }
+                .padding(.horizontal, 4)
+
+                // Vault Cards
+                ForEach(store.accounts) { account in
+                    VaultCardRow(
+                        account: account,
+                        isSelected: account.id == store.selectedAccountID,
+                        onSelect: { store.select(account) },
+                        onShowPhrase: { viewingRecoveryPhraseFor = account },
+                        onRename: {
+                            draftName = account.name
+                            pendingRename = account
+                        },
+                        onDelete: { pendingDelete = account }
+                    )
+                }
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 12)
+        }
+        .background(Color.vaultBackground.ignoresSafeArea())
+        .navigationTitle("Vaults")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showAdd = true
+                } label: {
+                    Image(systemName: "plus")
+                        .foregroundStyle(Color.vaultCyan)
                 }
             }
         }
-        .navigationTitle("Wallets")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) { Button("Add", systemImage: "plus") { showAdd = true } }
-        }
         .sheet(isPresented: $showAdd) { AddWalletView() }
+        .sheet(item: $viewingRecoveryPhraseFor) { account in
+            NavigationStack {
+                RecoveryPhraseView(account: account)
+            }
+        }
         .confirmationDialog(
-            "Delete this wallet from this device?",
+            "Delete this vault from this device?",
             isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
             titleVisibility: .visible,
             presenting: pendingDelete
@@ -51,16 +74,16 @@ struct WalletsView: View {
             Button("Delete \(account.name)", role: .destructive) { store.delete(account) }
         } message: { account in
             Text(account.backedUp
-                 ? "You can restore it later with your recovery phrase."
-                 : "This wallet is NOT backed up. Deleting it permanently loses access to its funds.")
+                 ? "You can restore it anytime using its 12-word recovery phrase."
+                 : "CRITICAL: This vault is NOT backed up. Deleting it will permanently destroy all access to its funds.")
         }
-        .alert("Rename Wallet", isPresented: Binding(
+        .alert("Rename Vault", isPresented: Binding(
             get: { pendingRename != nil },
             set: { if !$0 { pendingRename = nil } }
         )) {
-            TextField("Wallet name", text: $draftName)
+            TextField("Vault name", text: $draftName)
                 .textInputAutocapitalization(.words)
-            Button("Rename") {
+            Button("Save") {
                 let trimmed = draftName.trimmingCharacters(in: .whitespaces)
                 if let account = pendingRename, !trimmed.isEmpty {
                     store.rename(account, to: trimmed)
@@ -69,10 +92,110 @@ struct WalletsView: View {
             }
             Button("Cancel", role: .cancel) { pendingRename = nil }
         } message: {
-            Text("Enter a new name for "\(pendingRename?.name ?? "")".")
+            Text("Enter a new identifier for \"\(pendingRename?.name ?? "")\".")
         }
     }
 }
+
+// MARK: - Vault Card Row
+
+private struct VaultCardRow: View {
+    let account: WalletAccount
+    let isSelected: Bool
+    let onSelect: () -> Void
+    let onShowPhrase: () -> Void
+    let onRename: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .top) {
+                    VaultIdenticon(address: account.address, size: 44, showGlow: isSelected)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
+                            Text(account.name)
+                                .font(.headline.weight(.semibold))
+                                .foregroundStyle(.primary)
+
+                            if isSelected {
+                                Text("Active")
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(Color.vaultCyan)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.vaultCyan.opacity(0.15), in: Capsule())
+                            }
+                        }
+
+                        Text(account.address)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+
+                    Spacer()
+
+                    Menu {
+                        Button("View Recovery Phrase", systemImage: "key.fill", action: onShowPhrase)
+                        Button("Rename Vault", systemImage: "pencil", action: onRename)
+                        Button("Copy Address", systemImage: "doc.on.doc") {
+                            UIPasteboard.general.string = account.address
+                        }
+                        Divider()
+                        Button(role: .destructive, action: onDelete) {
+                            Label("Delete Vault", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                            .padding(8)
+                    }
+                }
+
+                HStack {
+                    if account.backedUp {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.shield.fill")
+                                .foregroundStyle(Color.vaultEmerald)
+                            Text("Phrase Secured")
+                                .font(.caption2.weight(.medium))
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Button(action: onShowPhrase) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.shield.fill")
+                                    .foregroundStyle(Color.vaultAmber)
+                                Text("Backup Needed")
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(Color.vaultAmber)
+                            }
+                        }
+                    }
+
+                    Spacer()
+
+                    Text("Ethereum Mainnet")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .padding(18)
+            .vaultCard(cornerRadius: 22, highlight: isSelected ? LinearGradient(
+                colors: [Color.vaultCyan.opacity(0.6), Color.vaultViolet.opacity(0.4)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ) : nil)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Add / Import Wallet View
 
 struct AddWalletView: View {
     @Environment(\.dismiss) private var dismiss
@@ -87,36 +210,106 @@ struct AddWalletView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Picker("Mode", selection: $importMode) {
-                    Text("Create").tag(false)
-                    Text("Import").tag(true)
-                }
-                .pickerStyle(.segmented)
+            ScrollView {
+                VStack(spacing: 24) {
+                    Picker("Mode", selection: $importMode) {
+                        Text("Create New").tag(false)
+                        Text("Import Phrase").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.top, 8)
 
-                TextField("Wallet name", text: $name)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Vault Name")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
 
-                if importMode {
-                    SecureField("Recovery phrase (12–24 words)", text: $phrase)
-                        .textInputAutocapitalization(.never).autocorrectionDisabled()
-                } else {
-                    Text("A recovery phrase is generated on this device and stored in the Keychain.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        TextField(importMode ? "Imported Vault" : "Primary Vault", text: $name)
+                            .font(.body)
+                            .padding(14)
+                            .vaultGlass(cornerRadius: 14)
+                    }
+
+                    if importMode {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("12 or 24-Word Recovery Phrase")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+
+                            TextEditor(text: $phrase)
+                                .font(.body.monospaced())
+                                .frame(height: 110)
+                                .padding(10)
+                                .vaultGlass(cornerRadius: 14)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+
+                            Text("Enter words separated by spaces. Your phrase is processed locally and never leaves this device.")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        VStack(spacing: 12) {
+                            Image(systemName: "key.viewfinder")
+                                .font(.system(size: 42))
+                                .foregroundStyle(Color.vaultCyan)
+                                .padding(.top, 12)
+
+                            Text("Cryptographically Secure Generation")
+                                .font(.headline)
+
+                            Text("A high-entropy BIP-39 mnemonic is generated directly within your device's Secure Enclave.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 16)
+                        }
+                        .padding(20)
+                        .vaultGlass(cornerRadius: 20)
+                    }
+
+                    if let errorMessage {
+                        HStack {
+                            Image(systemName: "exclamationmark.circle.fill").foregroundStyle(.red)
+                            Text(errorMessage).font(.caption).foregroundStyle(.red)
+                        }
+                    }
+
+                    Button {
+                        Task { await submit() }
+                    } label: {
+                        HStack {
+                            if isWorking {
+                                ProgressView().tint(.black)
+                            } else {
+                                Text(importMode ? "Import Vault" : "Generate Vault")
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .vaultButton(.prominent)
+                    .disabled(isWorking || (importMode && phrase.trimmingCharacters(in: .whitespaces).isEmpty))
                 }
-                if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
+                .padding(20)
             }
-            .navigationTitle(importMode ? "Import wallet" : "Create wallet")
+            .background(Color.vaultBackground.ignoresSafeArea())
+            .navigationTitle(importMode ? "Import Vault" : "Create Vault")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(importMode ? "Import" : "Create") { Task { await submit() } }
-                        .disabled(isWorking || (importMode && phrase.trimmingCharacters(in: .whitespaces).isEmpty))
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
                 }
             }
             .sheet(item: $created) { wallet in
-                RecoveryPhraseView(account: wallet.account, initialMnemonic: wallet.mnemonic,
-                                   requiresConfirmation: true, onFinish: { dismiss() })
-                    .interactiveDismissDisabled()
+                NavigationStack {
+                    RecoveryPhraseView(
+                        account: wallet.account,
+                        initialMnemonic: wallet.mnemonic,
+                        requiresConfirmation: true,
+                        onFinish: { dismiss() }
+                    )
+                }
+                .interactiveDismissDisabled()
             }
         }
     }
@@ -126,17 +319,19 @@ struct AddWalletView: View {
         defer { isWorking = false }
         do {
             if importMode {
-                try await store.importWallet(name: name.isEmpty ? "Imported Wallet" : name, mnemonic: phrase)
+                try await store.importWallet(name: name.isEmpty ? "Imported Vault" : name, mnemonic: phrase)
                 phrase = ""
                 dismiss()
             } else {
-                created = try await store.createWallet(name: name.isEmpty ? "Main Wallet" : name)
+                created = try await store.createWallet(name: name.isEmpty ? "Primary Vault" : name)
             }
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 }
+
+// MARK: - Recovery Phrase Reveal View
 
 struct RecoveryPhraseView: View {
     @Environment(\.dismiss) private var dismiss
@@ -161,38 +356,115 @@ struct RecoveryPhraseView: View {
         _phrase = State(initialValue: initialMnemonic)
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Recovery phrase").font(.largeTitle.bold())
-            Text("Anyone with these words can take everything in this wallet. Write them down on paper and never share or photograph them.")
-                .foregroundStyle(.secondary)
+    private var words: [String] {
+        phrase?.split(separator: " ").map(String.init) ?? []
+    }
 
-            if let phrase {
-                Text(phrase).font(.body.monospaced()).padding().vaultGlass()
-                if requiresConfirmation { Toggle("I wrote it down and stored it safely.", isOn: $confirmed) }
-                Button("Done") {
-                    if !requiresConfirmation || confirmed { store.markBackedUp(account.id) }
-                    dismiss(); onFinish?()
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                HStack(spacing: 12) {
+                    VaultIdenticon(address: account.address, size: 48)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(account.name).font(.headline)
+                        Text("Recovery Phrase").font(.subheadline).foregroundStyle(.secondary)
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(requiresConfirmation && !confirmed)
-            } else {
-                Button("Reveal with Face ID") { Task { await reveal() } }.buttonStyle(.borderedProminent)
+
+                HStack(spacing: 10) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(Color.vaultAmber)
+                    Text("Anyone with these words has total control of your funds. Never photograph, screenshot, or store them in cloud services.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(14)
+                .vaultGlass(cornerRadius: 16)
+
+                if !words.isEmpty {
+                    // Beautiful 2-column numbered word capsules
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                        ForEach(Array(words.enumerated()), id: \.offset) { index, word in
+                            HStack(spacing: 8) {
+                                Text("\(index + 1)")
+                                    .font(.caption2.monospacedDigit())
+                                    .foregroundStyle(Color.vaultCyan)
+                                    .frame(width: 20, alignment: .trailing)
+                                Text(word)
+                                    .font(.subheadline.monospaced().weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .vaultGlass(cornerRadius: 12)
+                        }
+                    }
+
+                    if requiresConfirmation {
+                        Toggle("I have physically written down these words and stored them in a safe place.", isOn: $confirmed)
+                            .font(.footnote)
+                            .padding(.top, 8)
+                    }
+
+                    Button {
+                        if !requiresConfirmation || confirmed { store.markBackedUp(account.id) }
+                        dismiss()
+                        onFinish?()
+                    } label: {
+                        Text("I've Backed Up My Phrase")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .vaultButton(.prominent)
+                    .disabled(requiresConfirmation && !confirmed)
+                    .padding(.top, 12)
+                } else {
+                    VStack(spacing: 16) {
+                        Text("Authentication Required")
+                            .font(.headline)
+                        Text("Verify your identity with Face ID or device passcode to reveal your recovery phrase.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+
+                        Button {
+                            Task { await reveal() }
+                        } label: {
+                            Label("Reveal with Face ID", systemImage: "faceid")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .vaultButton(.prominent)
+                    }
+                    .padding(24)
+                    .vaultGlass(cornerRadius: 20)
+                }
+
+                if let errorMessage {
+                    Text(errorMessage).font(.caption).foregroundStyle(.red)
+                }
             }
-            if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
-            Spacer()
+            .padding(20)
         }
-        .padding()
-        // Hide the recovery phrase as soon as the app leaves the foreground so it does not
-        // appear in the iOS app-switcher snapshot — regardless of whether it was passed in
-        // directly (after wallet creation) or revealed on demand via Face ID.
+        .background(Color.vaultBackground.ignoresSafeArea())
+        .navigationTitle("Secret Recovery Phrase")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Close") { dismiss() }
+            }
+        }
+        // Memory wiping on backgrounding
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase != .active { phrase = nil }
         }
     }
 
     private func reveal() async {
-        do { phrase = try await store.revealMnemonic(for: account.id); errorMessage = nil }
-        catch { errorMessage = error.localizedDescription }
+        do {
+            phrase = try await store.revealMnemonic(for: account.id)
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }

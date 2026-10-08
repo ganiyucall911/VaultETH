@@ -52,6 +52,20 @@ The review screen cannot be dismissed while sending, to avoid double sends.
 | `TransactionHistoryView` | History list was static without pull-to-refresh, status polling, or ability to remove records | Added `.refreshable`, automatic `.task` status check, swipe-to-delete, and toolbar menu to check status or clear wallet history |
 | `ENSAndHistoryTests.swift` | Lack of test coverage for ENS resolution helpers and transaction history serialization | Created comprehensive test suite verifying `looksLikeENS`, `decodeABIString`, `namehash("")`, and `SentTransaction` Codable |
 
+## Fourth pass: Brand Identity, UI/UX Overhaul & App Icon (session 4)
+| Area | Enhancement | Technical Details |
+|---|---|---|
+| **Concept of Identity** | **VaultIdenticon (Cryptographic Crests)** | Replaced generic circular avatars and legacy blockies with a pure SwiftUI generative cryptographic crest (`VaultIdenticon.swift`). Deterministically renders an algorithmic Ethereum diamond with orbital rings, micro-nodes, and a signature prismatic gradient aura derived from the address hex. |
+| **Design System** | **Liquid Glass 2.0 & Tokens** | Enhanced `LiquidGlass.swift` with semantic color tokens (`vaultBackground`, `vaultCardSurface`, `vaultCyan`, `vaultViolet`, `vaultAmber`, `vaultEmerald`), titanium specular borders (`.vaultGlass`), `.vaultCard` elevated containers, and `.vaultButton` spring haptic styles. |
+| **App Icon** | **Crystalline Ethereum Vault Icon** | Generated a world-class 1024x1024 App Store icon (`Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`). Features a 3D translucent liquid glass Ethereum octahedron crystal with sharp refractive facets, internal neon cyan/violet refraction, and a brushed dark titanium precision vault rim. |
+| **Information Architecture** | **Modern 4-Tab Cockpit** | Reorganized navigation into 4 primary hubs: `Vault` (Home), `Wallets`, `Activity` (History), and `Settings`. Integrated direct `Send`, `Receive`, `Scan`, and `Copy` quick actions directly into the Home hero card. |
+| **Privacy UX** | **Discreet Balance Mode** | Added discreet mode toggle (`eye` / `eye.slash`) in the navigation bar to mask balances (`•••••••• ETH`) with smooth spring animations when in public or recording screencasts. |
+| **Send Experience** | **Cockpit Flow & Presets** | Redesigned `SendView` with sender crest, interactive amount preset pills (`25%`, `50%`, `75%`, `Max`), instant recipient `VaultIdenticon` verification preview, and a biometric authentication review sheet. |
+| **Receive Experience** | **Digital Vault Pass** | Redesigned `ReceiveView` into an executive cryptographic pass featuring a high-contrast QR frame, centered identicon, one-tap copy with toast feedback, and iOS native `ShareLink`. |
+| **Wallets Management** | **Glass Vault Cards** | Upgraded `WalletsView` from standard list rows to luxury glass vault cards with live identicons, active state badges, backup indicators, and a 2-column numbered capsule grid in `RecoveryPhraseView`. |
+| **Activity Feed** | **Activity Hub & Filters** | Added segmented status filtering (`All`, `Confirmed`, `Pending`) in `TransactionHistoryView`, with recipient identicons, live status beacons, and a dedicated transaction detail modal sheet. |
+| **Onboarding** | **Sovereign Welcome Screen** | Revamped `WelcomeView` with floating glowing diamond motif, key pillar disclosures (Secure Enclave, zero tracking, direct on-chain), and prominent creation actions. |
+
 ## Remaining risks
 - Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
 - Public RPC providers see the user's IP and address, and their data (balance, nonce, fees) is trusted, not verified.

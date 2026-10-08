@@ -1,0 +1,10 @@
+# Xcode / Swift
+.build/
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+.DS_Store
+
+# Antigravity temporary artifacts
+.antigravity/scratch/
