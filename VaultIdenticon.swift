@@ -102,76 +102,89 @@ struct VaultIdenticon: View {
                 .strokeBorder(Color.white.opacity(0.15), lineWidth: max(0.5, size * 0.02))
                 .frame(width: size * 0.76, height: size * 0.76)
 
-            // Inner Cryptographic Rhomboid / Diamond (Ethereum facet motif)
+            // Inner Cryptographic Vault Keystone ("V" Aperture)
             Group {
-                // Background facet
-                EthereumFacetShape()
+                // Interlocking Vault Chevron Blades
+                VaultKeystoneChevronShape()
                     .fill(
                         LinearGradient(
-                            colors: [primaryColor.opacity(0.85), secondaryColor.opacity(0.75)],
+                            colors: [primaryColor.opacity(0.9), secondaryColor.opacity(0.8)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: size * 0.44, height: size * 0.60)
+                    .frame(width: size * 0.48, height: size * 0.54)
                     .shadow(color: primaryColor.opacity(0.4), radius: size * 0.08)
 
-                // Top specular facet highlight
-                EthereumTopFacetShape()
+                // Top Specular Chamfer Blade
+                VaultUpperBladeShape()
                     .fill(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.5), Color.white.opacity(0.0)],
+                            colors: [Color.white.opacity(0.6), Color.white.opacity(0.0)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: size * 0.44, height: size * 0.30)
-                    .offset(y: -size * 0.15)
+                    .frame(width: size * 0.44, height: size * 0.28)
+                    .offset(y: -size * 0.12)
             }
 
-            // Central Beacon Node
+            // Central Luminous Keystone Core
             Circle()
                 .fill(Color.white)
-                .frame(width: max(2, size * 0.08), height: max(2, size * 0.08))
-                .shadow(color: accentColor, radius: max(2, size * 0.08))
+                .frame(width: max(2, size * 0.09), height: max(2, size * 0.09))
+                .shadow(color: accentColor, radius: max(3, size * 0.10))
         }
         .frame(width: size, height: size)
     }
 }
 
-// MARK: - Geometric Shapes
+// MARK: - Bespoke Vault Geometric Shapes
 
-/// Stylized Ethereum octahedron silhouette
-private struct EthereumFacetShape: Shape {
+/// Sculptural interlocking Vault "V" keystone chevron blades
+private struct VaultKeystoneChevronShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        let top = CGPoint(x: rect.midX, y: rect.minY)
-        let bottom = CGPoint(x: rect.midX, y: rect.maxY)
-        let left = CGPoint(x: rect.minX, y: rect.midY)
-        let right = CGPoint(x: rect.maxX, y: rect.midY)
+        let midX = rect.midX
+        let top = rect.minY
+        let bottom = rect.maxY
+        let left = rect.minX
+        let right = rect.maxX
+        let innerCutY = rect.minY + rect.height * 0.40
 
-        path.move(to: top)
-        path.addLine(to: right)
-        path.addLine(to: bottom)
-        path.addLine(to: left)
+        // Outer V contour
+        path.move(to: CGPoint(x: left, y: top))
+        path.addLine(to: CGPoint(x: left + rect.width * 0.28, y: top))
+        path.addLine(to: CGPoint(x: midX, y: bottom - rect.height * 0.25))
+        path.addLine(to: CGPoint(x: right - rect.width * 0.28, y: top))
+        path.addLine(to: CGPoint(x: right, y: top))
+        path.addLine(to: CGPoint(x: midX, y: bottom))
         path.closeSubpath()
+
+        // Inner interlocking keystone blade
+        path.move(to: CGPoint(x: midX, y: top + rect.height * 0.08))
+        path.addLine(to: CGPoint(x: right - rect.width * 0.35, y: innerCutY))
+        path.addLine(to: CGPoint(x: midX, y: bottom - rect.height * 0.35))
+        path.addLine(to: CGPoint(x: left + rect.width * 0.35, y: innerCutY))
+        path.closeSubpath()
+
         return path
     }
 }
 
-/// Specular upper reflection
-private struct EthereumTopFacetShape: Shape {
+/// Upper specular chamfer blade
+private struct VaultUpperBladeShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        let top = CGPoint(x: rect.midX, y: rect.minY)
-        let bottom = CGPoint(x: rect.midX, y: rect.maxY)
-        let left = CGPoint(x: rect.minX, y: rect.maxY)
-        let right = CGPoint(x: rect.maxX, y: rect.maxY)
+        let midX = rect.midX
+        let top = rect.minY
+        let bottom = rect.maxY
+        let left = rect.minX
+        let right = rect.maxX
 
-        path.move(to: top)
-        path.addLine(to: right)
-        path.addLine(to: bottom)
-        path.addLine(to: left)
+        path.move(to: CGPoint(x: left, y: top))
+        path.addLine(to: CGPoint(x: right, y: top))
+        path.addLine(to: CGPoint(x: midX, y: bottom))
         path.closeSubpath()
         return path
     }
