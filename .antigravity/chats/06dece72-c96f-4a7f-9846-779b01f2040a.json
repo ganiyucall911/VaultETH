@@ -280,6 +280,54 @@
       "created_at": "2026-10-08T19:25:38.455Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "4bbf1a19-f063-4385-8a1a-1e14b0092307",
+      "role": "agent",
+      "content": "I have upgraded VaultETH to a **universal multi-chain architecture** supporting all major blockchains and custom EVM networks, as well as derived addresses for Solana and Bitcoin. All changes are saved.\n\n---\n\n### What Was Implemented\n\n#### 1. 🌐 Multi-Chain Network Engine ([`Models.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/Models.swift#L3-L135))\nIntroduced [`BlockchainNetwork`](https://github.com/ganiyucall911/VaultETH/blob/main/Models.swift#L6-L134) with built-in configurations for all major blockchains, their native gas currencies, RPC nodes, chain IDs, and official block explorers:\n* **Ethereum Mainnet** (`ETH` • Chain ID 1 • Etherscan)\n* **Arbitrum One** (`ETH` • Chain ID 42161 • Arbiscan)\n* **Base** (`ETH` • Chain ID 8453 • Basescan)\n* **Optimism (OP)** (`ETH` • Chain ID 10 • Optimistic Etherscan)\n* **Polygon PoS** (`POL` • Chain ID 137 • Polygonscan)\n* **BNB Smart Chain** (`BNB` • Chain ID 56 • BscScan)\n* **Avalanche C-Chain** (`AVAX` • Chain ID 43114 • Snowtrace)\n* **Linea** (`ETH` • Chain ID 59144 • Lineascan)\n* **Sepolia Testnet** (`SepoliaETH` • Chain ID 11155111 • Sepolia Etherscan)\n* **Custom EVM Networks:** Users can add any custom EVM chain (e.g. Scroll, Blast, Fantom, Gnosis, Cronos) by providing a Chain ID and RPC URL.\n\n---\n\n#### 2. ⚡ Dynamic Multi-Chain JSON-RPC Client ([`EthereumRPC.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/EthereumRPC.swift))\n* Dynamically adapts to whichever network is currently selected.\n* **Dual Gas Model:** Supports modern EIP-1559 base fee calculation with priority tips on networks like Ethereum, Base, and Arbitrum, while automatically falling back to standard `eth_gasPrice` on legacy or alternate EVM nodes (e.g. BNB Smart Chain).\n* Preserves multi-endpoint failover across all chains.\n\n---\n\n#### 3. 🔑 Cross-Chain Address Derivation ([`WalletEngine.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/WalletEngine.swift#L113-L147))\n* A single 12-word BIP-39 recovery phrase now deterministically derives addresses across multiple blockchain ecosystems:\n  1. **EVM Chains:** Universal `0x…` address (shared across Ethereum, Arbitrum, Base, Polygon, BSC, Avalanche, Linea, etc.).\n  2. **Solana:** Native Base58 Solana address (`wallet.getAddressForCoin(coin: .solana)`).\n  3. **Bitcoin:** Native SegWit Bech32 (`bc1q…`) address (`wallet.getAddressForCoin(coin: .bitcoin)`).\n\n---\n\n#### 4. 🎛️ Interactive Network Selector & UI ([`RootView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/RootView.swift))\n* **Header Network Pill:** Added an interactive network switcher button at the top of the Home screen displaying the active chain’s status, accent color, and Chain ID.\n* **Network Picker Sheet:** Tapping the pill presents [`NetworkPickerSheet`](https://github.com/ganiyucall911/VaultETH/blob/main/RootView.swift#L470-L533) to switch networks with a single tap or add a custom chain.\n* **Multi-Chain Receive Pass:** Redesigned [`ReceiveView`](https://github.com/ganiyucall911/VaultETH/blob/main/RootView.swift#L577-L697) with a 3-way segmented control (**EVM Chains**, **Solana**, **Bitcoin**), each displaying its tailored QR code, address pill, and network safety notice.\n* **Network-Aware Sending ([`SendView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/SendView.swift)):** Displays the active network banner, adapts token symbols (e.g. `BNB`, `POL`, `AVAX`, `ETH`), and links to each chain's respective block explorer upon confirmation.\n* **Multi-Chain Activity ([`TransactionHistoryView.swift`](https://github.com/ganiyucall911/VaultETH/blob/main/TransactionHistoryView.swift)):** Displays network tags on every transaction card and deep-links directly to Arbiscan, Basescan, Polygonscan, BscScan, Snowtrace, or Etherscan.",
+      "status": "completed",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "12a3944e-4d78-4553-baac-65cd616cce0d",
+      "created_at": "2026-10-08T19:30:46.506Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "a9bdf538-01cf-4be5-b620-7a36e232ef5c",
+      "role": "user",
+      "content": "1. I need this app to work on Android too. 2. Prepare for first release",
+      "status": "cancelled",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:32:18.098Z",
+      "sender": "ios",
+      "is_cancelled": true
+    },
+    {
+      "id": "b50b74b0-d663-403e-8835-5860cd49cfe1",
+      "role": "user",
+      "content": "1. I need this app to work on Android too. 2. Prepare for first release",
+      "status": "cancelled",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:33:37.698Z",
+      "sender": "ios",
+      "is_cancelled": true
+    },
+    {
+      "id": "f300dc98-58ed-4990-b4c8-2d5affe011d6",
+      "role": "user",
+      "content": "Continue task",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-08T19:38:00.070Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }
