@@ -76,6 +76,16 @@ The review screen cannot be dismissed while sending, to avoid double sends.
 | **Multi-Chain Receive** | **Segmented Digital Vault Pass** | Redesigned `ReceiveView` with a segmented control to toggle between EVM Chains, Solana, and Bitcoin, generating live respective QR codes and copy actions. |
 | **Dynamic Sending & History** | **Multi-Chain Execution** | Updated `SendView` and `TransactionHistoryView` to adapt symbols (`ETH`, `BNB`, `POL`, `AVAX`), validate against target network chain ID, and deep-link directly to each network's official block explorer (Basescan, Arbiscan, Polygonscan, BscScan, Snowtrace, Etherscan). |
 
+## Sixth pass: Native Android App & Store Submission Kit (session 6)
+| Area | Enhancement | Technical Details |
+|---|---|---|
+| **Android Native Engine** | **Full Jetpack Compose Implementation** | Built complete Android app matching iOS architecture: 4-tab Sovereign Obsidian layout (`VaultHomeScreen`, `WalletsScreen`, `ActivityScreen`, `SettingsScreen`), `VaultIdenticon` canvas keystone crests, dynamic multi-chain switcher, and 12-word capsule viewer. |
+| **Android Cryptography** | **BIP-39 & Multi-Chain Engine** | Implemented `WalletEngine.kt` in Kotlin with BouncyCastle supporting BIP-39 mnemonic generation/validation, EVM `m/44'/60'/0'/0/0` key derivation with EIP-55 checksum, Base58 Solana address derivation, Bech32 Bitcoin SegWit address derivation, EIP-1559 and legacy transaction signing, and EIP-681 / EIP-831 payment URI parsing. |
+| **Hardware Key Security** | **Android Keystore AES-256** | Implemented `SecureVault.kt` leveraging Android Keystore and `EncryptedSharedPreferences` with `AES256_GCM` and `AES256_SIV` encryption schemes. Disabled cloud backups to prevent seed phrase leaks. |
+| **Security Hardening** | **Strict `.gitignore` Protections** | Hardened `.gitignore` to explicitly block all private keys, keystores (`*.keystore`, `*.jks`, `*.p12`), certificates, provisioning profiles, environment variables (`*.env`), and secrets from ever being tracked or committed to Git. |
+| **Store Readiness** | **Submission Kit** | Created `SUBMISSION_KIT.md` with complete copy-paste answers for Apple App Store Connect and Google Play Console: metadata, Data Safety questionnaire, App Privacy nutrition label, export compliance exemptions, and App Review Guideline 3.1.5(a) compliance notes. |
+| **Verification & Tests** | **Automated Unit Tests** | Implemented `WalletEngineTest.kt` covering mnemonic validation, address derivation, payment URI parsing, and wei math. Verified with 100% passing test execution and clean `assembleDebug` APK build. |
+
 ## Remaining risks
 - Swift `String` cannot be zeroed: the recovery phrase lives in memory briefly while signing or revealing.
 - Public RPC providers see the user's IP and address, and their data (balance, nonce, fees) is trusted, not verified.
