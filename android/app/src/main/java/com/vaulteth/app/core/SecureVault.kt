@@ -46,6 +46,7 @@ class SecureVault(context: Context) {
                 put("solanaAddress", w.solanaAddress)
                 put("bitcoinAddress", w.bitcoinAddress)
                 put("isBackedUp", w.isBackedUp)
+                put("importedEnsName", w.importedEnsName)
                 put("createdAt", w.createdAt)
             }
             array.put(obj)
@@ -67,6 +68,7 @@ class SecureVault(context: Context) {
                     solanaAddress = obj.optString("solanaAddress", ""),
                     bitcoinAddress = obj.optString("bitcoinAddress", ""),
                     isBackedUp = obj.optBoolean("isBackedUp", false),
+                    importedEnsName = if (obj.has("importedEnsName") && !obj.isNull("importedEnsName")) obj.optString("importedEnsName").ifBlank { null } else null,
                     createdAt = obj.optLong("createdAt", System.currentTimeMillis())
                 )
             )

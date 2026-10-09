@@ -137,4 +137,43 @@ enum ENSResolver {
         }
         return node
     }
+
+    // MARK: - Registration & Buying Helpers
+
+    /// Formats a name to ensure it is lowercased and ends in `.eth`.
+    static func normalizeENSName(_ raw: String) -> String {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !trimmed.isEmpty else { return "" }
+        if trimmed.hasSuffix(".eth") { return trimmed }
+        return "\(trimmed).eth"
+    }
+
+    /// Provides an estimated annual registration fee in ETH and USD based on character length.
+    /// Official ENS base rates:
+    ///   - 5+ characters: $5/year (~0.0016 ETH)
+    ///   - 4 characters: $160/year (~0.045 ETH)
+    ///   - 3 characters: $640/year (~0.18 ETH)
+    static func estimateAnnualCost(for label: String) -> (eth: String, usd: String, note: String) {
+        let clean = label.replacingOccurrences(of: ".eth", with: "")
+                         .trimmingCharacters(in: .whitespacesAndNewlines)
+        switch clean.count {
+        case 0...2:
+            return ("Unavailable", "Unavailable", "Must be at least 3 characters")
+        case 3:
+            return ("~0.18 ETH / yr", "~$640 / yr", "Rare 3-letter tier")
+        case 4:
+            return ("~0.045 ETH / yr", "~$160 / yr", "4-letter tier")
+        default:
+            return ("~0.0016 ETH / yr", "~$5.00 / yr", "Standard 5+ letter tier")
+        }
+    }
+
+    /// Returns the canonical ENS registration URL for a given name.
+    static func registrationURL(for name: String) -> URL? {
+        let domain = normalizeENSName(name)
+        guard !domain.isEmpty, domain != ".eth" else {
+            return URL(string: "https://app.ens.domains")
+        }
+        return URL(string: "https://app.ens.domains/\(domain)")
+    }
 }

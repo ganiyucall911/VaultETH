@@ -127,6 +127,19 @@ class VaultViewModel(private val secureVault: SecureVault) : ViewModel() {
         return secureVault.getMnemonic(wallet.id)
     }
 
+    fun setImportedEns(walletId: String, ensName: String?) {
+        val normalized = ensName?.trim()?.lowercase()?.ifBlank { null }
+        val updated = _wallets.value.map { w ->
+            if (w.id == walletId) {
+                w.copy(importedEnsName = normalized)
+            } else {
+                w
+            }
+        }
+        _wallets.value = updated
+        secureVault.saveWallets(updated)
+    }
+
     fun refreshBalance() {
         val currentWallet = _wallets.value.find { it.id == _selectedWalletId.value } ?: return
         val currentNet = _selectedNetwork.value
@@ -350,7 +363,8 @@ fun VaultApp(viewModel: VaultViewModel) {
                                 onCreateWallet = { viewModel.createWallet("Vault #${wallets.size + 1}") },
                                 onImportWallet = { name, words -> viewModel.importWallet(name, words) },
                                 onDeleteWallet = { /* Delete handler */ },
-                                onViewMnemonic = { viewModel.getMnemonic(it) }
+                                onViewMnemonic = { viewModel.getMnemonic(it) },
+                                onSetImportedEns = { walletId, ensName -> viewModel.setImportedEns(walletId, ensName) }
                             )
                         }
                         NavigationTab.ACTIVITY -> {

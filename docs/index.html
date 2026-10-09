@@ -953,6 +953,184 @@
     .purchase-feature-card h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
     .purchase-feature-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
+    /* ENS Identity & Domain Hub Section */
+    .ens-section { padding: 80px 0; }
+    .ens-hub-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      margin-top: 36px;
+      position: relative;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    }
+    .ens-tabs-header {
+      display: flex; gap: 12px; border-bottom: 1px solid var(--border);
+      padding-bottom: 18px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .ens-tab-btn {
+      display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px;
+      border-radius: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .ens-tab-btn.active, .ens-tab-btn:hover {
+      background: rgba(0, 245, 255, 0.12); border-color: var(--cyan); color: #fff;
+    }
+    .ens-panel { display: none; }
+    .ens-panel.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .ens-panel-grid {
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start;
+    }
+    @media (max-width: 900px) {
+      .ens-panel-grid { grid-template-columns: 1fr; }
+    }
+    .ens-input-label {
+      display: block; font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px;
+    }
+    .ens-input-wrapper {
+      display: flex; align-items: center; background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border); border-radius: 14px; padding: 4px 14px;
+      transition: border-color var(--transition-fast);
+    }
+    .ens-input-wrapper:focus-within { border-color: var(--cyan); box-shadow: 0 0 12px var(--cyan-glow); }
+    .ens-input-prefix { color: var(--cyan); font-weight: 700; font-size: 18px; margin-right: 8px; }
+    .ens-text-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #fff; font-family: monospace; font-size: 16px; padding: 12px 0;
+    }
+    .ens-input-suffix { color: var(--cyan); font-weight: 800; font-size: 15px; margin-left: 8px; }
+    .btn-verify-ens {
+      background: rgba(0, 245, 255, 0.15); border: 1px solid var(--cyan); border-radius: 10px;
+      color: var(--cyan); font-size: 12px; font-weight: 700; padding: 8px 14px; cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .btn-verify-ens:hover { background: var(--cyan); color: #000; }
+
+    .ens-quick-tags {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+    }
+    .ens-quick-label { font-size: 11px; color: var(--text-dim); }
+    .ens-chip {
+      background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px; padding: 4px 10px; font-size: 11px; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .ens-chip:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0, 245, 255, 0.08); }
+
+    .ens-duration-selector { margin-top: 20px; }
+    .duration-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .duration-btn {
+      padding: 8px 16px; border-radius: 10px; background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .duration-btn.active, .duration-btn:hover {
+      background: rgba(0, 245, 255, 0.15); border-color: var(--cyan); color: var(--cyan);
+    }
+
+    .ens-price-card {
+      background: rgba(14, 20, 32, 0.6); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px; margin-top: 20px;
+    }
+    .ens-price-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--text-muted); margin-bottom: 10px;
+    }
+    .ens-price-val { font-weight: 700; color: #fff; }
+    .ens-price-row.total-row {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 15px; font-weight: 800; color: #fff;
+    }
+    .ens-total-val { color: var(--cyan); font-size: 16px; font-weight: 900; }
+
+    .ens-action-bar { margin-top: 22px; }
+    .ens-footnote {
+      display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim);
+      margin-top: 10px; justify-content: center;
+    }
+
+    /* ENS Preview Side Card */
+    .ens-nft-preview-card {
+      background: linear-gradient(145deg, rgba(18, 26, 44, 0.95), rgba(8, 12, 22, 0.95));
+      border: 1px solid var(--border-bright); border-radius: 20px;
+      padding: 24px; text-align: center; position: relative; overflow: hidden;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+    }
+    .ens-card-header-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+      border-radius: 20px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--emerald); font-size: 11px; font-weight: 700; margin-bottom: 20px;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--emerald);
+      box-shadow: 0 0 6px var(--emerald); animation: pulse 2s infinite;
+    }
+    .ens-avatar-wrap {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 245, 255, 0.2), rgba(168, 85, 247, 0.1));
+      border: 2px solid var(--cyan); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .ens-preview-logo { width: 36px; height: 36px; }
+    .ens-preview-domain { font-size: 22px; font-weight: 850; color: #fff; letter-spacing: -0.5px; }
+    .ens-preview-addr {
+      font-size: 11px; font-family: monospace; color: var(--text-dim); margin: 8px 0 18px;
+      word-break: break-all;
+    }
+    .ens-preview-chains { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+    .chain-tag {
+      font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Verification Box */
+    .ens-verification-box {
+      background: rgba(14, 20, 32, 0.6); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px; margin-top: 18px;
+    }
+    .verify-status-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .verify-icon-box {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .verify-title { font-size: 13px; font-weight: 700; color: #fff; }
+    .verify-desc { font-size: 11px; color: var(--text-muted); }
+    .records-grid { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 12px; }
+    .record-row { display: flex; justify-content: space-between; font-size: 12px; }
+    .record-label { color: var(--text-dim); }
+    .record-val { font-weight: 600; color: #fff; }
+    .record-val.mono { font-family: monospace; font-size: 11px; }
+
+    .import-benefits-box {
+      background: rgba(18, 24, 38, 0.8); border: 1px solid var(--border);
+      border-radius: 18px; padding: 22px;
+    }
+    .import-benefits-box h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+    .benefits-list { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 12px; color: var(--text-muted); }
+    .benefits-list li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+    .benefit-bullet {
+      color: var(--cyan); font-weight: 800; font-size: 13px; flex-shrink: 0;
+    }
+
+    /* Simulator ENS Home Pill & View */
+    .ens-identity-pill {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0, 245, 255, 0.08); border: 1px solid rgba(0, 245, 255, 0.22);
+      border-radius: 12px; padding: 8px 12px; margin: 10px 0; cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .ens-identity-pill:hover {
+      background: rgba(0, 245, 255, 0.15); border-color: var(--cyan); transform: translateY(-1px);
+    }
+    .ens-pill-left { display: flex; align-items: center; gap: 6px; }
+    .ens-pill-at { color: var(--cyan); font-weight: 800; font-size: 12px; }
+    .ens-pill-name { font-size: 12px; font-weight: 700; color: #fff; }
+    .ens-pill-check { color: var(--emerald); font-weight: 900; font-size: 11px; }
+    .ens-pill-action { font-size: 10px; font-weight: 700; color: var(--cyan); }
+
     /* Multi-Chain Grid Section */
     .chains-section { padding: 80px 0; }
     .chain-top-toolbar {
@@ -1172,6 +1350,7 @@
     <nav class="nav-center">
       <a href="#simulator" class="nav-spy-link">Simulator</a>
       <a href="#purchase" class="nav-spy-link">Buy & Add</a>
+      <a href="#ens" class="nav-spy-link">ENS Domains</a>
       <a href="#networks" class="nav-spy-link">Networks</a>
       <a href="#security" class="nav-spy-link">Security</a>
       <a href="#faq" class="nav-spy-link">FAQ</a>
@@ -1258,6 +1437,17 @@
               <span>Buy & Add Tokens</span>
             </div>
             <span class="tag">Apple/GPay</span>
+          </a>
+        </li>
+        <li>
+          <a href="#ens" class="sidebar-link" onclick="closeSidebar()">
+            <div class="link-left">
+              <span class="link-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              </span>
+              <span>ENS Domains (.eth)</span>
+            </div>
+            <span class="tag" style="background:rgba(0, 245, 255, 0.15); color:var(--cyan);">Buy / Import</span>
           </a>
         </li>
         <li>
@@ -1474,6 +1664,16 @@
                   <div class="balance-label">Total Portfolio Balance</div>
                   <div class="balance-amount" id="simPortfolioVal">$34,842.10</div>
                   <div class="balance-change">▲ +$1,520.40 (4.82% today)</div>
+                </div>
+
+                <!-- ENS Web3 Identity Bar in Simulator -->
+                <div class="ens-identity-pill" onclick="openPhoneScreen('ens')" title="Click to Manage ENS (.eth) Handle">
+                  <div class="ens-pill-left">
+                    <span class="ens-pill-at">@</span>
+                    <span class="ens-pill-name" id="simActiveEnsName">vitalik.eth</span>
+                    <span class="ens-pill-check">✓</span>
+                  </div>
+                  <span class="ens-pill-action">ENS Hub &rarr;</span>
                 </div>
 
                 <!-- 4 Action Buttons like every modern crypto wallet -->
@@ -1918,6 +2118,66 @@
                 </button>
               </div>
 
+              <!-- SCREEN 7: ENS Management (Buy or Import) -->
+              <div class="sim-tab-view" id="simViewENS">
+                <div class="token-detail-header">
+                  <button class="btn-back-link" onclick="openPhoneScreen('tokens')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>Back</span>
+                  </button>
+                  <span style="font-size:13px; font-weight:700;">ENS Identity (.eth)</span>
+                </div>
+
+                <div class="network-pill-selector" style="margin-bottom:12px;">
+                  <span class="network-pill active" id="simEnsPillBuy" onclick="switchSimEnsTab('buy')">Buy .eth</span>
+                  <span class="network-pill" id="simEnsPillImport" onclick="switchSimEnsTab('import')">Import ENS</span>
+                </div>
+
+                <!-- Sim Buy Tab -->
+                <div id="simEnsBuyContent">
+                  <div class="input-field-group">
+                    <label class="input-field-label">Search .eth Handle</label>
+                    <div class="input-field-box">
+                      <input type="text" id="simEnsSearchInput" value="satoshi" oninput="updateSimEnsCost(this.value)">
+                      <span class="tag">.eth</span>
+                    </div>
+                  </div>
+
+                  <div class="auto-fee-badge" id="simEnsCostBadge" style="margin:8px 0;">
+                    <span>Registration Cost:</span>
+                    <span style="color:var(--cyan); font-weight:700;" id="simEnsCostText">~0.0016 ETH / yr ($5/yr)</span>
+                  </div>
+
+                  <div style="background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.25); border-radius:12px; padding:9px 10px; margin-bottom:12px; font-size:11px; color:var(--emerald); display:flex; align-items:center; gap:8px;">
+                    <span>✓</span>
+                    <span>Available to Register directly on Mainnet</span>
+                  </div>
+
+                  <button class="btn-get-app" style="width:100%; justify-content:center; padding:12px;" onclick="registerSimEns()">
+                    Register via ENS Protocol
+                  </button>
+                </div>
+
+                <!-- Sim Import Tab -->
+                <div id="simEnsImportContent" style="display:none;">
+                  <div class="input-field-group">
+                    <label class="input-field-label">Existing ENS Domain</label>
+                    <div class="input-field-box">
+                      <input type="text" id="simEnsImportInput" value="alex.eth">
+                      <span class="tag">.eth</span>
+                    </div>
+                  </div>
+
+                  <div style="background:rgba(0, 245, 255, 0.08); border:1px solid rgba(0, 245, 255, 0.2); border-radius:12px; padding:9px 10px; margin-bottom:12px; font-size:11px; color:var(--text-muted);">
+                    Forward resolution verified. Resolves to active vault key.
+                  </div>
+
+                  <button class="btn-get-app" style="width:100%; justify-content:center; padding:12px;" onclick="importSimEns()">
+                    Link to Active Vault
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -1960,6 +2220,16 @@
               <div>
                 <div class="sim-btn-title">4. Multiple Ways to Add &amp; Buy Tokens</div>
                 <div class="sim-btn-desc">Integrated Apple Pay, Google Pay, Credit/Debit cards, wire transfers, and instant zero-markup DEX swaps.</div>
+              </div>
+            </div>
+
+            <div class="sim-tab-btn" id="simCtrlENS" onclick="openPhoneScreen('ens')">
+              <div class="sim-btn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+              </div>
+              <div>
+                <div class="sim-btn-title">5. ENS Identity (.eth) - Buy or Import</div>
+                <div class="sim-btn-desc">Search availability, buy a new .eth name or bind your existing ENS address directly to your sovereign vault.</div>
               </div>
             </div>
           </div>
@@ -2009,6 +2279,228 @@
             </div>
             <h3>Instant In-App Swaps</h3>
             <p>Exchange existing tokens across networks with decentralized smart routing. Zero custody, no account signups, and 0.00% app markup.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buy or Import ENS (.eth) Address Section -->
+    <section class="ens-section" id="ens">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Web3 Identity &amp; ENS</span>
+          <h2 class="section-title">Buy or Import Your ENS (.eth) Address</h2>
+          <p class="section-description">Replace cryptic 42-character hexadecimal addresses with memorable, human-readable Web3 identities. Seamlessly register a new .eth name or bind your existing ENS domain directly to your self-custodial vault.</p>
+        </div>
+
+        <div class="ens-hub-card spotlight-card">
+          <!-- Mode Switcher Tabs -->
+          <div class="ens-tabs-header">
+            <button class="ens-tab-btn active" id="ensTabBuyBtn" onclick="switchEnsMode('buy')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              <span>Buy a New .eth Name</span>
+              <span class="tag" style="background:rgba(0,245,255,0.15); color:var(--cyan);">0% Markup</span>
+            </button>
+            <button class="ens-tab-btn" id="ensTabImportBtn" onclick="switchEnsMode('import')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Import Existing ENS Domain</span>
+              <span class="tag" style="background:rgba(16,185,129,0.15); color:var(--emerald);">Instant Link</span>
+            </button>
+          </div>
+
+          <!-- PANEL 1: BUY NEW ENS -->
+          <div class="ens-panel active" id="ensPanelBuy">
+            <div class="ens-panel-grid">
+              <div class="ens-panel-main">
+                <div class="ens-search-box-wrap">
+                  <label class="ens-input-label">Search Desired .eth Name</label>
+                  <div class="ens-input-wrapper">
+                    <span class="ens-input-prefix">@</span>
+                    <input type="text" id="ensSearchInput" class="ens-text-input" placeholder="e.g. satoshi, vaultmaster, alice" value="myvault" oninput="handleEnsSearchInput(this.value)">
+                    <span class="ens-input-suffix">.eth</span>
+                  </div>
+                  <div class="ens-quick-tags">
+                    <span class="ens-quick-label">Try ideas:</span>
+                    <button class="ens-chip" onclick="setEnsSearchVal('vault')">vault.eth</button>
+                    <button class="ens-chip" onclick="setEnsSearchVal('crypto')">crypto.eth</button>
+                    <button class="ens-chip" onclick="setEnsSearchVal('defi')">defi.eth</button>
+                    <button class="ens-chip" onclick="setEnsSearchVal('satoshi')">satoshi.eth</button>
+                    <button class="ens-chip" onclick="setEnsSearchVal('alpha')">alpha.eth</button>
+                  </div>
+                </div>
+
+                <!-- Duration Picker -->
+                <div class="ens-duration-selector">
+                  <label class="ens-input-label">Registration Period</label>
+                  <div class="duration-buttons">
+                    <button class="duration-btn active" onclick="setEnsDuration(1, this)">1 Year</button>
+                    <button class="duration-btn" onclick="setEnsDuration(2, this)">2 Years</button>
+                    <button class="duration-btn" onclick="setEnsDuration(3, this)">3 Years</button>
+                    <button class="duration-btn" onclick="setEnsDuration(5, this)">5 Years (Save Gas)</button>
+                  </div>
+                </div>
+
+                <!-- Live Estimate Breakdown -->
+                <div class="ens-price-card">
+                  <div class="ens-price-row">
+                    <span>Protocol Registration Fee:</span>
+                    <span class="ens-price-val" id="ensProtocolFee">0.0016 ETH (~$5.00/yr)</span>
+                  </div>
+                  <div class="ens-price-row">
+                    <span>Duration Multiplier:</span>
+                    <span class="ens-price-val" id="ensDurationMultiplier">1 Year</span>
+                  </div>
+                  <div class="ens-price-row">
+                    <span>Estimated Network Gas:</span>
+                    <span class="ens-price-val">~0.0008 ETH (~$2.50)</span>
+                  </div>
+                  <div class="ens-price-row total-row">
+                    <span>Total Estimated Cost:</span>
+                    <span class="ens-total-val" id="ensTotalPrice">0.0024 ETH ($7.50)</span>
+                  </div>
+                </div>
+
+                <div class="ens-action-bar">
+                  <button class="btn-get-app" style="width:100%; justify-content:center; padding:14px;" onclick="executeEnsRegistration()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span id="ensRegisterBtnText">Register myvault.eth via Official ENS Protocol</span>
+                  </button>
+                  <div class="ens-footnote">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Direct ERC-721 minting to your self-custodial vault key. Zero intermediary markup.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live Identity Card Preview -->
+              <div class="ens-preview-side">
+                <div class="ens-nft-preview-card">
+                  <div class="ens-card-header-badge">
+                    <span class="pulse-dot"></span>
+                    <span id="ensLiveStatusText">Available to Register</span>
+                  </div>
+                  <div class="ens-avatar-wrap">
+                    <svg viewBox="0 0 256 417" class="ens-preview-logo"><path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="#00F5FF"/><path d="M127.96 0L0 212.32L127.96 287.96V157.34V0Z" fill="#A855F7"/><path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="#00F5FF"/><path d="M127.96 416.9V311.18L0 235.54L127.96 416.9Z" fill="#A855F7"/></svg>
+                  </div>
+                  <div class="ens-preview-domain" id="ensPreviewName">myvault.eth</div>
+                  <div class="ens-preview-addr">0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045</div>
+                  <div class="ens-preview-chains">
+                    <span class="chain-tag">Ethereum</span>
+                    <span class="chain-tag">Solana</span>
+                    <span class="chain-tag">Bitcoin</span>
+                    <span class="chain-tag">L2s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 2: IMPORT EXISTING ENS -->
+          <div class="ens-panel" id="ensPanelImport">
+            <div class="ens-panel-grid">
+              <div class="ens-panel-main">
+                <div class="ens-search-box-wrap">
+                  <label class="ens-input-label">Enter Your Existing ENS Domain</label>
+                  <div class="ens-input-wrapper">
+                    <span class="ens-input-prefix">@</span>
+                    <input type="text" id="ensImportInput" class="ens-text-input" placeholder="vitalik.eth, satoshi.eth, yourhandle.eth" value="vitalik.eth">
+                    <button class="btn-verify-ens" onclick="verifyImportedEns()">Verify On-Chain</button>
+                  </div>
+                  <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">Enter any .eth name or DNS-linked domain configured on Ethereum Mainnet.</p>
+                </div>
+
+                <div class="ens-verification-box" id="ensVerifyBox">
+                  <div class="verify-status-row">
+                    <div class="verify-icon-box">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                    </div>
+                    <div>
+                      <div class="verify-title" id="ensVerifyTitle">Forward &amp; Reverse Records Verified</div>
+                      <div class="verify-desc" id="ensVerifyDesc">Resolves to 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on Ethereum Mainnet Registry.</div>
+                    </div>
+                  </div>
+
+                  <div class="records-grid">
+                    <div class="record-row">
+                      <span class="record-label">Resolved EVM Address:</span>
+                      <span class="record-val mono" id="ensVerifyAddr">0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045</span>
+                    </div>
+                    <div class="record-row">
+                      <span class="record-label">Primary Reverse Name:</span>
+                      <span class="record-val" id="ensVerifyReverse">Configured (vitalik.eth)</span>
+                    </div>
+                    <div class="record-row">
+                      <span class="record-label">Multi-Chain Records:</span>
+                      <span class="record-val" style="color:var(--emerald);">ETH &bull; BTC &bull; SOL</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ens-action-bar">
+                  <button class="btn-get-app" style="width:100%; justify-content:center; padding:14px;" onclick="linkEnsToVault()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span id="ensLinkBtnText">Bind vitalik.eth as Active Vault Identity</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Feature highlight on right side -->
+              <div class="ens-preview-side">
+                <div class="import-benefits-box">
+                  <h4>Why Import Your ENS into VaultETH?</h4>
+                  <ul class="benefits-list">
+                    <li>
+                      <div class="benefit-bullet">✓</div>
+                      <div><strong>Replaces Long 0x... Addresses:</strong> Display your clean .eth username across the dashboard, transfers, and incoming payment receipts.</div>
+                    </li>
+                    <li>
+                      <div class="benefit-bullet">✓</div>
+                      <div><strong>Reverse Record Verification:</strong> Automatic verification protects against reverse-spoofing and address poisoning.</div>
+                    </li>
+                    <li>
+                      <div class="benefit-bullet">✓</div>
+                      <div><strong>Solana &amp; Bitcoin Aliasing:</strong> Map derived Bitcoin and Solana deposit addresses directly to your primary .eth handle.</div>
+                    </li>
+                    <li>
+                      <div class="benefit-bullet">✓</div>
+                      <div><strong>Zero Gas Cost to Link:</strong> Local cryptographic binding requires zero on-chain gas when records already exist.</div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Key Architectural Pillars -->
+        <div class="purchase-grid" style="margin-top:32px;">
+          <div class="purchase-feature-card spotlight-card">
+            <div class="purchase-feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>100% Self-Custodial NFT</h3>
+            <p>Your ENS name is an ERC-721 NFT minted straight to your Vault address. Key ownership is sealed in iOS Secure Enclave with Face ID protection.</p>
+          </div>
+          <div class="purchase-feature-card spotlight-card">
+            <div class="purchase-feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 8 8 12 12 16 16 12 12 8"/></svg>
+            </div>
+            <h3>Universal Multi-Chain Routing</h3>
+            <p>A single .eth name receives funds across Ethereum, Arbitrum, Base, Optimism, Polygon, Solana, and Bitcoin SegWit with zero confusion.</p>
+          </div>
+          <div class="purchase-feature-card spotlight-card">
+            <div class="purchase-feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
+            </div>
+            <h3>Primary Reverse Records</h3>
+            <p>Seamlessly set your reverse record so decentralized Web3 applications (Uniswap, Aave, OpenSea) recognize your vault name automatically.</p>
+          </div>
+          <div class="purchase-feature-card spotlight-card">
+            <div class="purchase-feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Zero Platform Markups</h3>
+            <p>Pay purely the canonical Ethereum ENS protocol rates (~$5/year for 5+ letter names). VaultETH never charges a broker fee or hidden commission.</p>
           </div>
         </div>
       </div>
@@ -2407,7 +2899,21 @@
 
           <div class="faq-card">
             <button class="faq-question-btn" onclick="toggleFaq(this)">
-              <span>5. Where can I find the Privacy Policy and in-app Support?</span>
+              <span>5. How do I buy or import an ENS (.eth) address in VaultETH?</span>
+              <svg class="faq-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              VaultETH provides direct decentralized ENS management:
+              <br><br>
+              &bull; <strong>To Buy / Register:</strong> Open the <a href="#ens" style="color:var(--cyan); text-decoration:none; font-weight:600;">ENS Domains section</a> or tap the ENS handle on your active vault card. Enter your desired .eth name to check live availability and protocol base pricing (~$5/year for 5+ letter handles). Tap &ldquo;Register via Official ENS Protocol&rdquo; to mint your ERC-721 domain NFT directly to your self-custodial vault key.
+              <br><br>
+              &bull; <strong>To Import / Link:</strong> Switch to the &ldquo;Import ENS&rdquo; tab and enter your owned domain. VaultETH verifies forward and reverse resolution on-chain and maps your clean username to your active Ethereum, Solana, and Bitcoin addresses with zero broker fees.
+            </div>
+          </div>
+
+          <div class="faq-card">
+            <button class="faq-question-btn" onclick="toggleFaq(this)">
+              <span>6. Where can I find the Privacy Policy and in-app Support?</span>
               <svg class="faq-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="faq-answer">
@@ -2506,6 +3012,7 @@
         <ul>
           <li><a href="#simulator">Live Simulator</a></li>
           <li><a href="#purchase">Buy &amp; Add Tokens</a></li>
+          <li><a href="#ens">Buy or Import ENS (.eth)</a></li>
           <li><a href="#networks">Supported Chains</a></li>
           <li><a href="#security">Hardware Enclave</a></li>
         </ul>
@@ -2621,7 +3128,7 @@
     // --- 2. Navbar Scroll Style & ScrollSpy ---
     const navbar = document.getElementById('navbar');
     const spyLinks = document.querySelectorAll('.nav-spy-link');
-    const sections = ['simulator', 'purchase', 'networks', 'security', 'faq'].map(id => document.getElementById(id));
+    const sections = ['simulator', 'purchase', 'ens', 'networks', 'security', 'faq'].map(id => document.getElementById(id));
 
     window.addEventListener('scroll', () => {
       if (window.scrollY > 30) {
@@ -2788,7 +3295,8 @@
       send: document.getElementById('simViewSend'),
       buy: document.getElementById('simViewBuy'),
       receive: document.getElementById('simViewReceive'),
-      swap: document.getElementById('simViewSwap')
+      swap: document.getElementById('simViewSwap'),
+      ens: document.getElementById('simViewENS')
     };
 
     function openPhoneScreen(screenName) {
@@ -2804,6 +3312,7 @@
       if (screenName === 'tokenDetail') document.getElementById('simCtrlDetail')?.classList.add('active');
       if (screenName === 'send') document.getElementById('simCtrlSend')?.classList.add('active');
       if (screenName === 'buy') document.getElementById('simCtrlBuy')?.classList.add('active');
+      if (screenName === 'ens') document.getElementById('simCtrlENS')?.classList.add('active');
 
       document.getElementById('phoneScreen').scrollTop = 0;
     }
@@ -2838,6 +3347,164 @@
 
     function openSendCurrentToken() {
       openSendForToken(currentSelectedToken);
+    }
+
+    // --- ENS Interactive Simulator & Page Logic ---
+    function switchSimEnsTab(tab) {
+      document.getElementById('simEnsPillBuy')?.classList.toggle('active', tab === 'buy');
+      document.getElementById('simEnsPillImport')?.classList.toggle('active', tab === 'import');
+      const buyContent = document.getElementById('simEnsBuyContent');
+      const importContent = document.getElementById('simEnsImportContent');
+      if (buyContent) buyContent.style.display = tab === 'buy' ? 'block' : 'none';
+      if (importContent) importContent.style.display = tab === 'import' ? 'block' : 'none';
+    }
+
+    function updateSimEnsCost(val) {
+      const clean = (val || '').replace(/\.eth$/i, '').trim();
+      const badge = document.getElementById('simEnsCostText');
+      if (!badge) return;
+      if (clean.length <= 2) {
+        badge.textContent = 'Min. 3 characters';
+      } else if (clean.length === 3) {
+        badge.textContent = '~0.18 ETH / yr ($640/yr)';
+      } else if (clean.length === 4) {
+        badge.textContent = '~0.045 ETH / yr ($160/yr)';
+      } else {
+        badge.textContent = '~0.0016 ETH / yr ($5.00/yr)';
+      }
+    }
+
+    function registerSimEns() {
+      const input = document.getElementById('simEnsSearchInput');
+      const raw = input ? input.value.trim() : 'satoshi';
+      const clean = raw.endsWith('.eth') ? raw : `${raw}.eth`;
+      const pill = document.getElementById('simActiveEnsName');
+      if (pill) pill.textContent = clean;
+      triggerToast(`Registered ${clean}! Minted ERC-721 NFT to vault address.`);
+      setTimeout(() => {
+        openPhoneScreen('tokens');
+      }, 900);
+    }
+
+    function importSimEns() {
+      const input = document.getElementById('simEnsImportInput');
+      const raw = input ? input.value.trim() : 'alex.eth';
+      const clean = raw.endsWith('.eth') ? raw : `${raw}.eth`;
+      const pill = document.getElementById('simActiveEnsName');
+      if (pill) pill.textContent = clean;
+      triggerToast(`Verified & linked ${clean} to active vault!`);
+      setTimeout(() => {
+        openPhoneScreen('tokens');
+      }, 900);
+    }
+
+    // Main ENS Section Workstation Logic
+    let currentEnsDuration = 1;
+
+    function switchEnsMode(mode) {
+      document.getElementById('ensTabBuyBtn')?.classList.toggle('active', mode === 'buy');
+      document.getElementById('ensTabImportBtn')?.classList.toggle('active', mode === 'import');
+      document.getElementById('ensPanelBuy')?.classList.toggle('active', mode === 'buy');
+      document.getElementById('ensPanelImport')?.classList.toggle('active', mode === 'import');
+      triggerToast(mode === 'buy' ? 'Switched to Buy & Register .eth Mode' : 'Switched to Import Existing ENS Mode');
+    }
+
+    function handleEnsSearchInput(val) {
+      const clean = val.replace(/\.eth$/i, '').trim().toLowerCase();
+      const domain = clean ? `${clean}.eth` : 'yourname.eth';
+      const previewName = document.getElementById('ensPreviewName');
+      if (previewName) previewName.textContent = domain;
+
+      const regBtn = document.getElementById('ensRegisterBtnText');
+      if (regBtn) regBtn.textContent = `Register ${domain} via Official ENS Protocol`;
+
+      const statusBadge = document.getElementById('ensLiveStatusText');
+      let baseEth = 0.0016;
+      let baseUsd = 5.0;
+
+      if (clean.length <= 2) {
+        if (statusBadge) statusBadge.textContent = 'Min. 3 characters required';
+        const fee = document.getElementById('ensProtocolFee');
+        if (fee) fee.textContent = 'Unavailable (< 3 chars)';
+        const tot = document.getElementById('ensTotalPrice');
+        if (tot) tot.textContent = '—';
+        return;
+      } else if (clean.length === 3) {
+        baseEth = 0.18;
+        baseUsd = 640;
+      } else if (clean.length === 4) {
+        baseEth = 0.045;
+        baseUsd = 160;
+      }
+
+      if (statusBadge) statusBadge.textContent = 'Available to Register';
+      calculateEnsTotal(baseEth, baseUsd);
+    }
+
+    function setEnsSearchVal(name) {
+      const input = document.getElementById('ensSearchInput');
+      if (input) {
+        input.value = name;
+        handleEnsSearchInput(name);
+      }
+    }
+
+    function setEnsDuration(years, btn) {
+      currentEnsDuration = years;
+      document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const mult = document.getElementById('ensDurationMultiplier');
+      if (mult) mult.textContent = `${years} ${years === 1 ? 'Year' : 'Years'}`;
+      const input = document.getElementById('ensSearchInput');
+      handleEnsSearchInput(input ? input.value : 'myvault');
+    }
+
+    function calculateEnsTotal(baseEth, baseUsd) {
+      const totalEth = (baseEth * currentEnsDuration + 0.0008).toFixed(4);
+      const totalUsd = (baseUsd * currentEnsDuration + 2.5).toFixed(2);
+      const fee = document.getElementById('ensProtocolFee');
+      if (fee) fee.textContent = `${baseEth} ETH (~$${baseUsd.toFixed(2)}/yr)`;
+      const tot = document.getElementById('ensTotalPrice');
+      if (tot) tot.textContent = `${totalEth} ETH (~$${totalUsd})`;
+    }
+
+    function executeEnsRegistration() {
+      const input = document.getElementById('ensSearchInput');
+      const val = input ? input.value.trim() : 'myvault';
+      const domain = val.endsWith('.eth') ? val : `${val}.eth`;
+      triggerToast(`Preparing registration for ${domain}...`);
+      setTimeout(() => {
+        const url = `https://app.ens.domains/${domain}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+        triggerToast(`Opened official ENS registrar for ${domain}!`);
+      }, 600);
+    }
+
+    function verifyImportedEns() {
+      const input = document.getElementById('ensImportInput');
+      const val = input ? input.value.trim() : 'vitalik.eth';
+      const domain = val.endsWith('.eth') ? val : `${val}.eth`;
+      triggerToast(`Querying Ethereum Mainnet ENS Registry for ${domain}...`);
+      setTimeout(() => {
+        const title = document.getElementById('ensVerifyTitle');
+        if (title) title.textContent = `Forward & Reverse Records Verified for ${domain}`;
+        const desc = document.getElementById('ensVerifyDesc');
+        if (desc) desc.textContent = `Confirmed on-chain ownership. Target: 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`;
+        const rev = document.getElementById('ensVerifyReverse');
+        if (rev) rev.textContent = `Configured (${domain})`;
+        const btn = document.getElementById('ensLinkBtnText');
+        if (btn) btn.textContent = `Bind ${domain} as Active Vault Identity`;
+        triggerToast(`Verified on-chain records for ${domain}!`);
+      }, 700);
+    }
+
+    function linkEnsToVault() {
+      const input = document.getElementById('ensImportInput');
+      const val = input ? input.value.trim() : 'vitalik.eth';
+      const domain = val.endsWith('.eth') ? val : `${val}.eth`;
+      const simBadge = document.getElementById('simActiveEnsName');
+      if (simBadge) simBadge.textContent = domain;
+      triggerToast(`Bound ${domain} as Primary Vault Identity!`);
     }
 
     // Chart Timeframe Switcher

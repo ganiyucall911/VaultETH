@@ -148,6 +148,18 @@
       "created_at": "2026-10-09T17:14:23.741Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "7b11a15a-8668-4a25-90ef-4ffe23945faf",
+      "role": "user",
+      "content": "I want to add a section to buy a ens address or import ens address",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-09T17:30:08.014Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }

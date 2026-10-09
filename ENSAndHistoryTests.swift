@@ -82,4 +82,40 @@ final class ENSAndHistoryTests: XCTestCase {
         // Chain ID data serialization check
         XCTAssertEqual(BlockchainNetwork.ethereum.chainIDData, Data([1]))
     }
+
+    func testENSRegistrationHelpers() {
+        XCTAssertEqual(ENSResolver.normalizeENSName("alice"), "alice.eth")
+        XCTAssertEqual(ENSResolver.normalizeENSName("alice.eth"), "alice.eth")
+        XCTAssertEqual(ENSResolver.normalizeENSName("  BOB.ETH  "), "bob.eth")
+        XCTAssertEqual(ENSResolver.normalizeENSName(""), "")
+
+        let cost3 = ENSResolver.estimateAnnualCost(for: "abc")
+        XCTAssertEqual(cost3.eth, "~0.18 ETH / yr")
+        XCTAssertEqual(cost3.usd, "~$640 / yr")
+
+        let cost4 = ENSResolver.estimateAnnualCost(for: "abcd")
+        XCTAssertEqual(cost4.eth, "~0.045 ETH / yr")
+        XCTAssertEqual(cost4.usd, "~$160 / yr")
+
+        let cost5 = ENSResolver.estimateAnnualCost(for: "vaulteth")
+        XCTAssertEqual(cost5.eth, "~0.0016 ETH / yr")
+        XCTAssertEqual(cost5.usd, "~$5.00 / yr")
+
+        let url = ENSResolver.registrationURL(for: "vitalik")
+        XCTAssertEqual(url?.absoluteString, "https://app.ens.domains/vitalik.eth")
+    }
+
+    func testWalletAccountWithImportedENS() throws {
+        let account = WalletAccount(
+            id: UUID(),
+            name: "Primary Vault",
+            address: "0x9858EfFD232B4033E47d90003D41EC34EcaEda94",
+            backedUp: true,
+            importedENSName: "primary.eth"
+        )
+        let data = try JSONEncoder().encode(account)
+        let decoded = try JSONDecoder().decode(WalletAccount.self, from: data)
+        XCTAssertEqual(decoded.importedENSName, "primary.eth")
+        XCTAssertEqual(decoded.address, account.address)
+    }
 }

@@ -69,6 +69,7 @@ struct HomeView: View {
     @State private var showReceiveSheet = false
     @State private var showScanner = false
     @State private var showNetworkPicker = false
+    @State private var showENSManager = false
     @State private var copiedToast = false
 
     var body: some View {
@@ -149,6 +150,11 @@ struct HomeView: View {
                 showSendSheet = true
             }
         }
+        .sheet(isPresented: $showENSManager) {
+            if let account = store.selectedAccount {
+                ENSManagerView(account: account)
+            }
+        }
         .overlay(alignment: .bottom) {
             if copiedToast {
                 HStack(spacing: 8) {
@@ -226,15 +232,36 @@ struct HomeView: View {
                         }
                     }
 
-                    if let ens = store.selectedENSName, store.selectedNetwork.chainID == 1 {
-                        HStack(spacing: 4) {
-                            Text(ens)
-                                .font(.subheadline.bold())
-                                .foregroundStyle(Color.vaultCyan)
-                            Image(systemName: "checkmark.seal.fill")
-                                .font(.caption2)
-                                .foregroundStyle(Color.vaultCyan)
+                    if let ens = store.selectedENSName {
+                        Button {
+                            showENSManager = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(ens)
+                                    .font(.subheadline.bold())
+                                    .foregroundStyle(Color.vaultCyan)
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(Color.vaultCyan)
+                            }
                         }
+                        .buttonStyle(.plain)
+                    } else if store.selectedAccount != nil {
+                        Button {
+                            showENSManager = true
+                        } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: "at")
+                                    .font(.caption2)
+                                Text("Buy or Link ENS")
+                                    .font(.caption2.weight(.medium))
+                            }
+                            .foregroundStyle(Color.vaultCyan)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.vaultCyan.opacity(0.12), in: Capsule())
+                        }
+                        .buttonStyle(.plain)
                     }
 
                     if let addr = store.selectedAccount?.address {
@@ -760,6 +787,9 @@ struct ReceiveView: View {
 struct SettingsView: View {
     @EnvironmentObject private var store: WalletStore
     @State private var showNetworkPicker = false
+    @State private var showENSManager = false
+    @State private var showPrivacyPolicy = false
+    @State private var showSupportFAQ = false
 
     private var version: String {
         let v = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
@@ -796,6 +826,35 @@ struct SettingsView: View {
                     Task { await store.refreshBalance() }
                 } label: {
                     Label("Test RPC Latency & Sync", systemImage: "bolt.horizontal.circle")
+                }
+            }
+
+            Section("Web3 Domain Identity") {
+                Button {
+                    showENSManager = true
+                } label: {
+                    HStack {
+                        Image(systemName: "at")
+                            .foregroundStyle(Color.vaultCyan)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Buy or Import ENS (.eth)")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            if let ens = store.selectedENSName {
+                                Text("Linked: \(ens)")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.vaultCyan)
+                            } else {
+                                Text("Register a .eth name or bind existing ENS")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
 
@@ -853,6 +912,11 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .sheet(isPresented: $showNetworkPicker) {
             NavigationStack { NetworkPickerSheet() }
+        }
+        .sheet(isPresented: $showENSManager) {
+            if let account = store.selectedAccount {
+                ENSManagerView(account: account)
+            }
         }
         .sheet(isPresented: $showPrivacyPolicy) {
             NavigationStack { InAppPrivacyPolicySheet() }

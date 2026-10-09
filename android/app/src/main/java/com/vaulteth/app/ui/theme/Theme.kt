@@ -17,6 +17,7 @@ val VaultAmber = Color(0xFFFFB300)
 val VaultTextPrimary = Color(0xFFF1F5F9)
 val VaultTextSecondary = Color(0xFF94A3B8)
 val VaultTextMuted = Color(0xFF64748B)
+val VaultRose = Color(0xFFFF4D4F)
 
 private val DarkColorScheme = darkColorScheme(
     primary = VaultCyan,

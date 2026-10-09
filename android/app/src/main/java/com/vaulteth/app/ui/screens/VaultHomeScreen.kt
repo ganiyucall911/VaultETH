@@ -148,11 +148,24 @@ fun VaultHomeScreen(
                                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = VaultTextPrimary
                                         )
-                                        Text(
-                                            text = "${wallet.address.take(6)}...${wallet.address.takeLast(4)}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = VaultTextSecondary
-                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = "${wallet.address.take(6)}...${wallet.address.takeLast(4)}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = VaultTextSecondary
+                                            )
+                                            if (wallet.importedEnsName != null) {
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = "@${wallet.importedEnsName}",
+                                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                                    color = VaultCyan,
+                                                    modifier = Modifier
+                                                        .background(VaultCyan.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
 
@@ -197,7 +210,37 @@ fun VaultHomeScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Interactive ENS Identity Pill
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(if (wallet.importedEnsName != null) VaultCyan.copy(alpha = 0.12f) else VaultSurfaceVariant)
+                                    .border(
+                                        1.dp,
+                                        if (wallet.importedEnsName != null) VaultCyan.copy(alpha = 0.35f) else VaultBorder,
+                                        RoundedCornerShape(20.dp)
+                                    )
+                                    .clickable { onNavigateToWallets() }
+                                    .padding(horizontal = 12.dp, vertical = 5.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AlternateEmail,
+                                    contentDescription = "ENS",
+                                    tint = if (wallet.importedEnsName != null) VaultCyan else VaultTextMuted,
+                                    modifier = Modifier.size(13.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (wallet.importedEnsName != null) "@${wallet.importedEnsName}" else "Buy / Link ENS",
+                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = if (wallet.importedEnsName != null) VaultCyan else VaultTextSecondary
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(18.dp))
 
                             // Action Cockpit Buttons
                             Row(

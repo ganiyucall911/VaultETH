@@ -7,6 +7,7 @@ struct WalletsView: View {
     @State private var pendingRename: WalletAccount?
     @State private var draftName = ""
     @State private var viewingRecoveryPhraseFor: WalletAccount?
+    @State private var managingENSFor: WalletAccount?
 
     var body: some View {
         ScrollView {
@@ -36,6 +37,7 @@ struct WalletsView: View {
                         isSelected: account.id == store.selectedAccountID,
                         onSelect: { store.select(account) },
                         onShowPhrase: { viewingRecoveryPhraseFor = account },
+                        onManageENS: { managingENSFor = account },
                         onRename: {
                             draftName = account.name
                             pendingRename = account
@@ -64,6 +66,9 @@ struct WalletsView: View {
             NavigationStack {
                 RecoveryPhraseView(account: account)
             }
+        }
+        .sheet(item: $managingENSFor) { account in
+            ENSManagerView(account: account)
         }
         .confirmationDialog(
             "Delete this vault from this device?",
@@ -104,6 +109,7 @@ private struct VaultCardRow: View {
     let isSelected: Bool
     let onSelect: () -> Void
     let onShowPhrase: () -> Void
+    let onManageENS: () -> Void
     let onRename: () -> Void
     let onDelete: () -> Void
 
@@ -129,6 +135,17 @@ private struct VaultCardRow: View {
                             }
                         }
 
+                        if let ens = account.importedENSName {
+                            HStack(spacing: 4) {
+                                Text(ens)
+                                    .font(.caption.bold())
+                                    .foregroundStyle(Color.vaultCyan)
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(Color.vaultCyan)
+                            }
+                        }
+
                         Text(account.address)
                             .font(.caption.monospaced())
                             .foregroundStyle(.secondary)
@@ -139,6 +156,7 @@ private struct VaultCardRow: View {
                     Spacer()
 
                     Menu {
+                        Button("ENS Identity (.eth)", systemImage: "at", action: onManageENS)
                         Button("View Recovery Phrase", systemImage: "key.fill", action: onShowPhrase)
                         Button("Rename Vault", systemImage: "pencil", action: onRename)
                         Menu("Copy Address") {
@@ -191,9 +209,15 @@ private struct VaultCardRow: View {
 
                     Spacer()
 
-                    Text("All Blockchains")
-                        .font(.caption2.weight(.medium))
+                    Button(action: onManageENS) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "at")
+                                .font(.caption2)
+                            Text(account.importedENSName != nil ? "Manage ENS" : "Buy / Link ENS")
+                                .font(.caption2.weight(.medium))
+                        }
                         .foregroundStyle(Color.vaultCyan)
+                    }
                 }
             }
             .padding(18)

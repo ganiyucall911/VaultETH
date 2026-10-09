@@ -174,14 +174,16 @@ struct WalletAccount: Identifiable, Codable, Hashable, Sendable {
     var solanaAddress: String?   // Derived Solana address from same seed
     var bitcoinAddress: String?  // Derived Bitcoin SegWit (Bech32) address from same seed
     var backedUp: Bool
+    var importedENSName: String? // User-linked or imported ENS domain
 
-    init(id: UUID, name: String, address: String, solanaAddress: String? = nil, bitcoinAddress: String? = nil, backedUp: Bool) {
+    init(id: UUID, name: String, address: String, solanaAddress: String? = nil, bitcoinAddress: String? = nil, backedUp: Bool, importedENSName: String? = nil) {
         self.id = id
         self.name = name
         self.address = address
         self.solanaAddress = solanaAddress
         self.bitcoinAddress = bitcoinAddress
         self.backedUp = backedUp
+        self.importedENSName = importedENSName
     }
 }
 

@@ -109,13 +109,24 @@ final class WalletStore: ObservableObject {
     func markBackedUp(_ id: UUID) { update(id) { $0.backedUp = true } }
     func rename(_ account: WalletAccount, to name: String) { update(account.id) { $0.name = name } }
 
+    /// Sets or clears an imported/linked ENS domain for the given wallet account.
+    func setImportedENS(for id: UUID, ensName: String?) {
+        update(id) { $0.importedENSName = ensName }
+        if selectedAccountID == id {
+            selectedENSName = ensName
+            if ensName == nil && selectedNetwork.chainID == 1 {
+                Task { await refreshENS() }
+            }
+        }
+    }
+
     func select(_ account: WalletAccount) {
         selectedAccountID = account.id
         balanceETH = "—"
-        selectedENSName = nil
+        selectedENSName = account.importedENSName
         Task {
             await refreshBalance()
-            if selectedNetwork.chainID == 1 {
+            if selectedNetwork.chainID == 1 || account.importedENSName == nil {
                 await refreshENS()
             }
         }
@@ -127,7 +138,7 @@ final class WalletStore: ObservableObject {
         if selectedAccountID == account.id {
             selectedAccountID = accounts.first?.id
             balanceETH = "—"
-            selectedENSName = nil
+            selectedENSName = accounts.first?.importedENSName
         }
         persist()
     }
@@ -149,11 +160,16 @@ final class WalletStore: ObservableObject {
     }
 
     func refreshENS() async {
+        guard let account = selectedAccount else { selectedENSName = nil; return }
+        // If user explicitly imported/linked an ENS domain, prioritize it
+        if let imported = account.importedENSName, !imported.isEmpty {
+            selectedENSName = imported
+            return
+        }
         guard selectedNetwork.chainID == 1 else {
             selectedENSName = nil
             return
         }
-        guard let account = selectedAccount else { selectedENSName = nil; return }
         do {
             let ensRPC = EthereumRPC(network: .ethereum)
             let ens = try await ENSResolver.resolveAddress(account.address, rpc: ensRPC)

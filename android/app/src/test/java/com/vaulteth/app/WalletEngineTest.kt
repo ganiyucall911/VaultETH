@@ -54,4 +54,31 @@ class WalletEngineTest {
         val backToEth = WalletEngine.weiToEth(BigInteger("1500000000000000000"))
         assertEquals("1.5", backToEth)
     }
+
+    @Test
+    fun testENSUtilsAndWalletAccountWithENS() {
+        // Normalization
+        assertEquals("vitalik.eth", com.vaulteth.app.core.ENSUtils.normalizeENSName("vitalik"))
+        assertEquals("vitalik.eth", com.vaulteth.app.core.ENSUtils.normalizeENSName("@vitalik.eth"))
+        assertEquals("vitalik.eth", com.vaulteth.app.core.ENSUtils.normalizeENSName("VITALIK.ETH"))
+        assertEquals("sat.eth", com.vaulteth.app.core.ENSUtils.normalizeENSName("  sat  "))
+
+        // Annual Cost
+        assertEquals(0.18, com.vaulteth.app.core.ENSUtils.estimateAnnualCost("abc.eth"), 0.0001)
+        assertEquals(0.045, com.vaulteth.app.core.ENSUtils.estimateAnnualCost("abcd.eth"), 0.0001)
+        assertEquals(0.0016, com.vaulteth.app.core.ENSUtils.estimateAnnualCost("vitalik.eth"), 0.0001)
+        assertEquals(0.0, com.vaulteth.app.core.ENSUtils.estimateAnnualCost("ab.eth"), 0.0001)
+
+        // Registration URL
+        assertEquals("https://app.ens.domains/vitalik.eth", com.vaulteth.app.core.ENSUtils.registrationUrl("vitalik"))
+
+        // VaultWallet model with ENS
+        val wallet = com.vaulteth.app.core.VaultWallet(
+            name = "Test Vault",
+            address = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+            importedEnsName = "vitalik.eth"
+        )
+        assertEquals("vitalik.eth", wallet.importedEnsName)
+    }
 }
+

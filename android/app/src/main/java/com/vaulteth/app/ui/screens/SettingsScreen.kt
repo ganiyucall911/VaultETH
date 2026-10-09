@@ -133,6 +133,60 @@ fun SettingsScreen(
                 }
             }
 
+            // Section: Web3 Domain Identity
+            item {
+                Text(
+                    text = "WEB3 DOMAIN IDENTITY",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    color = VaultTextMuted
+                )
+            }
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().border(1.dp, VaultBorder, RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(containerColor = VaultSurface)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text("ENS Domain (.eth)", fontWeight = FontWeight.SemiBold, color = VaultTextPrimary)
+                                Text("Decentralized human-readable name", style = MaterialTheme.typography.bodySmall, color = VaultTextSecondary)
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://app.ens.domains"))
+                                    context.startActivity(intent)
+                                },
+                                border = androidx.compose.foundation.BorderStroke(1.dp, VaultCyan.copy(alpha = 0.5f)),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("ENS App", color = VaultCyan, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
+                        HorizontalDivider(color = VaultBorder)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Resolution Protocol", color = VaultTextSecondary)
+                            Text("Direct On-Chain (EIP-137)", fontWeight = FontWeight.SemiBold, color = VaultEmerald)
+                        }
+                        HorizontalDivider(color = VaultBorder)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Vault Management", color = VaultTextSecondary)
+                            Text("Manage in Wallets Tab", fontWeight = FontWeight.SemiBold, color = VaultTextPrimary)
+                        }
+                    }
+                }
+            }
+
             // Section: Legal & Support
             item {
                 Text(

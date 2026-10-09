@@ -26,8 +26,46 @@ data class VaultWallet(
     val solanaAddress: String = "",
     val bitcoinAddress: String = "",
     val isBackedUp: Boolean = false,
+    val importedEnsName: String? = null,
     val createdAt: Long = System.currentTimeMillis()
 )
+
+object ENSUtils {
+    /**
+     * Normalizes an ENS domain string: trims whitespace, lowercases, strips leading '@', and appends '.eth' if omitted.
+     */
+    fun normalizeENSName(input: String): String {
+        var clean = input.trim().lowercase()
+        if (clean.startsWith("@")) clean = clean.substring(1)
+        if (!clean.endsWith(".eth")) clean += ".eth"
+        return clean
+    }
+
+    /**
+     * Estimates annual registration cost in ETH according to official ENS pricing tiers:
+     * - 3 characters: ~$640/yr (~0.18 ETH)
+     * - 4 characters: ~$160/yr (~0.045 ETH)
+     * - 5+ characters: ~$5/yr (~0.0016 ETH)
+     */
+    fun estimateAnnualCost(name: String): Double {
+        val baseName = name.removeSuffix(".eth").lowercase()
+        return when (baseName.length) {
+            0, 1, 2 -> 0.0
+            3 -> 0.18
+            4 -> 0.045
+            else -> 0.0016
+        }
+    }
+
+    /**
+     * Generates deep-link URL to official ENS Manager App.
+     */
+    fun registrationUrl(name: String): String {
+        val clean = normalizeENSName(name)
+        return "https://app.ens.domains/$clean"
+    }
+}
+
 
 data class PaymentURI(
     val recipient: String,
