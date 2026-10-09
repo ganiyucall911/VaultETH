@@ -88,6 +88,18 @@
       "created_at": "2026-10-09T16:30:12.965Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "fe34b809-444a-4aba-90b1-81ea78b3c635",
+      "role": "user",
+      "content": "1. Make the landing page more professional and interactive as perfect as possible and impossible. 2. Add the available on Apple devices and Available on Android devices icons in page. 3. Instead of having all buttons like support and privacy policy on page, a side bar is needed. Put the whole thing in order",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-09T16:52:12.909Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }

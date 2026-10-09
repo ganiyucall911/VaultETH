@@ -4,14 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support & FAQ | VaultETH by vault.</title>
+  <meta name="description" content="Support & FAQ for VaultETH: Self-custodial multi-chain wallet for iOS and Android.">
+  <link rel="icon" type="image/png" href="assets/app-icon.png">
   <style>
     :root {
-      --bg: #0A0D14;
-      --card: #121824;
-      --border: #1F293D;
+      --bg: #07090E;
+      --bg-card: rgba(14, 20, 32, 0.78);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(0, 245, 255, 0.35);
       --cyan: #00F5FF;
-      --text: #F1F5F9;
-      --muted: #94A3B8;
+      --cyan-glow: rgba(0, 245, 255, 0.28);
+      --violet: #8B5CF6;
+      --emerald: #10B981;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --glass-blur: blur(20px);
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -19,110 +30,344 @@
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.2;
+    }
+    .glow-cyan {
+      top: 5%;
+      left: 10%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, var(--cyan) 0%, transparent 70%);
+    }
+    .glow-violet {
+      bottom: 10%;
+      right: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--violet) 0%, transparent 70%);
+    }
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 72px;
+      z-index: 100;
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(16px, 4vw, 48px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand-logo-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.2), rgba(139, 92, 246, 0.2));
+      border: 1px solid var(--border-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+    .brand-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .brand-name { font-size: 19px; font-weight: 800; }
+    .brand-name span { color: var(--cyan); }
+    .brand-sub { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
+
+    .menu-toggle-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(18, 24, 38, 0.65);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .menu-toggle-btn:hover { border-color: var(--cyan); background: rgba(0, 245, 255, 0.1); }
+    .menu-bar { width: 20px; height: 2px; background-color: var(--text); border-radius: 2px; transition: all 0.3s; }
+    .menu-toggle-btn.active .menu-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); background-color: var(--cyan); }
+    .menu-toggle-btn.active .menu-bar:nth-child(2) { opacity: 0; }
+    .menu-toggle-btn.active .menu-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background-color: var(--cyan); }
+
+    /* Sidebar Drawer */
+    .sidebar-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.68);
+      backdrop-filter: blur(8px);
+      opacity: 0; visibility: hidden; transition: all 0.35s ease; z-index: 998;
+    }
+    .sidebar-overlay.open { opacity: 1; visibility: visible; }
+    .sidebar-drawer {
+      position: fixed; top: 0; right: 0; width: min(380px, 86vw); height: 100%;
+      background: rgba(10, 14, 23, 0.96);
+      backdrop-filter: var(--glass-blur);
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: -12px 0 48px rgba(0, 0, 0, 0.7);
+      transform: translateX(100%);
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+      display: flex; flex-direction: column; padding: 24px; overflow-y: auto;
+    }
+    .sidebar-drawer.open { transform: translateX(0); }
+    .sidebar-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+    }
+    .sidebar-close-btn {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border); color: var(--text-muted); cursor: pointer;
+    }
+    .sidebar-link {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-radius: var(--radius-md); color: var(--text);
+      text-decoration: none; font-size: 14px; font-weight: 600; transition: all var(--transition-fast);
+      margin-bottom: 6px;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(0, 245, 255, 0.08); color: var(--cyan); border: 1px solid rgba(0, 245, 255, 0.25);
+    }
+
+    /* Content */
     .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 60px 20px 80px;
+      max-width: 840px;
+      margin: 110px auto 60px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 10;
+      flex: 1;
     }
-    .back {
-      display: inline-block;
-      margin-bottom: 24px;
+    .back-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       color: var(--cyan);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding: 6px 14px;
+      background: rgba(0, 245, 255, 0.08);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      transition: all var(--transition-fast);
+    }
+    .back-nav:hover {
+      background: rgba(0, 245, 255, 0.16);
+      transform: translateX(-3px);
     }
     h1 {
-      font-size: 36px;
-      font-weight: 800;
-      margin-bottom: 8px;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 850;
+      letter-spacing: -1.2px;
+      margin-bottom: 10px;
     }
     .meta {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 32px;
+      color: var(--text-muted);
+      font-size: 13px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
     }
-    .faq-item {
-      background: var(--card);
+    .faq-block {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: var(--radius-md);
       padding: 24px;
       margin-bottom: 18px;
+      transition: border-color var(--transition-fast);
     }
-    .faq-item h3 {
+    .faq-block:hover {
+      border-color: rgba(0, 245, 255, 0.25);
+    }
+    .faq-block h3 {
       font-size: 18px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .faq-item p {
-      color: var(--muted);
+    .faq-block h3 span.num {
+      color: var(--cyan);
+      font-size: 14px;
+    }
+    .faq-block p {
+      color: var(--text-muted);
       font-size: 15px;
-      margin: 0;
+      line-height: 1.6;
     }
-    .notice {
-      border: 1px solid rgba(0, 245, 255, 0.3);
-      background: rgba(0, 245, 255, 0.05);
-      border-radius: 16px;
+    .notice-card {
+      border: 1px solid var(--border-bright);
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(139, 92, 246, 0.08));
+      border-radius: var(--radius-lg);
       padding: 24px;
       margin-top: 36px;
     }
-    .notice h3 {
+    .notice-card h3 {
       color: var(--cyan);
       font-size: 18px;
       margin-bottom: 8px;
     }
-    .notice p {
-      color: var(--muted);
+    .notice-card p {
+      color: var(--text-muted);
       font-size: 14px;
-      margin: 0;
     }
     footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 40px 20px;
       border-top: 1px solid var(--border);
+      background: rgba(5, 7, 12, 0.95);
+      padding: 30px 20px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+      position: relative;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a href="index.html" class="back">&larr; Back to VaultETH</a>
-    <h1>Support & Assistance</h1>
-    <div class="meta">Developer: vault. &bull; Self-Custody Multi-Chain Wallet</div>
+  <div class="ambient-glow glow-cyan"></div>
+  <div class="ambient-glow glow-violet"></div>
 
-    <div class="faq-item">
-      <h3>1. What does non-custodial mean?</h3>
-      <p>Non-custodial means you, and only you, own and control the cryptographic keys to your wallet. VaultETH never has access to your funds, private keys, or recovery phrase.</p>
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="index.html" class="brand">
+      <div class="brand-logo-wrap">
+        <img src="assets/app-icon.png" alt="VaultETH" onerror="this.style.display='none';">
+      </div>
+      <div>
+        <div class="brand-name">Vault<span>ETH</span></div>
+        <div class="brand-sub">by vault.</div>
+      </div>
+    </a>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="index.html" style="color:var(--text-muted); text-decoration:none; font-size:14px; font-weight:600;">Home</a>
+      <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="Toggle navigation">
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay & Drawer -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar-drawer" id="sidebarDrawer">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-name">Vault<span style="color:var(--cyan)">ETH</span></div>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn">✕</button>
+    </div>
+    <div style="margin-bottom:20px;">
+      <a href="index.html" class="sidebar-link">⌂ Home &amp; Overview</a>
+      <a href="index.html#simulator" class="sidebar-link">📱 Interactive Simulator</a>
+      <a href="index.html#networks" class="sidebar-link">🌐 12+ Blockchains</a>
+      <a href="index.html#security" class="sidebar-link">🛡️ Security Specifications</a>
+      <a href="index.html#download" class="sidebar-link">⬇️ Download on Apple &amp; Android</a>
+    </div>
+    <div style="border-top:1px solid var(--border); padding-top:16px;">
+      <a href="privacy.html" class="sidebar-link">📜 Privacy Policy</a>
+      <a href="support.html" class="sidebar-link active">💬 Support &amp; FAQ</a>
+      <a href="https://github.com/ganiyucall911/VaultETH" target="_blank" rel="noopener noreferrer" class="sidebar-link">🐙 GitHub Source Code</a>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <main class="container">
+    <a href="index.html" class="back-nav">&larr; Return to VaultETH Home</a>
+    <h1>Support &amp; FAQ</h1>
+    <div class="meta">
+      <span>Developer: <strong>vault.</strong></span>
+      <span>Self-Custodial Architecture</span>
+      <span>iOS &bull; Android</span>
     </div>
 
-    <div class="faq-item">
-      <h3>2. Can you recover my wallet if I lose my 12-word recovery phrase?</h3>
-      <p><strong>No.</strong> Your recovery phrase is generated directly on your device and stored in the hardware-backed Secure Enclave and Keystore. It is never sent to any server. If you lose your recovery phrase and delete the app, no one can restore your wallet. Always store your phrase safely offline.</p>
+    <div class="faq-block">
+      <h3><span class="num">01.</span> What does non-custodial and sovereign mean?</h3>
+      <p>Non-custodial means you, and strictly you, hold and control the cryptographic private keys to your wallet. VaultETH never has access to your assets, recovery phrase, or password. There are no corporate servers or custodial accounts.</p>
     </div>
 
-    <div class="faq-item">
-      <h3>3. Does VaultETH charge transaction fees?</h3>
-      <p>VaultETH charges <strong>zero</strong> platform fees. 100% of the network fee displayed during transactions is paid directly to blockchain network validators for transaction execution.</p>
+    <div class="faq-block">
+      <h3><span class="num">02.</span> Can vault. recover my funds if I lose my recovery phrase?</h3>
+      <p><strong>No.</strong> Your BIP-39 recovery phrase is generated directly on your device's hardware Secure Enclave or Android Keystore chip. It is never transmitted across the network. If you lose your phrase and delete the app, no one on Earth can recover it. Always write it down offline.</p>
     </div>
 
-    <div class="faq-item">
-      <h3>4. Why does VaultETH require Biometrics or Device Passcode?</h3>
-      <p>Face ID, Touch ID, or your device passcode is used by your device's hardware keystore to protect your recovery phrase from unauthorized access. Every key reveal or transfer authorization prompts for verification.</p>
+    <div class="faq-block">
+      <h3><span class="num">03.</span> Does VaultETH charge transaction fees or take swap cuts?</h3>
+      <p>VaultETH charges <strong>0% platform fees</strong>. 100% of the network gas fee displayed during transaction preparation is paid directly to blockchain validators for transaction confirmation.</p>
     </div>
 
-    <div class="notice">
-      <h3>In-App Support & Assistance</h3>
-      <p>VaultETH features a self-contained diagnostic and support center accessible directly inside the application under <strong>Settings &gt; Support &amp; FAQ</strong>.</p>
+    <div class="faq-block">
+      <h3><span class="num">04.</span> Why is biometric verification (Face ID / Keystore) prompted?</h3>
+      <p>Face ID, Touch ID, or your device passcode is enforced by your device's hardware keystore to safeguard your recovery phrase against unauthorized access. Every transaction signature or key reveal triggers hardware authorization.</p>
     </div>
-  </div>
+
+    <div class="faq-block">
+      <h3><span class="num">05.</span> Can I use custom RPC nodes or private nodes?</h3>
+      <p>Yes. VaultETH allows adding custom JSON-RPC URLs for any supported EVM network or testnet, providing full self-hosting and maximum redundancy.</p>
+    </div>
+
+    <div class="notice-card" id="security">
+      <h3>In-App Support &amp; Diagnostics</h3>
+      <p>VaultETH features a self-contained diagnostic and support suite directly inside the app under <strong>Settings &gt; Support &amp; FAQ</strong>. You can also inspect our open-source codebase on <a href="https://github.com/ganiyucall911/VaultETH" target="_blank" rel="noopener noreferrer" style="color:var(--cyan); font-weight:700;">GitHub</a>.</p>
+    </div>
+  </main>
 
   <footer>
-    &copy; 2026 vault. All rights reserved.
+    &copy; 2026 vault. All rights reserved. Sovereign self-custody.
   </footer>
+
+  <script>
+    const menuBtn = document.getElementById('menuToggleBtn');
+    const drawer = document.getElementById('sidebarDrawer');
+    const overlay = document.getElementById('sidebarOverlay');
+    const closeBtn = document.getElementById('sidebarCloseBtn');
+
+    function toggleMenu() {
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('open');
+      menuBtn.classList.toggle('active');
+    }
+    menuBtn.addEventListener('click', toggleMenu);
+    closeBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        menuBtn.classList.remove('active');
+      }
+    });
+  </script>
 </body>
 </html>
