@@ -6,5 +6,28 @@ xcuserdata/
 DerivedData/
 .DS_Store
 
+# Android & Gradle
+android/.gradle/
+android/app/build/
+android/build/
+*.apk
+*.aab
+
+# Private Keys, Certificates & Credentials (NEVER COMMIT)
+*.keystore
+*.jks
+*.p12
+*.cer
+*.key
+*.pem
+*.mobileprovision
+*.p8
+*.env
+*.env.*
+credentials.json
+google-services.json
+private/
+secrets/
+
 # Antigravity temporary artifacts
 .antigravity/scratch/
