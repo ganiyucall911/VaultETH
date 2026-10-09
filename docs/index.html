@@ -81,6 +81,7 @@
       width: 500px;
       height: 500px;
       background: radial-gradient(circle, var(--cyan) 0%, transparent 70%);
+      transition: background 0.4s ease;
     }
     .glow-violet {
       bottom: 20%;
@@ -165,6 +166,7 @@
     }
     .brand-name span.highlight {
       color: var(--cyan);
+      transition: color 0.3s;
     }
     .brand-sub {
       font-size: 11px;
@@ -179,7 +181,7 @@
       align-items: center;
       gap: 28px;
     }
-    @media (min-width: 900px) {
+    @media (min-width: 960px) {
       .nav-center { display: flex; }
     }
     .nav-center a {
@@ -189,15 +191,56 @@
       font-weight: 500;
       transition: color var(--transition-fast);
       position: relative;
+      padding: 4px 0;
     }
-    .nav-center a:hover {
+    .nav-center a:hover, .nav-center a.nav-active {
       color: var(--cyan);
+    }
+    .nav-center a.nav-active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--cyan);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--cyan);
     }
 
     .nav-right {
       display: flex;
       align-items: center;
       gap: 14px;
+    }
+
+    /* Accent Color Mini-Palette */
+    .theme-palette {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+    @media (min-width: 680px) {
+      .theme-palette { display: flex; }
+    }
+    .palette-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .palette-dot:hover {
+      transform: scale(1.25);
+    }
+    .palette-dot.active {
+      border-color: #fff;
+      transform: scale(1.15);
     }
 
     .btn-get-app {
@@ -336,7 +379,7 @@
     }
 
     .sidebar-section {
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
     .sidebar-title {
       font-size: 11px;
@@ -535,7 +578,7 @@
       border-color: var(--cyan);
       background: rgba(18, 27, 44, 0.95);
       transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(0, 245, 255, 0.22);
+      box-shadow: 0 10px 28px var(--cyan-glow);
     }
     .store-badge-btn::before {
       content: '';
@@ -608,6 +651,25 @@
       z-index: 10;
     }
 
+    /* Spotlight interactive card effect */
+    .spotlight-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .spotlight-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(350px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), var(--cyan-glow), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .spotlight-card:hover::before {
+      opacity: 1;
+    }
+
     /* Live Simulator Showcase Section */
     .simulator-section {
       padding: 40px 0 100px;
@@ -662,13 +724,14 @@
       border-radius: 50px;
       border: 4px solid #232B3E;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8),
-                  0 0 40px rgba(0, 245, 255, 0.15),
+                  0 0 40px var(--cyan-glow),
                   inset 0 0 12px rgba(255, 255, 255, 0.12);
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      transition: box-shadow 0.4s ease;
     }
 
     /* Dynamic Island */
@@ -881,15 +944,15 @@
     /* Biometrics Auth View */
     .biometrics-box {
       text-align: center;
-      padding: 24px 10px;
+      padding: 18px 10px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
     .faceid-ring {
-      width: 80px;
-      height: 80px;
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
       border: 2px dashed var(--cyan);
       display: flex;
@@ -916,6 +979,35 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--cyan);
+    }
+
+    /* Broadcast Receipt View Inside Phone */
+    .tx-receipt-card {
+      display: none;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 10px;
+      text-align: left;
+      font-size: 11px;
+    }
+    .tx-receipt-card.visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .tx-hash-mono {
+      font-family: monospace;
+      color: var(--emerald);
+      word-break: break-all;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    .tx-hash-mono:hover {
+      background: rgba(0, 0, 0, 0.5);
     }
 
     /* ENS Resolver View */
@@ -965,6 +1057,7 @@
       font-family: monospace;
       color: var(--emerald);
       word-break: break-all;
+      cursor: pointer;
     }
 
     /* Simulator Controls Sidebar (Desktop Right) */
@@ -994,7 +1087,7 @@
     .sim-tab-btn.active {
       border-color: var(--cyan);
       background: rgba(0, 245, 255, 0.08);
-      box-shadow: 0 0 24px rgba(0, 245, 255, 0.12);
+      box-shadow: 0 0 24px var(--cyan-glow);
     }
     .sim-btn-icon {
       width: 38px;
@@ -1027,12 +1120,18 @@
     .chains-section {
       padding: 80px 0;
     }
+    .chain-top-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
     .chain-filter-bar {
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 36px;
     }
     .chain-filter-btn {
       padding: 8px 18px;
@@ -1051,6 +1150,33 @@
       color: var(--cyan);
     }
 
+    .btn-ping-refresh {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .btn-ping-refresh:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 245, 255, 0.08);
+    }
+    .spin-icon {
+      display: inline-block;
+      transition: transform 0.6s ease;
+    }
+    .btn-ping-refresh.spinning .spin-icon {
+      transform: rotate(360deg);
+    }
+
     .chains-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1063,7 +1189,6 @@
       padding: 22px;
       transition: all var(--transition-smooth);
       position: relative;
-      overflow: hidden;
       cursor: pointer;
     }
     .chain-card:hover {
@@ -1076,6 +1201,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
     }
     .chain-icon-badge {
       width: 36px;
@@ -1100,6 +1227,8 @@
       font-size: 17px;
       font-weight: 700;
       margin-bottom: 4px;
+      position: relative;
+      z-index: 2;
     }
     .chain-meta {
       font-size: 12px;
@@ -1109,6 +1238,8 @@
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      z-index: 2;
     }
 
     /* Security Architecture Section */
@@ -1127,23 +1258,26 @@
       border-radius: var(--radius-lg);
       padding: 32px;
       position: relative;
-      overflow: hidden;
       transition: all var(--transition-smooth);
     }
     .bento-card:hover {
       border-color: var(--cyan);
-      box-shadow: 0 12px 40px rgba(0, 245, 255, 0.1);
+      box-shadow: 0 12px 40px var(--cyan-glow);
     }
     .bento-card h3 {
       font-size: 20px;
       font-weight: 700;
       margin: 16px 0 10px;
       color: var(--text);
+      position: relative;
+      z-index: 2;
     }
     .bento-card p {
       color: var(--text-muted);
       font-size: 14px;
       line-height: 1.6;
+      position: relative;
+      z-index: 2;
     }
     .bento-icon {
       width: 48px;
@@ -1155,6 +1289,8 @@
       align-items: center;
       justify-content: center;
       color: var(--cyan);
+      position: relative;
+      z-index: 2;
     }
 
     /* Comparison Table */
@@ -1201,7 +1337,7 @@
       border-radius: var(--radius-xl);
       padding: clamp(30px, 6vw, 64px);
       text-align: center;
-      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 245, 255, 0.1);
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6), 0 0 40px var(--cyan-glow);
       position: relative;
       overflow: hidden;
     }
@@ -1213,7 +1349,7 @@
       transform: translateX(-50%);
       width: 500px;
       height: 300px;
-      background: radial-gradient(circle, rgba(0, 245, 255, 0.2) 0%, transparent 70%);
+      background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -1238,12 +1374,14 @@
     .platform-card:hover {
       border-color: var(--cyan);
       transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0, 245, 255, 0.15);
+      box-shadow: 0 10px 30px var(--cyan-glow);
     }
     .platform-card-header {
       display: flex;
       align-items: center;
       gap: 14px;
+      position: relative;
+      z-index: 2;
     }
     .platform-card-header svg {
       width: 40px;
@@ -1257,6 +1395,8 @@
       gap: 8px;
       font-size: 13px;
       color: var(--text-muted);
+      position: relative;
+      z-index: 2;
     }
     .platform-specs li {
       display: flex;
@@ -1361,7 +1501,7 @@
       max-width: 440px;
       width: 100%;
       position: relative;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 245, 255, 0.2);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px var(--cyan-glow);
       transform: scale(0.92);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
@@ -1388,17 +1528,44 @@
       color: var(--cyan);
       border-color: var(--cyan);
     }
+
+    .modal-platform-toggle {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px;
+      margin-top: 12px;
+      gap: 4px;
+    }
+    .modal-toggle-btn {
+      padding: 6px 14px;
+      border-radius: 16px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-toggle-btn.active {
+      background: var(--cyan);
+      color: #07090E;
+    }
+
     .modal-qr-canvas {
       width: 190px;
       height: 190px;
       background: #FFFFFF;
       padding: 12px;
       border-radius: 16px;
-      margin: 20px auto;
+      margin: 18px auto;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
     .modal-qr-svg {
       width: 100%;
@@ -1514,17 +1681,25 @@
       </div>
     </a>
 
-    <!-- Desktop Navigation Links -->
+    <!-- Desktop Navigation Links with ScrollSpy -->
     <nav class="nav-center">
-      <a href="#simulator">Simulator</a>
-      <a href="#networks">Networks</a>
-      <a href="#security">Security</a>
-      <a href="#download">Get App</a>
-      <a href="#faq">FAQ</a>
+      <a href="#simulator" class="nav-spy-link">Simulator</a>
+      <a href="#networks" class="nav-spy-link">Networks</a>
+      <a href="#security" class="nav-spy-link">Security</a>
+      <a href="#download" class="nav-spy-link">Get App</a>
+      <a href="#faq" class="nav-spy-link">FAQ</a>
     </nav>
 
-    <!-- Right Controls: CTA & Sidebar Hamburger Toggle -->
+    <!-- Right Controls: Color Palette, CTA & Sidebar Hamburger Toggle -->
     <div class="nav-right">
+      <!-- Theme Accent Switcher -->
+      <div class="theme-palette" title="Switch Theme Glow Accent">
+        <span class="palette-dot active" style="background:#00F5FF;" onclick="setThemeAccent('#00F5FF', 'rgba(0,245,255,0.28)', 'rgba(0,245,255,0.35)', this)" title="Electric Cyan"></span>
+        <span class="palette-dot" style="background:#A855F7;" onclick="setThemeAccent('#A855F7', 'rgba(168,85,247,0.28)', 'rgba(168,85,247,0.35)', this)" title="Hyper Violet"></span>
+        <span class="palette-dot" style="background:#10B981;" onclick="setThemeAccent('#10B981', 'rgba(16,185,129,0.28)', 'rgba(16,185,129,0.35)', this)" title="Cyber Emerald"></span>
+        <span class="palette-dot" style="background:#F59E0B;" onclick="setThemeAccent('#F59E0B', 'rgba(245,158,11,0.28)', 'rgba(245,158,11,0.35)', this)" title="Solar Amber"></span>
+      </div>
+
       <a href="#download" class="btn-get-app" onclick="openDownloadModal('all')">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1795,7 +1970,7 @@
                 </div>
 
                 <div class="asset-list">
-                  <div class="asset-row" onclick="triggerToast('Copied Ethereum deposit address')">
+                  <div class="asset-row" onclick="triggerToast('Copied Ethereum deposit address', '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')">
                     <div class="asset-left">
                       <div class="asset-icon" style="background: rgba(98, 126, 234, 0.2); color: #627EEA;">Ξ</div>
                       <div>
@@ -1809,7 +1984,7 @@
                     </div>
                   </div>
 
-                  <div class="asset-row" onclick="triggerToast('Copied Arbitrum deposit address')">
+                  <div class="asset-row" onclick="triggerToast('Copied Arbitrum deposit address', '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')">
                     <div class="asset-left">
                       <div class="asset-icon" style="background: rgba(40, 160, 240, 0.2); color: #28A0F0;">A</div>
                       <div>
@@ -1823,7 +1998,7 @@
                     </div>
                   </div>
 
-                  <div class="asset-row" onclick="triggerToast('Copied Base deposit address')">
+                  <div class="asset-row" onclick="triggerToast('Copied Base deposit address', '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')">
                     <div class="asset-left">
                       <div class="asset-icon" style="background: rgba(0, 82, 255, 0.2); color: #0052FF;">B</div>
                       <div>
@@ -1874,7 +2049,7 @@
                 </button>
               </div>
 
-              <!-- VIEW 3: Biometrics Simulator -->
+              <!-- VIEW 3: Biometrics Simulator & Broadcast Flow -->
               <div class="sim-tab-view" id="simViewAuth">
                 <div class="biometrics-box">
                   <div class="faceid-ring" id="faceIdRing" onclick="simulateBiometricAuth()">
@@ -1888,7 +2063,26 @@
                     Private keys are unlocked momentarily in memory for cryptographic signature derivation then immediately wiped.
                   </p>
                 </div>
-                <button class="btn-get-app" style="width:100%; justify-content:center; margin-top:20px;" onclick="switchSimTab('ens')">
+
+                <div id="broadcastActionArea" style="display:none; margin-top:8px;">
+                  <button class="btn-get-app" id="btnBroadcastTx" style="width:100%; justify-content:center;" onclick="broadcastSimTx()">
+                    Broadcast to Ethereum RPC &rarr;
+                  </button>
+                </div>
+
+                <div class="tx-receipt-card" id="txReceiptCard">
+                  <div style="color:var(--emerald); font-weight:700; margin-bottom:4px;">● Transaction Included in Block #21,084,912</div>
+                  <div style="color:var(--text-dim);">Transaction Hash (click to copy):</div>
+                  <div class="tx-hash-mono" onclick="triggerToast('Copied Tx Hash', '0x8f2c3d1e4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d')">
+                    0x8f2c3d1e...4e5f6a7b
+                  </div>
+                  <div style="display:flex; justify-content:space-between; color:var(--text-dim); margin-top:6px;">
+                    <span>Gas: 21,000</span>
+                    <span style="color:var(--cyan); cursor:pointer;" onclick="resetSimTx()">Reset Demo</span>
+                  </div>
+                </div>
+
+                <button class="btn-get-app" style="width:100%; justify-content:center; margin-top:16px; background:transparent; border-color:var(--border);" onclick="switchSimTab('ens')">
                   Test ENS Resolver &rarr;
                 </button>
               </div>
@@ -1901,7 +2095,7 @@
                     <input type="text" class="ens-input" id="ensInput" value="vitalik.eth" placeholder="name.eth">
                     <button class="ens-btn" onclick="simulateEnsLookup()">Resolve</button>
                   </div>
-                  <div class="ens-result" id="ensResult">
+                  <div class="ens-result" id="ensResult" onclick="triggerToast('Copied resolved address', this.textContent.trim())">
                     0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
                   </div>
                 </div>
@@ -1970,20 +2164,28 @@
           <p class="section-description">Native JSON-RPC connectivity with zero centralized bridge dependencies. Filter networks by category below.</p>
         </div>
 
-        <div class="chain-filter-bar">
-          <button class="chain-filter-btn active" onclick="filterChains('all', this)">All Networks (12)</button>
-          <button class="chain-filter-btn" onclick="filterChains('l2', this)">Layer 2 Rollups</button>
-          <button class="chain-filter-btn" onclick="filterChains('evm', this)">EVM Mainnets</button>
-          <button class="chain-filter-btn" onclick="filterChains('non-evm', this)">Non-EVM (BTC &amp; SOL)</button>
-          <button class="chain-filter-btn" onclick="filterChains('testnet', this)">Testnets</button>
+        <div class="chain-top-toolbar">
+          <div class="chain-filter-bar">
+            <button class="chain-filter-btn active" onclick="filterChains('all', this)">All Networks (12)</button>
+            <button class="chain-filter-btn" onclick="filterChains('l2', this)">Layer 2 Rollups</button>
+            <button class="chain-filter-btn" onclick="filterChains('evm', this)">EVM Mainnets</button>
+            <button class="chain-filter-btn" onclick="filterChains('non-evm', this)">Non-EVM (BTC &amp; SOL)</button>
+            <button class="chain-filter-btn" onclick="filterChains('testnet', this)">Testnets</button>
+          </div>
+
+          <!-- Re-ping latency button -->
+          <button class="btn-ping-refresh" id="btnPingRefresh" onclick="refreshRpcPings()">
+            <span class="spin-icon">⟳</span>
+            <span>Refresh RPC Nodes</span>
+          </button>
         </div>
 
         <div class="chains-grid" id="chainsGrid">
           <!-- Ethereum -->
-          <div class="chain-card" data-cat="evm" onclick="triggerToast('Ethereum Mainnet: Chain ID 1 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="evm" onclick="triggerToast('Ethereum Mainnet: Chain ID 1 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(98, 126, 234, 0.2); color: #627EEA;">Ξ</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 24ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">24ms</span></div>
             </div>
             <div class="chain-name">Ethereum Mainnet</div>
             <div class="chain-meta">
@@ -1993,10 +2195,10 @@
           </div>
 
           <!-- Arbitrum -->
-          <div class="chain-card" data-cat="l2" onclick="triggerToast('Arbitrum One: Chain ID 42161 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="l2" onclick="triggerToast('Arbitrum One: Chain ID 42161 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(40, 160, 240, 0.2); color: #28A0F0;">ARB</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 18ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">18ms</span></div>
             </div>
             <div class="chain-name">Arbitrum One</div>
             <div class="chain-meta">
@@ -2006,10 +2208,10 @@
           </div>
 
           <!-- Base -->
-          <div class="chain-card" data-cat="l2" onclick="triggerToast('Base: Chain ID 8453 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="l2" onclick="triggerToast('Base: Chain ID 8453 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(0, 82, 255, 0.2); color: #0052FF;">BASE</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 20ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">20ms</span></div>
             </div>
             <div class="chain-name">Base</div>
             <div class="chain-meta">
@@ -2019,10 +2221,10 @@
           </div>
 
           <!-- Optimism -->
-          <div class="chain-card" data-cat="l2" onclick="triggerToast('Optimism: Chain ID 10 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="l2" onclick="triggerToast('Optimism: Chain ID 10 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(255, 4, 32, 0.2); color: #FF0420;">OP</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 21ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">21ms</span></div>
             </div>
             <div class="chain-name">Optimism (OP)</div>
             <div class="chain-meta">
@@ -2032,10 +2234,10 @@
           </div>
 
           <!-- Polygon -->
-          <div class="chain-card" data-cat="evm" onclick="triggerToast('Polygon PoS: Chain ID 137 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="evm" onclick="triggerToast('Polygon PoS: Chain ID 137 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(130, 71, 229, 0.2); color: #8247E5;">POL</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 29ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">29ms</span></div>
             </div>
             <div class="chain-name">Polygon PoS</div>
             <div class="chain-meta">
@@ -2045,10 +2247,10 @@
           </div>
 
           <!-- BNB -->
-          <div class="chain-card" data-cat="evm" onclick="triggerToast('BNB Smart Chain: Chain ID 56 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="evm" onclick="triggerToast('BNB Smart Chain: Chain ID 56 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(240, 185, 11, 0.2); color: #F0B90B;">BNB</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 32ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">32ms</span></div>
             </div>
             <div class="chain-name">BNB Smart Chain</div>
             <div class="chain-meta">
@@ -2058,10 +2260,10 @@
           </div>
 
           <!-- Avalanche -->
-          <div class="chain-card" data-cat="evm" onclick="triggerToast('Avalanche C-Chain: Chain ID 43114 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="evm" onclick="triggerToast('Avalanche C-Chain: Chain ID 43114 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(232, 65, 66, 0.2); color: #E84142;">AVAX</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 27ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">27ms</span></div>
             </div>
             <div class="chain-name">Avalanche C-Chain</div>
             <div class="chain-meta">
@@ -2071,10 +2273,10 @@
           </div>
 
           <!-- Linea -->
-          <div class="chain-card" data-cat="l2" onclick="triggerToast('Linea: Chain ID 59144 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="l2" onclick="triggerToast('Linea: Chain ID 59144 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(97, 218, 251, 0.2); color: #61DAFB;">LN</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 35ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">35ms</span></div>
             </div>
             <div class="chain-name">Linea (zkEVM)</div>
             <div class="chain-meta">
@@ -2084,10 +2286,10 @@
           </div>
 
           <!-- Solana -->
-          <div class="chain-card" data-cat="non-evm" onclick="triggerToast('Solana: Ed25519 Derived Address &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="non-evm" onclick="triggerToast('Solana: Ed25519 Derived Address &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(20, 241, 149, 0.2); color: #14F195;">SOL</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 16ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">16ms</span></div>
             </div>
             <div class="chain-name">Solana</div>
             <div class="chain-meta">
@@ -2097,10 +2299,10 @@
           </div>
 
           <!-- Bitcoin -->
-          <div class="chain-card" data-cat="non-evm" onclick="triggerToast('Bitcoin: Native SegWit Address &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="non-evm" onclick="triggerToast('Bitcoin: Native SegWit Address &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(247, 147, 26, 0.2); color: #F7931A;">BTC</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 19ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">19ms</span></div>
             </div>
             <div class="chain-name">Bitcoin (SegWit)</div>
             <div class="chain-meta">
@@ -2110,10 +2312,10 @@
           </div>
 
           <!-- Sepolia -->
-          <div class="chain-card" data-cat="testnet" onclick="triggerToast('Sepolia Testnet: Chain ID 11155111 &bull; Active')">
+          <div class="chain-card spotlight-card" data-cat="testnet" onclick="triggerToast('Sepolia Testnet: Chain ID 11155111 &bull; Active')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(168, 85, 247, 0.2); color: #A855F7;">SEP</div>
-              <div class="chain-status-dot"><span class="status-pulse"></span> 22ms</div>
+              <div class="chain-status-dot"><span class="status-pulse"></span> <span class="ping-val">22ms</span></div>
             </div>
             <div class="chain-name">Sepolia Testnet</div>
             <div class="chain-meta">
@@ -2123,7 +2325,7 @@
           </div>
 
           <!-- Custom RPC -->
-          <div class="chain-card" data-cat="evm" onclick="triggerToast('Custom RPC: Add any EVM network in-app')">
+          <div class="chain-card spotlight-card" data-cat="evm" onclick="triggerToast('Custom RPC: Add any EVM network in-app')">
             <div class="chain-card-header">
               <div class="chain-icon-badge" style="background: rgba(0, 245, 255, 0.2); color: var(--cyan);">+</div>
               <div class="chain-status-dot" style="color:var(--cyan);">Configurable</div>
@@ -2148,7 +2350,7 @@
         </div>
 
         <div class="bento-grid">
-          <div class="bento-card">
+          <div class="bento-card spotlight-card">
             <div class="bento-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
@@ -2156,7 +2358,7 @@
             <p>On Apple devices, cryptographic key seeds are bound to the Secure Enclave via <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code>. On Android, encrypted in the Keystore via AES-256-GCM. Keys never reach RAM unencrypted.</p>
           </div>
 
-          <div class="bento-card">
+          <div class="bento-card spotlight-card">
             <div class="bento-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </div>
@@ -2164,7 +2366,7 @@
             <p>No Google Firebase, no Segment, no Mixpanel, and no Sentry. VaultETH transmits zero analytics, IP addresses, or crash logs to any remote server. Completely self-contained and private.</p>
           </div>
 
-          <div class="bento-card">
+          <div class="bento-card spotlight-card">
             <div class="bento-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
             </div>
@@ -2231,7 +2433,7 @@
 
           <div class="dual-platform-cards">
             <!-- Apple Card -->
-            <div class="platform-card">
+            <div class="platform-card spotlight-card">
               <div class="platform-card-header">
                 <svg viewBox="0 0 170 170" fill="currentColor">
                   <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.81-11.96-14.31-7.01-10.66-12.27-22.39-15.77-35.19-3.5-12.8-5.25-24.58-5.25-35.34 0-14.89 3.73-27.18 11.19-36.87 7.46-9.69 16.9-14.65 28.33-14.88 4.7 0 10.05 1.25 16.05 3.75 6 2.5 9.77 3.86 11.31 4.08 1.9-.33 5.86-1.78 11.88-4.34 6.02-2.57 11.17-3.74 15.46-3.52 12.02.66 21.63 5.28 28.84 13.86-10.5 6.34-15.65 15.34-15.46 27 0 10.36 4.09 18.9 12.28 25.62 4.19 3.51 8.87 6.07 14.04 7.68-2.61 7.66-5.89 15.44-9.84 23.34zM119.22 33.15c0-7.39 2.66-14.36 7.97-20.91 5.31-6.55 11.83-10.74 19.57-12.57.8 3.17 1.2 6.2 1.2 9.09 0 7.39-2.73 14.36-8.2 20.91-5.46 6.55-12.16 10.74-20.1 12.57-.27-3.04-.44-6.07-.44-9.09z"/>
@@ -2260,7 +2462,7 @@
             </div>
 
             <!-- Android Card -->
-            <div class="platform-card">
+            <div class="platform-card spotlight-card">
               <div class="platform-card-header">
                 <svg viewBox="0 0 512 512" fill="none">
                   <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" fill="#00E5FF"/>
@@ -2366,8 +2568,14 @@
   <div class="modal-overlay" id="downloadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeDownloadModal()" aria-label="Close modal">✕</button>
-      <h3 id="modalTitle" style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Download VaultETH</h3>
+      <h3 id="modalTitle" style="font-size: 22px; font-weight: 800; margin-bottom: 4px;">Download VaultETH</h3>
       <p style="font-size: 13px; color: var(--text-muted);" id="modalSubtitle">Scan with your phone camera to install instantly.</p>
+
+      <!-- Platform toggle inside modal -->
+      <div class="modal-platform-toggle">
+        <button class="modal-toggle-btn active" id="modalBtnApple" onclick="setModalPlatform('apple')">Apple iOS</button>
+        <button class="modal-toggle-btn" id="modalBtnAndroid" onclick="setModalPlatform('android')">Android</button>
+      </div>
 
       <div class="modal-qr-canvas">
         <!-- SVG Vector QR Code -->
@@ -2408,11 +2616,11 @@
         </svg>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
-        <button class="btn-get-app" style="width:100%; justify-content:center;" onclick="triggerToast('Opening App Store installation link...'); closeDownloadModal();">
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+        <button class="btn-get-app" id="modalMainDownloadBtn" style="width:100%; justify-content:center;" onclick="triggerToast('Opening App Store link...'); closeDownloadModal();">
           Install for Apple Devices (iOS 17+)
         </button>
-        <button class="btn-get-app" style="width:100%; justify-content:center; background:rgba(255,255,255,0.06); border-color:var(--border);" onclick="triggerToast('Opening Google Play / APK download link...'); closeDownloadModal();">
+        <button class="btn-get-app" id="modalSecondaryDownloadBtn" style="width:100%; justify-content:center; background:rgba(255,255,255,0.06); border-color:var(--border);" onclick="triggerToast('Opening Google Play link...'); closeDownloadModal();">
           Install for Android Devices (Google Play)
         </button>
       </div>
@@ -2563,14 +2771,30 @@
     }
     animateParticles();
 
-    // --- 2. Navbar Scroll Style ---
+    // --- 2. Navbar Scroll Style & ScrollSpy ---
+    const navbar = document.getElementById('navbar');
+    const spyLinks = document.querySelectorAll('.nav-spy-link');
+    const sections = ['simulator', 'networks', 'security', 'download', 'faq'].map(id => document.getElementById(id));
+
     window.addEventListener('scroll', () => {
-      const navbar = document.getElementById('navbar');
       if (window.scrollY > 30) {
         navbar.classList.add('scrolled');
       } else {
         navbar.classList.remove('scrolled');
       }
+
+      // ScrollSpy
+      let currentSection = '';
+      sections.forEach(sec => {
+        if (!sec) return;
+        const top = sec.offsetTop - 140;
+        if (window.scrollY >= top) {
+          currentSection = sec.getAttribute('id');
+        }
+      });
+      spyLinks.forEach(link => {
+        link.classList.toggle('nav-active', link.getAttribute('href') === `#${currentSection}`);
+      });
     });
 
     // --- 3. Sidebar Drawer Handling ---
@@ -2605,7 +2829,6 @@
     sidebarCloseBtn.addEventListener('click', closeSidebar);
     sidebarOverlay.addEventListener('click', closeSidebar);
 
-    // Escape key closes modals and sidebar
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeSidebar();
@@ -2613,7 +2836,26 @@
       }
     });
 
-    // --- 4. Interactive Simulator Tab Switching ---
+    // --- 4. Interactive Spotlight Cursor Effect on Cards ---
+    document.querySelectorAll('.spotlight-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+      });
+    });
+
+    // --- 5. Interactive Theme Accent Color Switcher ---
+    function setThemeAccent(color, glow, bright, btn) {
+      document.documentElement.style.setProperty('--cyan', color);
+      document.documentElement.style.setProperty('--cyan-glow', glow);
+      document.documentElement.style.setProperty('--border-bright', bright);
+      document.querySelectorAll('.palette-dot').forEach(d => d.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      triggerToast(`Switched accent glow palette`);
+    }
+
+    // --- 6. Interactive Simulator Tab Switching & Tx Lifecycle ---
     const tabViews = {
       portfolio: document.getElementById('simViewPortfolio'),
       gas: document.getElementById('simViewGas'),
@@ -2634,21 +2876,15 @@
       });
     }
 
-    // Network switcher in phone
     function switchSimNetwork(name, balance, crypto, color) {
       document.getElementById('simBalanceVal').textContent = '$' + balance;
       const pills = document.querySelectorAll('#simNetworkPills .network-pill');
       pills.forEach(pill => {
-        if (pill.textContent.includes(name)) {
-          pill.classList.add('active');
-        } else {
-          pill.classList.remove('active');
-        }
+        pill.classList.toggle('active', pill.textContent.includes(name));
       });
       triggerToast(`Switched active network to ${name}`);
     }
 
-    // Gas slider calculation
     function updateGasEstimate(gwei) {
       document.getElementById('simGweiDisplay').textContent = `${gwei} Gwei`;
       const usdEst = ((parseFloat(gwei) * 21000 * 3700) / 1e9).toFixed(2);
@@ -2667,7 +2903,6 @@
       }
     }
 
-    // Biometric Auth Simulation
     function simulateBiometricAuth() {
       const ring = document.getElementById('faceIdRing');
       const status = document.getElementById('authStatusTxt');
@@ -2678,12 +2913,28 @@
         ring.classList.remove('scanning');
         status.textContent = '✓ Hardware Signature Generated!';
         status.style.color = 'var(--emerald)';
+        document.getElementById('broadcastActionArea').style.display = 'block';
         triggerToast('Face ID Verified &bull; Cryptographic Signature Ready');
-        setTimeout(() => {
-          status.textContent = 'Tap to Verify Face ID / Keystore';
-          status.style.color = 'var(--cyan)';
-        }, 3000);
-      }, 1200);
+      }, 1100);
+    }
+
+    function broadcastSimTx() {
+      const btn = document.getElementById('btnBroadcastTx');
+      btn.textContent = 'Broadcasting to RPC Node...';
+      setTimeout(() => {
+        document.getElementById('broadcastActionArea').style.display = 'none';
+        document.getElementById('txReceiptCard').classList.add('visible');
+        triggerToast('Transaction confirmed in Block #21,084,912');
+      }, 1000);
+    }
+
+    function resetSimTx() {
+      document.getElementById('txReceiptCard').classList.remove('visible');
+      document.getElementById('broadcastActionArea').style.display = 'none';
+      const status = document.getElementById('authStatusTxt');
+      status.textContent = 'Tap to Verify Face ID / Keystore';
+      status.style.color = 'var(--cyan)';
+      switchSimTab('portfolio');
     }
 
     // ENS Lookup Simulation
@@ -2703,17 +2954,17 @@
         if (mockENS[input]) {
           res.textContent = mockENS[input];
           res.style.color = 'var(--emerald)';
-          triggerToast(`Resolved ${input} to checksummed address`);
+          triggerToast(`Resolved ${input} to checksummed address`, mockENS[input]);
         } else {
-          // generate reproducible mock checksum
-          res.textContent = '0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+          const fakeAddr = '0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+          res.textContent = fakeAddr;
           res.style.color = 'var(--cyan)';
-          triggerToast(`Resolved ${input}`);
+          triggerToast(`Resolved ${input}`, fakeAddr);
         }
       }, 400);
     }
 
-    // --- 5. Chain Filter Matrix ---
+    // --- 7. Chain Filter Matrix & RPC Latency Ping Simulation ---
     function filterChains(category, btn) {
       document.querySelectorAll('.chain-filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -2728,7 +2979,23 @@
       });
     }
 
-    // --- 6. FAQ Accordion ---
+    function refreshRpcPings() {
+      const btn = document.getElementById('btnPingRefresh');
+      btn.classList.add('spinning');
+      const pingDoms = document.querySelectorAll('.ping-val');
+      pingDoms.forEach(d => d.textContent = '...');
+
+      setTimeout(() => {
+        pingDoms.forEach(d => {
+          const randomMs = Math.floor(Math.random() * 22) + 14;
+          d.textContent = `${randomMs}ms`;
+        });
+        btn.classList.remove('spinning');
+        triggerToast('RPC Nodes pinged successfully &bull; All 12 nodes online');
+      }, 650);
+    }
+
+    // --- 8. FAQ Accordion ---
     function toggleFaq(btn) {
       const card = btn.parentElement;
       const isOpen = card.classList.contains('active');
@@ -2738,23 +3005,41 @@
       }
     }
 
-    // --- 7. Download Modal Dialog ---
+    // --- 9. Download Modal Dialog & Platform Switcher ---
     const downloadModal = document.getElementById('downloadModal');
 
     function openDownloadModal(platform) {
+      setModalPlatform(platform === 'android' ? 'android' : 'apple');
+      downloadModal.classList.add('open');
+    }
+
+    function setModalPlatform(platform) {
       const title = document.getElementById('modalTitle');
       const subtitle = document.getElementById('modalSubtitle');
-      if (platform === 'apple') {
-        title.textContent = 'Available on Apple Devices';
-        subtitle.textContent = 'Scan or download directly for iOS 17+, iPadOS, and Apple Silicon Mac.';
-      } else if (platform === 'android') {
+      const btnApple = document.getElementById('modalBtnApple');
+      const btnAndroid = document.getElementById('modalBtnAndroid');
+      const mainBtn = document.getElementById('modalMainDownloadBtn');
+      const secBtn = document.getElementById('modalSecondaryDownloadBtn');
+
+      if (platform === 'android') {
+        btnAndroid.classList.add('active');
+        btnApple.classList.remove('active');
         title.textContent = 'Available on Android Devices';
-        subtitle.textContent = 'Scan or install from Google Play / APK with hardware Keystore security.';
+        subtitle.textContent = 'Scan or install from Google Play & direct APK.';
+        mainBtn.textContent = 'Download on Google Play';
+        mainBtn.onclick = () => { triggerToast('Opening Google Play link...'); closeDownloadModal(); };
+        secBtn.textContent = 'Direct APK Download (SHA-256)';
+        secBtn.onclick = () => { triggerToast('Downloading VaultETH Android APK...'); closeDownloadModal(); };
       } else {
-        title.textContent = 'Download VaultETH';
-        subtitle.textContent = 'Available on Apple iOS & Android devices.';
+        btnApple.classList.add('active');
+        btnAndroid.classList.remove('active');
+        title.textContent = 'Available on Apple Devices';
+        subtitle.textContent = 'Scan or install for iOS 17+, iPadOS, and Apple Silicon Mac.';
+        mainBtn.textContent = 'Download on the App Store';
+        mainBtn.onclick = () => { triggerToast('Opening App Store link...'); closeDownloadModal(); };
+        secBtn.textContent = 'TestFlight Beta Program';
+        secBtn.onclick = () => { triggerToast('Opening Apple TestFlight invite...'); closeDownloadModal(); };
       }
-      downloadModal.classList.add('open');
     }
 
     function closeDownloadModal() {
@@ -2765,12 +3050,16 @@
       if (e.target === downloadModal) closeDownloadModal();
     });
 
-    // --- 8. Interactive Toast System ---
+    // --- 10. Interactive Toast System & Clipboard Copy ---
     let toastTimeout;
-    function triggerToast(message) {
+    function triggerToast(message, copyText) {
+      if (copyText && navigator.clipboard) {
+        navigator.clipboard.writeText(copyText).catch(() => {});
+        message = `${message} &bull; Copied to clipboard`;
+      }
       const toast = document.getElementById('toastPopup');
       const msg = document.getElementById('toastMsg');
-      msg.textContent = message;
+      msg.innerHTML = message;
       toast.classList.add('visible');
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {

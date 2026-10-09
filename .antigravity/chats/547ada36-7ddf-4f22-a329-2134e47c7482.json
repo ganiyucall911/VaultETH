@@ -100,6 +100,30 @@
       "created_at": "2026-10-09T16:52:12.909Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "583d0837-1f11-4758-bcc0-93e683d651da",
+      "role": "agent",
+      "content": "The landing page has been redesigned to be professional, interactive, and organized according to your exact specifications.\n\n### Summary of Improvements\n\n1. **Professional & Interactive Experience**:\n   - **Interactive Quantum Ambient Canvas**: An ambient particle field (`<canvas id=\"bg-canvas\">`) that moves smoothly and repels/reacts to your cursor.\n   - **Interactive Live Wallet Simulator**: A phone frame mockup showcasing real-time on-device interactions:\n     - **Multi-Chain Portfolio**: Live network switcher across Ethereum, Arbitrum, Base, Solana, and Bitcoin with dynamic USD balance recalculation.\n     - **Dynamic EIP-1559 Gas Estimator**: An interactive slider adjusting Gwei (Eco, Fast, Instant) with real-time transaction fee USD calculations.\n     - **Hardware Secure Enclave Auth**: Interactive Face ID / Biometrics simulation with scanning animation and instant signature feedback.\n     - **On-Chain ENS Name Resolver**: Test resolver supporting names like `vitalik.eth` and `vault.eth`.\n   - **12+ Chain Matrix**: Category filter buttons (*All Networks, Layer 2 Rollups, EVM Mainnets, Non-EVM, Testnets*) with active simulated RPC ping latencies.\n   - **Security Architecture Bento & Comparison Matrix**: Direct side-by-side comparison of VaultETH vs. Standard Wallets vs. Centralized Exchanges.\n   - **Interactive FAQ Accordion**: Expandable questions with smooth animations.\n   - **Interactive Feedback**: A glass toast notification system when copying addresses or interacting with networks.\n\n2. **Official Badges for Apple & Android Devices**:\n   - **\"Available on Apple Devices\" / App Store**: Official Apple vector icon with compatibility specs (*iOS 17+ • iPadOS • Apple Silicon macOS*).\n   - **\"Available on Android Devices\" / Google Play**: Official Google Play multi-color vector icon with specs (*Android 10+ • Keystore AES-256 GCM*).\n   - Displayed in the **Hero section**, in the dedicated **Download Spotlight section**, inside the **Sidebar Drawer**, and in an interactive **Download & QR Modal**.\n\n3. **Slide-Out Sidebar Navigation Drawer**:\n   - Removed loose buttons from the header and main layout.\n   - Added a fixed glassmorphism navigation bar with an animated hamburger button (`☰` ➔ `✕`).\n   - Clicking opens a slide-out drawer organized in clean order:\n     - **Explore**: Home & Overview, Live Simulator, 12+ Blockchains, Hardware Keystore, FAQ.\n     - **Legal & Support**: [Privacy Policy](https://github.com/ganiyucall911/VaultETH/blob/main/docs/privacy.html), [Support & FAQ](https://github.com/ganiyucall911/VaultETH/blob/main/docs/support.html), and GitHub Repository.\n     - **Platform Downloads**: Quick links for Apple devices and Android devices.\n     - **Hardware Status**: Live on-device keystore status indicator.\n   - [privacy.html](https://github.com/ganiyucall911/VaultETH/blob/main/docs/privacy.html) and [support.html](https://github.com/ganiyucall911/VaultETH/blob/main/docs/support.html) were also updated with matching Liquid Glass styling and the shared sidebar navigation drawer.",
+      "status": "completed",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "fe34b809-444a-4aba-90b1-81ea78b3c635",
+      "created_at": "2026-10-09T17:01:11.558Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "50d0dce8-4245-42cb-83da-b41663ebf842",
+      "role": "user",
+      "content": "Continue",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-09T17:04:01.127Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }
