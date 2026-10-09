@@ -124,6 +124,30 @@
       "created_at": "2026-10-09T17:04:01.127Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "c79072df-d2ad-44ee-a099-8097ebad5bac",
+      "role": "agent",
+      "content": "All requested enhancements and interactive capabilities are fully implemented, verified, and saved:\n\n### Key Additions & Interactive Features\n\n1. **Interactive Theme Glow Accent Switcher**:\n   - Added a live neon palette selector in the navigation bar and drawer:\n     - **Electric Cyan** (`#00F5FF`)\n     - **Hyper Violet** (`#A855F7`)\n     - **Cyber Emerald** (`#10B981`)\n     - **Solar Amber** (`#F59E0B`)\n   - Dynamically shifts CSS variables, glows, and borders across the entire site in real time.\n\n2. **Full Transaction Lifecycle Simulation inside Phone Mockup**:\n   - After biometric authorization (Face ID / Secure Enclave scanning), users can now click **\"Broadcast to Ethereum RPC\"**.\n   - Simulates `eth_sendRawTransaction` and block inclusion with a live receipt:\n     - **Status**: Block `#21,084,912` confirmation\n     - **Transaction Hash**: Clickable with instant clipboard copy (`0x8f2c3d1e...`)\n     - **Gas Used**: `21,000 gas • 18.5 Gwei`\n     - **Reset Demo**: One-click reset to run through again.\n\n3. **Live RPC Node Latency Ping Tool**:\n   - Added a **\"Refresh RPC Nodes\"** button on the 12+ Chains Matrix.\n   - Triggers simulated live RPC ping tests with spinning animation and randomized latencies across all 12 chains (`14ms` – `35ms`).\n\n4. **Dynamic Card Spotlight Effect**:\n   - Cards (`.bento-card`, `.chain-card`, `.platform-card`) now track cursor coordinates (`--mouse-x`, `--mouse-y`) with subtle radial gradient illumination following the cursor.\n\n5. **ScrollSpy Navigation**:\n   - As users scroll, the top navigation links dynamically highlight based on the active viewport section (`#simulator`, `#networks`, `#security`, `#download`, `#faq`).\n\n6. **Interactive Platform QR Code Switcher**:\n   - The download modal allows instant toggling between **Apple iOS** (App Store / TestFlight) and **Android** (Google Play / APK) download modes and QR codes.\n\n7. **System Clipboard Integration**:\n   - Copying addresses, ENS lookups, or transaction hashes uses the native `navigator.clipboard` API with animated toast confirmation.",
+      "status": "completed",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "50d0dce8-4245-42cb-83da-b41663ebf842",
+      "created_at": "2026-10-09T17:08:42.193Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "5f49945a-dab8-4a98-808c-ac2716ec4b6e",
+      "role": "user",
+      "content": "I think there are some issues there is supposed to be a view for individual tokens and real time prices for them and also how much of that token a user owns. Also there shouldn’t be a place to sign gas fees it just makes the transaction usage more complicated. Just make it like every other crypto app out there . Make provision for a multiple means of adding and purchasing tokens, use reall icons for everything and anything",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-09T17:14:23.741Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }
