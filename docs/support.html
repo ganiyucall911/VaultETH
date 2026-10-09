@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support & FAQ | VaultETH by vault.</title>
+  <style>
+    :root {
+      --bg: #0A0D14;
+      --card: #121824;
+      --border: #1F293D;
+      --cyan: #00F5FF;
+      --text: #F1F5F9;
+      --muted: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 20px 80px;
+    }
+    .back {
+      display: inline-block;
+      margin-bottom: 24px;
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    .faq-item h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .faq-item p {
+      color: var(--muted);
+      font-size: 15px;
+      margin: 0;
+    }
+    .notice {
+      border: 1px solid rgba(0, 245, 255, 0.3);
+      background: rgba(0, 245, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 36px;
+    }
+    .notice h3 {
+      color: var(--cyan);
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .notice p {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back">&larr; Back to VaultETH</a>
+    <h1>Support & Assistance</h1>
+    <div class="meta">Developer: vault. &bull; Self-Custody Multi-Chain Wallet</div>
+
+    <div class="faq-item">
+      <h3>1. What does non-custodial mean?</h3>
+      <p>Non-custodial means you, and only you, own and control the cryptographic keys to your wallet. VaultETH never has access to your funds, private keys, or recovery phrase.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>2. Can you recover my wallet if I lose my 12-word recovery phrase?</h3>
+      <p><strong>No.</strong> Your recovery phrase is generated directly on your device and stored in the hardware-backed Secure Enclave and Keystore. It is never sent to any server. If you lose your recovery phrase and delete the app, no one can restore your wallet. Always store your phrase safely offline.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>3. Does VaultETH charge transaction fees?</h3>
+      <p>VaultETH charges <strong>zero</strong> platform fees. 100% of the network fee displayed during transactions is paid directly to blockchain network validators for transaction execution.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>4. Why does VaultETH require Biometrics or Device Passcode?</h3>
+      <p>Face ID, Touch ID, or your device passcode is used by your device's hardware keystore to protect your recovery phrase from unauthorized access. Every key reveal or transfer authorization prompts for verification.</p>
+    </div>
+
+    <div class="notice">
+      <h3>In-App Support & Assistance</h3>
+      <p>VaultETH features a self-contained diagnostic and support center accessible directly inside the application under <strong>Settings &gt; Support &amp; FAQ</strong>.</p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 vault. All rights reserved.
+  </footer>
+</body>
+</html>

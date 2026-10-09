@@ -816,29 +816,166 @@ struct SettingsView: View {
             }
 
             Section("Legal & Compliance") {
-                if let privacyURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/PRIVACY_POLICY.md") {
-                    Link("Privacy Policy", destination: privacyURL)
+                Button {
+                    showPrivacyPolicy = true
+                } label: {
+                    HStack {
+                        Label("Privacy Policy", systemImage: "hand.raised.shield")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                if let supportURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/SUPPORT.md") {
-                    Link("Support & FAQ", destination: supportURL)
+                .foregroundStyle(.primary)
+
+                Button {
+                    showSupportFAQ = true
+                } label: {
+                    HStack {
+                        Label("Support & FAQ", systemImage: "questionmark.circle")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                if let checklistURL = URL(string: "https://github.com/ganiyucall911/VaultETH/blob/main/APP_STORE_CHECKLIST.md") {
-                    Link("App Store Submission Checklist", destination: checklistURL)
-                }
+                .foregroundStyle(.primary)
             }
 
             Section("About VaultETH") {
+                LabeledContent("Developer", value: "vault.")
                 LabeledContent("Version", value: version)
                 LabeledContent("Supported Chains", value: "\(store.supportedNetworks.count) Blockchains")
                 LabeledContent("Custody", value: "100% Self-Custodial")
-                if let url = URL(string: "https://github.com/ganiyucall911/VaultETH") {
-                    Link("Open Source Repository", destination: url)
-                }
             }
         }
         .navigationTitle("Settings")
         .sheet(isPresented: $showNetworkPicker) {
             NavigationStack { NetworkPickerSheet() }
+        }
+        .sheet(isPresented: $showPrivacyPolicy) {
+            NavigationStack { InAppPrivacyPolicySheet() }
+        }
+        .sheet(isPresented: $showSupportFAQ) {
+            NavigationStack { InAppSupportFAQSheet() }
+        }
+    }
+}
+
+// MARK: - In-App Privacy Policy Sheet
+
+struct InAppPrivacyPolicySheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Privacy Policy for VaultETH")
+                    .font(.title2.bold())
+                Text("Developer: vault. • October 2026")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Divider()
+
+                Group {
+                    Text("1. Zero Personal Data Collected")
+                        .font(.headline)
+                    Text("We do not collect, store, transmit, or sell your personal information, name, email address, phone number, location, or device identifiers.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    Text("2. Hardware-Backed Key Storage")
+                        .font(.headline)
+                    Text("Your BIP-39 recovery phrases and private keys are stored exclusively in the iOS Secure Keychain on your local device with kSecAttrAccessibleWhenUnlockedThisDeviceOnly and biometric authentication. Keys are never synced to iCloud or external servers.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    Text("3. Decentralized Blockchain Communication")
+                        .font(.headline)
+                    Text("VaultETH queries decentralized public JSON-RPC nodes over HTTPS to display balances and broadcast transactions. RPC providers never receive your private keys or recovery phrase.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    Text("4. Public Ledger Notice")
+                        .font(.headline)
+                    Text("Transactions broadcast to public blockchains are permanent and publicly visible on decentralized ledger explorers.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("Privacy Policy")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") { dismiss() }
+            }
+        }
+    }
+}
+
+// MARK: - In-App Support & FAQ Sheet
+
+struct InAppSupportFAQSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                Text("VaultETH Support & Assistance")
+                    .font(.title2.bold())
+                Text("Developed by vault.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Divider()
+
+                FAQItemView(
+                    question: "What does 'non-custodial' mean?",
+                    answer: "Non-custodial means you, and only you, own and control the cryptographic keys to your wallet. VaultETH never has access to your funds, private keys, or recovery phrase."
+                )
+
+                FAQItemView(
+                    question: "Can anyone recover my wallet if I lose my 12-word phrase?",
+                    answer: "No. Your recovery phrase is generated directly on your device in the iOS Secure Enclave. It is never sent to any server. If you lose your phrase and delete the app, no one (including the developer) can restore your wallet. Always store your phrase safely offline."
+                )
+
+                FAQItemView(
+                    question: "Does VaultETH charge transaction fees?",
+                    answer: "Zero fees. 100% of the network gas fee is paid directly to decentralized validators on-chain."
+                )
+
+                FAQItemView(
+                    question: "Why is Face ID or Passcode required?",
+                    answer: "iOS Keychain uses your biometric presence to protect your recovery phrase from unauthorized access. Every time you reveal keys or sign a transfer, iOS prompts for your authentication."
+                )
+            }
+            .padding()
+        }
+        .navigationTitle("Support & FAQ")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") { dismiss() }
+            }
+        }
+    }
+}
+
+struct FAQItemView: View {
+    let question: String
+    let answer: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(question)
+                .font(.headline)
+            Text(answer)
+                .font(.body)
+                .foregroundStyle(.secondary)
         }
     }
 }

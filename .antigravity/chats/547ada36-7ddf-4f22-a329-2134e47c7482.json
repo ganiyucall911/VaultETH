@@ -64,6 +64,30 @@
       "created_at": "2026-10-09T16:18:02.063Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "9879bef4-0949-443e-98f6-a60ce9f08985",
+      "role": "agent",
+      "content": "All changes are saved.\n\n### Summary of Changes Saved to the Repository\n\n* **Android Native App ([`android/app/src/main`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main)):**\n  * Complete Jetpack Compose implementation with the 4-tab Sovereign Obsidian design system ([`MainActivity.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/MainActivity.kt), [`VaultHomeScreen.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/ui/screens/VaultHomeScreen.kt), [`WalletsScreen.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/ui/screens/WalletsScreen.kt), [`ActivityScreen.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/ui/screens/ActivityScreen.kt), [`SettingsScreen.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/ui/screens/SettingsScreen.kt)).\n  * Multi-chain cryptographic engine ([`WalletEngine.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/core/WalletEngine.kt)) with BIP-39 mnemonic generation, EVM/Solana/Bitcoin address derivations, and EIP-1559/legacy transaction signing.\n  * Hardware-backed storage ([`SecureVault.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/main/java/com/vaulteth/app/core/SecureVault.kt)) using Android Keystore AES-256 GCM encryption.\n  * Comprehensive test suite ([`WalletEngineTest.kt`](https://github.com/ganiyucall911/VaultETH/blob/main/android/app/src/test/java/com/vaulteth/app/WalletEngineTest.kt)) with 100% passing tests.\n\n* **Security & Privacy Protection ([`.gitignore`](https://github.com/ganiyucall911/VaultETH/blob/main/.gitignore)):**\n  * Hardened Git ignore rules strictly blocking all keystores, private keys, certificates, provisioning profiles, environment variables, and build outputs from ever being tracked.\n\n* **Documentation & Review Notes ([`REVIEW.md`](https://github.com/ganiyucall911/VaultETH/blob/main/REVIEW.md)):**\n  * Updated with detailed architectural documentation covering the Android implementation, cryptographic tests, and security hardening.\n\n* **Submission Kit:**\n  * Created the [Submission Kit](file:///home/runner/.gemini/antigravity-cli/brain/6d82d2e9-c2ec-4fd7-aa63-7eae12b5a0a3/SUBMISSION_KIT.md) with copy-paste answers for Apple App Store Connect and Google Play Console review forms.",
+      "status": "completed",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": "29fd189e-ded2-4f62-ad67-af03e1993348",
+      "created_at": "2026-10-09T16:18:50.026Z",
+      "sender": "macOS",
+      "is_cancelled": false
+    },
+    {
+      "id": "37b558ec-40aa-4302-bb45-1f3eed71f9b2",
+      "role": "user",
+      "content": "Details to Provide for Custom Kit Filling\n\nPlease provide any of the following details you would like filled in:\n\n1. **Developer / Organization Name:** vault.\n2. **Public Support Contact Email:** I don’t have one yet and I also don’t want it to be redirected to github\n3. **Official Website / Domain (Optional):** i don’t have one rn\n4. **Apple Developer Team ID (Optional):**\n5. **Android Release Package & Keystore Alias (Optional):** (currently configured as `com.vaulteth.app`).",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-09T16:30:12.965Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }

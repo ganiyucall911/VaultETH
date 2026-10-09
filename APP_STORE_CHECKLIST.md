@@ -23,17 +23,18 @@ This document tracks all App Store submission requirements for VaultETH, disting
 ## 2. App Store Connect & Developer Setup (👉 User Action Items)
 
 ### A. Apple Developer Account
+- [ ] **Developer / Organization Name:** `vault.`
 - [ ] **Account Type:** Apple requires an **Organization** account for apps facilitating cryptocurrency transactions (App Store Review Guideline 3.1.5(a)). Ensure your enrollment is under an organization/business entity.
 - [ ] **Bundle Identifier:** Ensure `com.vaulteth.app` is registered under your Team ID in the Apple Developer Certificates, Identifiers & Profiles portal.
 - [ ] **Code Signing:** Set your Apple Development/Distribution Team ID in Xcode.
 
 ### B. App Store Connect Metadata
 - [ ] **App Name:** `VaultETH`
-- [ ] **Subtitle:** *Self-Custody Ethereum Wallet* (or similar under 30 characters)
+- [ ] **Subtitle:** *Self-Custody Multi-Chain Vault* (under 30 characters)
 - [ ] **Category:** Primary: `Finance` | Secondary: `Utilities`
-- [ ] **Privacy Policy URL:** `https://github.com/ganiyucall911/VaultETH/blob/main/PRIVACY_POLICY.md` (or hosted on your website)
-- [ ] **Support URL:** `https://github.com/ganiyucall911/VaultETH/blob/main/SUPPORT.md` (or your support website)
-- [ ] **Marketing URL (Optional):** Repository link or project homepage.
+- [ ] **Privacy Policy URL:** `https://ganiyucall911.github.io/VaultETH/privacy.html` (Standalone product page by `vault.`)
+- [ ] **Support URL:** `https://ganiyucall911.github.io/VaultETH/support.html` (Standalone product page by `vault.`)
+- [ ] **Marketing URL (Optional):** `https://ganiyucall911.github.io/VaultETH/`
 
 ### C. App Store Questionnaires
 - [ ] **App Privacy Details:**

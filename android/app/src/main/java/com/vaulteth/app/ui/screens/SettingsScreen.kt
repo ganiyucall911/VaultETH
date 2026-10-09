@@ -10,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +27,9 @@ fun SettingsScreen(
     selectedNetwork: BlockchainNetwork
 ) {
     val context = LocalContext.current
+
+    var showPrivacyDialog by remember { mutableStateOf(false) }
+    var showSupportDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = VaultBackground,
@@ -147,29 +150,23 @@ fun SettingsScreen(
                         SettingsRow(
                             icon = Icons.Default.PrivacyTip,
                             title = "Privacy Policy",
-                            onClick = {
-                                val url = "https://github.com/ganiyucall911/VaultETH/blob/main/PRIVACY_POLICY.md"
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                            }
+                            onClick = { showPrivacyDialog = true }
                         )
                         HorizontalDivider(color = VaultBorder)
                         SettingsRow(
                             icon = Icons.Default.HelpOutline,
                             title = "Support & FAQ",
-                            onClick = {
-                                val url = "https://github.com/ganiyucall911/VaultETH/blob/main/SUPPORT.md"
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                            }
+                            onClick = { showSupportDialog = true }
                         )
                         HorizontalDivider(color = VaultBorder)
-                        SettingsRow(
-                            icon = Icons.Default.Code,
-                            title = "GitHub Repository",
-                            onClick = {
-                                val url = "https://github.com/ganiyucall911/VaultETH"
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                            }
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Developer", color = VaultTextSecondary)
+                            Text("vault.", fontWeight = FontWeight.SemiBold, color = VaultTextPrimary)
+                        }
                     }
                 }
             }
@@ -186,6 +183,57 @@ fun SettingsScreen(
                     )
                 }
             }
+        }
+
+        if (showPrivacyDialog) {
+            AlertDialog(
+                onDismissRequest = { showPrivacyDialog = false },
+                title = { Text("Privacy Policy", color = VaultTextPrimary, fontWeight = FontWeight.Bold) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Developer: vault.", color = VaultCyan, style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "• Zero Personal Data: VaultETH collects no personal information, analytics, or identifiers.\n\n" +
+                            "• Hardware Keystore: All keys and recovery phrases are stored exclusively in the Android Keystore with AES-256 GCM encryption.\n\n" +
+                            "• Decentralized RPC: Network queries connect directly to public Ethereum JSON-RPC nodes with zero middlemen.\n\n" +
+                            "• No Cloud Sync: Keys never leave this physical device.",
+                            color = VaultTextSecondary,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showPrivacyDialog = false }) {
+                        Text("Done", color = VaultCyan, fontWeight = FontWeight.Bold)
+                    }
+                },
+                containerColor = VaultSurface
+            )
+        }
+
+        if (showSupportDialog) {
+            AlertDialog(
+                onDismissRequest = { showSupportDialog = false },
+                title = { Text("Support & FAQ", color = VaultTextPrimary, fontWeight = FontWeight.Bold) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Developer: vault.", color = VaultCyan, style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "1. What is non-custodial?\nYou alone hold the keys to your funds. No central entity or developer can access your wallet.\n\n" +
+                            "2. Can my wallet be recovered if I lose my phrase?\nNo. Because your keys are generated locally in the Android Keystore, no one can recover a lost phrase. Always keep offline backups.\n\n" +
+                            "3. Are there platform fees?\nZero fees. Network gas fees go 100% to blockchain validators.",
+                            color = VaultTextSecondary,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showSupportDialog = false }) {
+                        Text("Done", color = VaultCyan, fontWeight = FontWeight.Bold)
+                    }
+                },
+                containerColor = VaultSurface
+            )
         }
     }
 }

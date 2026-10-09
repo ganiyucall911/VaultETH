@@ -1,8 +1,8 @@
 # Privacy Policy for VaultETH
 
-**Last Updated:** October 8, 2026
+**Last Updated:** October 2026
 
-VaultETH ("we", "our", or "the app") is an open-source, non-custodial Ethereum wallet application for iOS. Your privacy and financial self-sovereignty are fundamental design principles of VaultETH.
+VaultETH is a sovereign, self-custodial multi-chain wallet application developed by **vault.** ("we", "our", or "the app"). Your privacy and financial self-sovereignty are the fundamental design principles of VaultETH.
 
 ---
 
@@ -65,6 +65,6 @@ VaultETH does not knowingly collect or solicit any personal information from chi
 
 ## 7. Contact & Support
 
-If you have questions regarding this Privacy Policy or VaultETH's security architecture, you may contact us via:
-- **GitHub Repository:** [https://github.com/ganiyucall911/VaultETH](https://github.com/ganiyucall911/VaultETH)
-- **Support Issues:** [https://github.com/ganiyucall911/VaultETH/issues](https://github.com/ganiyucall911/VaultETH/issues)
+If you have questions regarding this Privacy Policy or VaultETH's non-custodial security architecture:
+- **Developer:** vault.
+- **In-App Support:** Access the offline Support & FAQ guide directly within VaultETH (*Settings > Support & FAQ*).
