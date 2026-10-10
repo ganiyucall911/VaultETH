@@ -9,6 +9,15 @@ final class WalletStore: ObservableObject {
     @Published var balanceError: String?
     @Published private(set) var selectedENSName: String?
     @Published private(set) var sentTransactions: [SentTransaction] = []
+    @Published var tokens: [TokenAsset] = TokenAsset.defaultAssets
+
+    var totalPortfolioUSD: Double {
+        tokens.reduce(0) { $0 + $1.fiatValueUSD }
+    }
+
+    var formattedTotalPortfolioUSD: String {
+        String(format: "$%.2f", totalPortfolioUSD)
+    }
 
     // Multi-Chain State
     @Published var selectedNetwork: BlockchainNetwork = .ethereum {

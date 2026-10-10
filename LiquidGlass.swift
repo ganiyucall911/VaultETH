@@ -21,7 +21,7 @@ extension Color {
 
 // MARK: - Liquid Glass Modifier
 
-/// Liquid Glass on iOS 26+ (when built with Swift 6.2+ toolchain), frosted obsidian glass everywhere else.
+/// Frosted titanium glass modifier built with native ultraThinMaterial and specular borders.
 struct VaultGlass: ViewModifier {
     var cornerRadius: CGFloat = 24
     var specularBorder: Bool = true
@@ -29,15 +29,7 @@ struct VaultGlass: ViewModifier {
     private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: cornerRadius, style: .continuous) }
 
     func body(content: Content) -> some View {
-        #if compiler(>=6.2)
-        if #available(iOS 26.0, *) {
-            content.glassEffect(.regular, in: shape)
-        } else {
-            fallback(content)
-        }
-        #else
         fallback(content)
-        #endif
     }
 
     private func fallback(_ content: Content) -> some View {

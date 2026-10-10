@@ -25,7 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vaulteth.app.core.BlockchainNetwork
+import com.vaulteth.app.core.DefaultTokenAssets
 import com.vaulteth.app.core.SentTransaction
+import com.vaulteth.app.core.TokenItem
 import com.vaulteth.app.core.VaultWallet
 import com.vaulteth.app.ui.components.VaultIdenticon
 import com.vaulteth.app.ui.theme.*
@@ -49,6 +51,7 @@ fun VaultHomeScreen(
     val clipboardManager = LocalClipboardManager.current
     var isDiscreetMode by remember { mutableStateOf(false) }
     var showNetworkDialog by remember { mutableStateOf(false) }
+    var showBuyDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = VaultBackground,
@@ -242,27 +245,33 @@ fun VaultHomeScreen(
 
                             Spacer(modifier = Modifier.height(18.dp))
 
-                            // Action Cockpit Buttons
+                            // Action Buttons
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 QuickActionButton(
+                                    icon = Icons.Default.Add,
+                                    label = "Buy",
+                                    color = VaultCyan,
+                                    onClick = { showBuyDialog = true }
+                                )
+                                QuickActionButton(
                                     icon = Icons.Default.ArrowUpward,
                                     label = "Send",
-                                    color = VaultCyan,
+                                    color = Color.White,
                                     onClick = onNavigateToSend
                                 )
                                 QuickActionButton(
                                     icon = Icons.Default.ArrowDownward,
                                     label = "Receive",
-                                    color = VaultEmerald,
+                                    color = Color.White,
                                     onClick = onNavigateToReceive
                                 )
                                 QuickActionButton(
                                     icon = Icons.Default.QrCodeScanner,
                                     label = "Scan",
-                                    color = VaultViolet,
+                                    color = Color.White,
                                     onClick = onNavigateToScan
                                 )
                             }
@@ -286,6 +295,95 @@ fun VaultHomeScreen(
                             ) {
                                 Text("Open Vault Manager", color = Color.Black, fontWeight = FontWeight.Bold)
                             }
+                        }
+                    }
+                }
+            }
+
+            // Assets & Tokens Section
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Assets & Tokens",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = VaultTextPrimary
+                    )
+                    Text(
+                        text = "${DefaultTokenAssets.size} Assets",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = VaultTextSecondary
+                    )
+                }
+            }
+
+            items(DefaultTokenAssets) { token ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .border(1.dp, VaultBorder, RoundedCornerShape(16.dp))
+                        .clickable { showBuyDialog = true },
+                    colors = CardDefaults.cardColors(containerColor = VaultSurface)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(token.accentHex)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = token.symbol.take(3),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
+                                    color = Color.White
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = token.name,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = VaultTextPrimary
+                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = token.priceFormatted,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = VaultTextSecondary
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = token.changeFormatted,
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = if (token.isPositive) VaultEmerald else Color(0xFFFF5252)
+                                    )
+                                }
+                            }
+                        }
+
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = if (isDiscreetMode) "••••" else token.holdingFormatted,
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                color = VaultTextPrimary
+                            )
+                            Text(
+                                text = if (isDiscreetMode) "••••" else token.fiatFormatted,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = VaultTextMuted
+                            )
                         }
                     }
                 }
@@ -437,6 +535,56 @@ fun VaultHomeScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showNetworkDialog = false }) {
+                    Text("Close", color = VaultCyan)
+                }
+            },
+            containerColor = VaultBackground
+        )
+    }
+
+    if (showBuyDialog) {
+        AlertDialog(
+            onDismissRequest = { showBuyDialog = false },
+            title = {
+                Text(
+                    text = "Add & Purchase Tokens",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = VaultTextPrimary
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = "Choose your preferred payment method:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = VaultTextSecondary
+                    )
+                    listOf(
+                        "Google Pay" to "Instant 1-tap checkout on Android",
+                        "Debit / Credit Card" to "Visa, Mastercard via Stripe & MoonPay",
+                        "Bank Transfer (Wire/SEPA)" to "Lowest fee (0.5%) • Direct account deposit",
+                        "External Wallet Transfer" to "Deposit from Coinbase, Binance, or cold wallet"
+                    ).forEach { (title, subtitle) ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, VaultBorder, RoundedCornerShape(12.dp))
+                                .clickable {
+                                    Toast.makeText(context, "$title selected", Toast.LENGTH_SHORT).show()
+                                    showBuyDialog = false
+                                },
+                            colors = CardDefaults.cardColors(containerColor = VaultSurfaceVariant)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(text = title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = VaultTextPrimary)
+                                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = VaultTextMuted)
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showBuyDialog = false }) {
                     Text("Close", color = VaultCyan)
                 }
             },

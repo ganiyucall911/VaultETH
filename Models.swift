@@ -297,3 +297,52 @@ enum WalletError: LocalizedError, Equatable {
         }
     }
 }
+
+// MARK: - Tokens & Asset Holdings
+
+/// Represents an individual cryptocurrency / token held across supported networks.
+struct TokenAsset: Identifiable, Hashable, Sendable {
+    let id: String
+    let symbol: String
+    let name: String
+    let networkID: String
+    let networkName: String
+    let priceUSD: Double
+    let change24h: Double
+    var balance: Double
+    let accentHex: String
+
+    var fiatValueUSD: Double { balance * priceUSD }
+
+    var formattedPrice: String {
+        if priceUSD >= 1.0 {
+            return String(format: "$%.2f", priceUSD)
+        } else {
+            return String(format: "$%.4f", priceUSD)
+        }
+    }
+
+    var formattedChange: String {
+        let prefix = change24h >= 0 ? "+" : ""
+        return String(format: "%@%.2f%%", prefix, change24h)
+    }
+
+    var formattedHolding: String {
+        return String(format: "%.4f %@", balance, symbol)
+    }
+
+    var formattedFiat: String {
+        return String(format: "$%.2f", fiatValueUSD)
+    }
+
+    static let defaultAssets: [TokenAsset] = [
+        TokenAsset(id: "eth", symbol: "ETH", name: "Ethereum", networkID: "ethereum", networkName: "Ethereum Mainnet", priceUSD: 3485.20, change24h: 4.82, balance: 4.8250, accentHex: "#627EEA"),
+        TokenAsset(id: "btc", symbol: "BTC", name: "Bitcoin", networkID: "bitcoin", networkName: "Bitcoin SegWit", priceUSD: 64120.00, change24h: 2.15, balance: 0.1850, accentHex: "#F7931A"),
+        TokenAsset(id: "sol", symbol: "SOL", name: "Solana", networkID: "solana", networkName: "Solana Native", priceUSD: 152.40, change24h: 6.38, balance: 24.50, accentHex: "#14F195"),
+        TokenAsset(id: "usdc", symbol: "USDC", name: "USD Coin", networkID: "ethereum", networkName: "Ethereum", priceUSD: 1.00, change24h: 0.00, balance: 1430.00, accentHex: "#2775CA"),
+        TokenAsset(id: "arb", symbol: "ARB", name: "Arbitrum", networkID: "arbitrum", networkName: "Arbitrum One", priceUSD: 1.18, change24h: 3.20, balance: 850.00, accentHex: "#28A0F0"),
+        TokenAsset(id: "op", symbol: "OP", name: "Optimism", networkID: "optimism", networkName: "Optimism", priceUSD: 1.85, change24h: -1.45, balance: 420.00, accentHex: "#FF0420"),
+        TokenAsset(id: "pol", symbol: "POL", name: "Polygon", networkID: "polygon", networkName: "Polygon PoS", priceUSD: 0.42, change24h: 1.12, balance: 1250.00, accentHex: "#8247E5"),
+        TokenAsset(id: "bnb", symbol: "BNB", name: "BNB", networkID: "bsc", networkName: "BNB Smart Chain", priceUSD: 585.30, change24h: 0.88, balance: 2.10, accentHex: "#F3BA2F")
+    ]
+}

@@ -160,6 +160,42 @@
       "created_at": "2026-10-09T17:30:08.014Z",
       "sender": "ios",
       "is_cancelled": false
+    },
+    {
+      "id": "cab8fe30-8c56-4452-be60-92be49070882",
+      "role": "user",
+      "content": "This is looking way too Artificial",
+      "status": "cancelled",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-10T14:12:15.719Z",
+      "sender": "ios",
+      "is_cancelled": true
+    },
+    {
+      "id": "4c93506b-994a-4a45-89a4-2259b599b5ef",
+      "role": "user",
+      "content": "This is looking way too Artificial",
+      "status": "cancelled",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-10T14:13:58.231Z",
+      "sender": "ios",
+      "is_cancelled": true
+    },
+    {
+      "id": "211c27a2-544e-4055-801d-59ad4ba40464",
+      "role": "user",
+      "content": "This is looking way too Artificial",
+      "status": "pending",
+      "model": "auto",
+      "client_type": "gemini-bridge",
+      "parent_message_id": null,
+      "created_at": "2026-10-10T14:21:00.227Z",
+      "sender": "ios",
+      "is_cancelled": false
     }
   ]
 }

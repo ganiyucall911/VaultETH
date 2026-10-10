@@ -67,28 +67,32 @@ struct HomeView: View {
 
     @State private var showSendSheet = false
     @State private var showReceiveSheet = false
+    @State private var showBuySheet = false
     @State private var showScanner = false
     @State private var showNetworkPicker = false
     @State private var showENSManager = false
+    @State private var selectedTokenForDetail: TokenAsset? = nil
+    @State private var tokenFilter: String = "all"
     @State private var copiedToast = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Interactive Multi-Chain Network Beacon
+                // Interactive Multi-Chain Network Selector
                 networkSelectorButton
 
-                // Hero Vault Card
+                // Hero Portfolio & Vault Card
                 vaultHeroCard
 
-                // Action Cockpit (Send / Receive / Scan / Copy)
-                cockpitActions
+                // Core Action Buttons (Buy, Send, Receive, Swap)
+                coreActionButtons
+
+                // Token Assets Section
+                tokensSection
 
                 // Backup Status Banner
                 if let account = store.selectedAccount, !account.backedUp {
                     backupWarningBanner(account: account)
-                } else if store.selectedAccount != nil {
-                    securityHealthPill
                 }
 
                 // Recent Multi-Chain Activity Snapshot
@@ -139,6 +143,12 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showReceiveSheet) {
             NavigationStack { ReceiveView() }
+        }
+        .sheet(isPresented: $showBuySheet) {
+            NavigationStack { BuyTokensSheet() }
+        }
+        .sheet(item: $selectedTokenForDetail) { token in
+            NavigationStack { TokenDetailSheet(token: token) }
         }
         .sheet(isPresented: $showNetworkPicker) {
             NavigationStack { NetworkPickerSheet() }
@@ -293,19 +303,40 @@ struct HomeView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Balance on \(store.selectedNetwork.name)")
+                Text("Total Balance")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
 
                 if isDiscreetMode {
-                    Text("•••••••• \(store.selectedNetwork.symbol)")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                    Text("••••••••")
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.vaultCyan)
                 } else {
-                    Text(store.balanceETH)
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
-                        .minimumScaleFactor(0.4)
-                        .lineLimit(1)
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(store.formattedTotalPortfolioUSD)
+                            .font(.system(size: 36, weight: .bold, design: .rounded))
+                            .minimumScaleFactor(0.4)
+                            .lineLimit(1)
+
+                        HStack(spacing: 3) {
+                            Image(systemName: "arrow.up.right")
+                            Text("+4.82%")
+                        }
+                        .font(.caption.bold())
+                        .foregroundStyle(Color.vaultEmerald)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(Color.vaultEmerald.opacity(0.15), in: Capsule())
+                    }
+                }
+
+                HStack(spacing: 6) {
+                    Text("On \(store.selectedNetwork.name):")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(isDiscreetMode ? "••••" : store.balanceETH)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.primary)
                 }
 
                 if let error = store.balanceError {
@@ -319,48 +350,152 @@ struct HomeView: View {
         .vaultCard(cornerRadius: 24)
     }
 
-    private var cockpitActions: some View {
+    private var coreActionButtons: some View {
         HStack(spacing: 12) {
-            cockpitButton(title: "Send", systemImage: "arrow.up.right", color: Color.vaultCyan) {
+            coreActionButton(title: "Buy", systemImage: "plus", color: Color.vaultCyan, isProminent: true) {
+                showBuySheet = true
+            }
+
+            coreActionButton(title: "Send", systemImage: "arrow.up.right", color: .white, isProminent: false) {
                 showSendSheet = true
             }
 
-            cockpitButton(title: "Receive", systemImage: "arrow.down.left", color: Color.vaultViolet) {
+            coreActionButton(title: "Receive", systemImage: "arrow.down.left", color: .white, isProminent: false) {
                 showReceiveSheet = true
             }
 
-            cockpitButton(title: "Scan", systemImage: "qrcode.viewfinder", color: Color.white) {
-                showScanner = true
-            }
-
-            cockpitButton(title: "Copy", systemImage: "doc.on.doc", color: Color.secondary) {
-                if let addr = store.selectedAccount?.address {
-                    copyAddress(addr)
-                }
+            coreActionButton(title: "Swap", systemImage: "arrow.triangle.2.circlepath", color: .white, isProminent: false) {
+                showSendSheet = true
             }
         }
     }
 
-    private func cockpitButton(title: String, systemImage: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func coreActionButton(title: String, systemImage: String, color: Color, isProminent: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: 7) {
                 ZStack {
                     Circle()
-                        .fill(Color.white.opacity(0.06))
+                        .fill(isProminent ? Color.vaultCyan.opacity(0.18) : Color.white.opacity(0.06))
                         .frame(width: 48, height: 48)
 
                     Image(systemName: systemImage)
                         .font(.title3.weight(.semibold))
-                        .foregroundStyle(color)
+                        .foregroundStyle(isProminent ? Color.vaultCyan : color)
                 }
 
                 Text(title)
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .vaultGlass(cornerRadius: 18)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var tokensSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Tokens")
+                    .font(.headline.weight(.bold))
+
+                Spacer()
+
+                Text("\(store.tokens.count) Assets")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            // Filter pills
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    filterPill(title: "All Chains", id: "all")
+                    filterPill(title: "Ethereum", id: "ethereum")
+                    filterPill(title: "Bitcoin", id: "bitcoin")
+                    filterPill(title: "Solana", id: "solana")
+                    filterPill(title: "Arbitrum", id: "arbitrum")
+                    filterPill(title: "Optimism", id: "optimism")
+                }
+            }
+
+            // Tokens List
+            VStack(spacing: 8) {
+                let filtered = store.tokens.filter { token in
+                    if tokenFilter == "all" { return true }
+                    return token.networkID == tokenFilter
+                }
+
+                ForEach(filtered) { token in
+                    Button {
+                        selectedTokenForDetail = token
+                    } label: {
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(Color(hex: token.accentHex))
+                                .frame(width: 40, height: 40)
+                                .overlay(
+                                    Text(token.symbol.prefix(3))
+                                        .font(.system(size: 11, weight: .black, design: .rounded))
+                                        .foregroundStyle(.white)
+                                )
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(token.name)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.primary)
+
+                                HStack(spacing: 6) {
+                                    Text(token.formattedPrice)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+
+                                    Text(token.formattedChange)
+                                        .font(.caption2.weight(.bold))
+                                        .foregroundStyle(token.change24h >= 0 ? Color.vaultEmerald : Color.red)
+                                }
+                            }
+
+                            Spacer()
+
+                            VStack(alignment: .trailing, spacing: 2) {
+                                if isDiscreetMode {
+                                    Text("••••")
+                                        .font(.subheadline.bold())
+                                        .foregroundStyle(.primary)
+                                    Text("••••")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                } else {
+                                    Text(token.formattedHolding)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.primary)
+                                    Text(token.formattedFiat)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .padding(14)
+                        .vaultGlass(cornerRadius: 16)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private func filterPill(title: String, id: String) -> some View {
+        Button {
+            tokenFilter = id
+        } label: {
+            Text(title)
+                .font(.caption.bold())
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(tokenFilter == id ? Color.white.opacity(0.18) : Color.white.opacity(0.04), in: Capsule())
+                .overlay(Capsule().strokeBorder(tokenFilter == id ? Color.white.opacity(0.3) : Color.clear, lineWidth: 1))
+                .foregroundStyle(tokenFilter == id ? .white : .secondary)
         }
         .buttonStyle(.plain)
     }
@@ -1135,6 +1270,411 @@ struct WelcomeView: View {
         }
         .padding(14)
         .vaultGlass(cornerRadius: 16)
+    }
+// MARK: - Token Detail Sheet
+
+struct TokenDetailSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: WalletStore
+    let token: TokenAsset
+
+    @State private var selectedTimeframe = "1D"
+    @State private var showSend = false
+    @State private var showReceive = false
+    @State private var showBuy = false
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                // Token Hero Header
+                VStack(spacing: 6) {
+                    Circle()
+                        .fill(Color(hex: token.accentHex))
+                        .frame(width: 54, height: 54)
+                        .overlay(
+                            Text(token.symbol.prefix(3))
+                                .font(.system(size: 15, weight: .black, design: .rounded))
+                                .foregroundStyle(.white)
+                        )
+
+                    Text(token.name)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    Text(token.formattedPrice)
+                        .font(.system(size: 38, weight: .bold, design: .rounded))
+
+                    HStack(spacing: 4) {
+                        Image(systemName: token.change24h >= 0 ? "arrow.up.right" : "arrow.down.right")
+                        Text(token.formattedChange)
+                    }
+                    .font(.subheadline.bold())
+                    .foregroundStyle(token.change24h >= 0 ? Color.vaultEmerald : Color.red)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background((token.change24h >= 0 ? Color.vaultEmerald : Color.red).opacity(0.12), in: Capsule())
+                }
+                .padding(.top, 10)
+
+                // Timeframe Sparkline
+                VStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.white.opacity(0.04))
+                        .frame(height: 120)
+                        .overlay(
+                            Path { path in
+                                path.move(to: CGPoint(x: 20, y: 90))
+                                path.addCurve(to: CGPoint(x: 120, y: 50), control1: CGPoint(x: 60, y: 100), control2: CGPoint(x: 90, y: 40))
+                                path.addCurve(to: CGPoint(x: 220, y: 70), control1: CGPoint(x: 160, y: 60), control2: CGPoint(x: 190, y: 80))
+                                path.addCurve(to: CGPoint(x: 320, y: 25), control1: CGPoint(x: 260, y: 60), control2: CGPoint(x: 290, y: 20))
+                            }
+                            .stroke(Color(hex: token.accentHex), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                        )
+
+                    HStack {
+                        ForEach(["1D", "1W", "1M", "1Y", "ALL"], id: \.self) { tf in
+                            Button {
+                                selectedTimeframe = tf
+                            } label: {
+                                Text(tf)
+                                    .font(.caption.bold())
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(selectedTimeframe == tf ? Color.white.opacity(0.15) : Color.clear, in: Capsule())
+                                    .foregroundStyle(selectedTimeframe == tf ? .white : .secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .padding(16)
+                .vaultGlass(cornerRadius: 20)
+
+                // Your Holdings Card
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Your Balance")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(token.formattedHolding)
+                            .font(.title2.bold())
+                        Spacer()
+                        Text(token.formattedFiat)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(Color.vaultCyan)
+                    }
+
+                    HStack {
+                        Text("Network")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(token.networkName)
+                            .font(.caption.weight(.semibold))
+                    }
+                }
+                .padding(18)
+                .vaultGlass(cornerRadius: 18)
+
+                // Quick Action Buttons
+                HStack(spacing: 12) {
+                    Button {
+                        showBuy = true
+                    } label: {
+                        VStack(spacing: 6) {
+                            Image(systemName: "plus")
+                                .font(.title3.bold())
+                            Text("Buy")
+                                .font(.caption.bold())
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.vaultCyan.opacity(0.18), in: RoundedRectangle(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.vaultCyan.opacity(0.4), lineWidth: 1))
+                        .foregroundStyle(Color.vaultCyan)
+                    }
+
+                    Button {
+                        showSend = true
+                    } label: {
+                        VStack(spacing: 6) {
+                            Image(systemName: "arrow.up.right")
+                                .font(.title3.bold())
+                            Text("Send")
+                                .font(.caption.bold())
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .vaultGlass(cornerRadius: 14)
+                        .foregroundStyle(.white)
+                    }
+
+                    Button {
+                        showReceive = true
+                    } label: {
+                        VStack(spacing: 6) {
+                            Image(systemName: "arrow.down.left")
+                                .font(.title3.bold())
+                            Text("Receive")
+                                .font(.caption.bold())
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .vaultGlass(cornerRadius: 14)
+                        .foregroundStyle(.white)
+                    }
+                }
+
+                // Market Stats Grid
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Market Stats")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        statCell(title: "24h High", value: token.priceUSD >= 1 ? String(format: "$%.2f", token.priceUSD * 1.03) : String(format: "$%.4f", token.priceUSD * 1.03))
+                        statCell(title: "24h Low", value: token.priceUSD >= 1 ? String(format: "$%.2f", token.priceUSD * 0.97) : String(format: "$%.4f", token.priceUSD * 0.97))
+                        statCell(title: "Market Cap", value: token.symbol == "ETH" ? "$418.2B" : (token.symbol == "BTC" ? "$1.26T" : "$12.4B"))
+                        statCell(title: "24h Volume", value: token.symbol == "ETH" ? "$14.8B" : (token.symbol == "BTC" ? "$28.4B" : "$1.2B"))
+                    }
+                }
+                .padding(18)
+                .vaultGlass(cornerRadius: 18)
+            }
+            .padding(18)
+        }
+        .background(Color.vaultBackground.ignoresSafeArea())
+        .navigationTitle(token.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Done") { dismiss() }
+            }
+        }
+        .sheet(isPresented: $showSend) { NavigationStack { SendView() } }
+        .sheet(isPresented: $showReceive) { NavigationStack { ReceiveView() } }
+        .sheet(isPresented: $showBuy) { NavigationStack { BuyTokensSheet(initialToken: token) } }
+    }
+
+    private func statCell(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.subheadline.bold())
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Color.white.opacity(0.03), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// MARK: - Buy Tokens Sheet
+
+struct BuyTokensSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: WalletStore
+    var initialToken: TokenAsset? = nil
+
+    @State private var selectedTokenSymbol: String = "ETH"
+    @State private var fiatAmountText: String = "250"
+    @State private var selectedPaymentMethod: PaymentMethod = .applePay
+    @State private var isProcessing: Bool = false
+    @State private var showSuccess: Bool = false
+
+    enum PaymentMethod: String, CaseIterable, Identifiable {
+        case applePay = "Apple Pay"
+        case card = "Credit / Debit Card"
+        case bank = "Bank Transfer (SEPA / Wire)"
+        case deposit = "External Wallet Transfer"
+
+        var id: String { rawValue }
+        var icon: String {
+            switch self {
+            case .applePay: return "apple.logo"
+            case .card: return "creditcard.fill"
+            case .bank: return "building.columns.fill"
+            case .deposit: return "arrow.down.circle.fill"
+            }
+        }
+        var subtitle: String {
+            switch self {
+            case .applePay: return "Instant 1-tap checkout with Face ID"
+            case .card: return "Visa, Mastercard via Stripe & MoonPay"
+            case .bank: return "Lowest fee (0.5%) • Direct deposit"
+            case .deposit: return "Send from Coinbase, Binance, or ledger"
+            }
+        }
+    }
+
+    var selectedToken: TokenAsset {
+        store.tokens.first(where: { $0.symbol == selectedTokenSymbol }) ?? store.tokens[0]
+    }
+
+    var estimatedTokens: String {
+        guard let fiat = Double(fiatAmountText), fiat > 0, selectedToken.priceUSD > 0 else { return "0.0000" }
+        let tokens = fiat / selectedToken.priceUSD
+        return String(format: "%.4f", tokens)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                // Amount Card
+                VStack(spacing: 12) {
+                    Text("You Pay (USD)")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    HStack(spacing: 4) {
+                        Text("$")
+                            .font(.system(size: 38, weight: .bold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                        TextField("250", text: $fiatAmountText)
+                            .font(.system(size: 44, weight: .bold, design: .rounded))
+                            .keyboardType(.numberPad)
+                            .frame(maxWidth: 180)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                    // Quick presets
+                    HStack(spacing: 8) {
+                        ForEach(["100", "250", "500", "1000"], id: \.self) { amt in
+                            Button {
+                                fiatAmountText = amt
+                            } label: {
+                                Text("$\(amt)")
+                                    .font(.caption.bold())
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(fiatAmountText == amt ? Color.vaultCyan.opacity(0.2) : Color.white.opacity(0.06), in: Capsule())
+                                    .overlay(Capsule().strokeBorder(fiatAmountText == amt ? Color.vaultCyan : Color.clear, lineWidth: 1))
+                                    .foregroundStyle(fiatAmountText == amt ? Color.vaultCyan : .primary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    Divider().padding(.vertical, 4)
+
+                    // Token To Receive
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("You Receive")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Text("≈ \(estimatedTokens) \(selectedToken.symbol)")
+                                .font(.headline.bold())
+                                .foregroundStyle(Color.vaultEmerald)
+                        }
+
+                        Spacer()
+
+                        Picker("Token", selection: $selectedTokenSymbol) {
+                            ForEach(store.tokens) { t in
+                                Text(t.symbol).tag(t.symbol)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .tint(Color.vaultCyan)
+                    }
+                }
+                .padding(20)
+                .vaultGlass(cornerRadius: 22)
+
+                // Payment Methods
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Payment Method")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    ForEach(PaymentMethod.allCases) { method in
+                        Button {
+                            selectedPaymentMethod = method
+                        } label: {
+                            HStack(spacing: 14) {
+                                Image(systemName: method.icon)
+                                    .font(.title3)
+                                    .foregroundStyle(selectedPaymentMethod == method ? Color.vaultCyan : .secondary)
+                                    .frame(width: 28)
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(method.rawValue)
+                                        .font(.subheadline.bold())
+                                        .foregroundStyle(.primary)
+                                    Text(method.subtitle)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                if selectedPaymentMethod == method {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(Color.vaultCyan)
+                                }
+                            }
+                            .padding(14)
+                            .background(
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .fill(selectedPaymentMethod == method ? Color.vaultCyan.opacity(0.08) : Color.white.opacity(0.03))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                            .strokeBorder(selectedPaymentMethod == method ? Color.vaultCyan.opacity(0.4) : Color.white.opacity(0.06), lineWidth: 1)
+                                    )
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(18)
+                .vaultGlass(cornerRadius: 20)
+
+                // Pay Button
+                Button {
+                    isProcessing = true
+                    Task {
+                        try? await Task.sleep(for: .seconds(1))
+                        isProcessing = false
+                        showSuccess = true
+                    }
+                } label: {
+                    HStack {
+                        if isProcessing {
+                            ProgressView().tint(.black)
+                        } else {
+                            Image(systemName: selectedPaymentMethod == .applePay ? "apple.logo" : "checkmark.shield.fill")
+                            Text("Pay $\(fiatAmountText) with \(selectedPaymentMethod.rawValue)")
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .vaultButton(.prominent)
+                .disabled(isProcessing || (Double(fiatAmountText) ?? 0) <= 0)
+            }
+            .padding(18)
+        }
+        .background(Color.vaultBackground.ignoresSafeArea())
+        .navigationTitle("Buy Crypto")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { dismiss() }
+            }
+        }
+        .alert("Order Submitted", isPresented: $showSuccess) {
+            Button("Done") { dismiss() }
+        } message: {
+            Text("Your purchase of \(estimatedTokens) \(selectedToken.symbol) via \(selectedPaymentMethod.rawValue) has been submitted. Tokens will arrive directly into your vault upon bank clearance.")
+        }
+        .onAppear {
+            if let initTok = initialToken {
+                selectedTokenSymbol = initTok.symbol
+            }
+        }
     }
 }
 
