@@ -57,16 +57,20 @@ jobs:
 
       - name: Run Unit Tests
         run: |
+          # List available simulators and pick first available iPhone
+          xcrun simctl list devices available
           SIM_NAME=$(xcrun simctl list devices available | grep -E "iPhone" | head -n 1 | sed -E 's/.*(iPhone [^()]+).*/\1/' | xargs)
           if [ -z "$SIM_NAME" ]; then
             SIM_NAME="iPhone 15"
           fi
           echo "Selected simulator: $SIM_NAME"
+          xcrun simctl boot "$SIM_NAME" || true
 
+          set -o pipefail
           xcodebuild test \
             -project VaultETH.xcodeproj \
             -scheme VaultETH \
             -destination "platform=iOS Simulator,name=$SIM_NAME" \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee test_run.log
