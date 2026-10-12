@@ -83,8 +83,8 @@ struct TransactionHistoryView: View {
                                     VaultHaptics.success()
                                     #endif
                                 }
-                                if let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io",
-                                   let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {
+                                let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io"
+                                if let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {
                                     ShareLink("Share on Explorer", item: url)
                                 }
                                 Divider()
@@ -268,8 +268,8 @@ private struct TransactionDetailSheet: View {
                 .padding(18)
                 .vaultGlass(cornerRadius: 18)
 
-                if let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io",
-                   let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {
+                let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io"
+                if let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {
                     Link(destination: url) {
                         Label("Inspect on \(tx.networkName ?? "Block") Explorer ↗", systemImage: "safari")
                             .frame(maxWidth: .infinity)

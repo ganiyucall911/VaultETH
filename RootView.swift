@@ -1101,11 +1101,11 @@ struct ProtocolTreasurySheet: View {
 
     @State private var isEnabled: Bool = false
     @State private var treasuryAddress: String = ""
-    @State private var feeBasisPoints: UInt16 = 15
+    @State private var feeBasisPoints: Int = 15
     @State private var isTransparent: Bool = true
     @State private var saveNotice: String?
 
-    private let feeTiers: [UInt16] = [5, 10, 15, 25, 50]
+    private let feeTiers: [Int] = [5, 10, 15, 25, 50]
 
     var body: some View {
         Form {
@@ -1172,8 +1172,8 @@ struct ProtocolTreasurySheet: View {
                 HStack {
                     Text("Total Collected (Lifetime)")
                     Spacer()
-                    let collectedWei = Data(hex: store.feeConfig.totalCollectedWei)
-                    Text(ETHAmount.format(wei: collectedWei) + " " + store.selectedNetwork.symbol)
+                    let amount = ETHAmount.format(wei: Data(vaultHex: store.feeConfig.totalCollectedWei) ?? Data())
+                    Text("\(amount) \(store.selectedNetwork.symbol)")
                         .font(.caption.monospaced())
                         .foregroundStyle(Color.vaultEmerald)
                 }

@@ -168,7 +168,7 @@ struct ENSManagerView: View {
                 .vaultGlass(cornerRadius: 14)
 
                 let normalized = ENSResolver.normalizeENSName(searchName)
-                let pricing = ENSResolver.estimateAnnualCost(for: searchName)
+                let pricing = ENSResolver.estimateAnnualCost(for: normalized)
                 if !searchName.trimmingCharacters(in: .whitespaces).isEmpty {
                     HStack {
                         Text("Est. Base Fee: \(pricing.eth) (\(pricing.usd))")

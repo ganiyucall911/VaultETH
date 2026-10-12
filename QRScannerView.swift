@@ -38,7 +38,7 @@ struct QRScannerView: UIViewControllerRepresentable {
             hasScanned = true
             onScan(value)
             let d = dismiss
-            Task { @MainActor in d() }
+            DispatchQueue.main.async { d() }
         }
     }
 }
