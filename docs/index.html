@@ -6,29 +6,49 @@
   <title>VaultETH | Self-Custodial Multi-Chain Wallet for iOS & Android</title>
   <meta name="description" content="Universal self-custodial multi-chain wallet for iOS and Android. Hardware Secure Enclave protection, real-time token tracking, Apple Pay & Google Pay on-ramping, and zero cloud tracking.">
   <link rel="icon" type="image/png" href="assets/app-icon.png">
+
+  <!-- Google Fonts: Outfit for sleek modern display & JetBrains Mono for cryptographic addresses -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #0A0B0F;
-      --bg-card: rgba(16, 20, 29, 0.75);
-      --bg-card-hover: rgba(22, 28, 42, 0.88);
-      --bg-subtle: rgba(255, 255, 255, 0.03);
+      --bg: #07090E;
+      --bg-surface: #0E121C;
+      --bg-card: rgba(16, 22, 34, 0.72);
+      --bg-card-hover: rgba(24, 32, 50, 0.88);
+      --bg-subtle: rgba(255, 255, 255, 0.04);
       --border: rgba(255, 255, 255, 0.08);
-      --border-highlight: rgba(255, 255, 255, 0.16);
-      --border-cyan: rgba(0, 229, 255, 0.35);
+      --border-highlight: rgba(255, 255, 255, 0.18);
+      --border-cyan: rgba(0, 229, 255, 0.38);
+      --border-violet: rgba(139, 92, 246, 0.38);
+      
       --primary: #00E5FF;
       --primary-dim: rgba(0, 229, 255, 0.12);
+      --primary-glow: rgba(0, 229, 255, 0.35);
+      
+      --violet: #8B5CF6;
+      --violet-dim: rgba(139, 92, 246, 0.12);
+      --violet-glow: rgba(139, 92, 246, 0.35);
+      
       --blue: #3B82F6;
       --emerald: #10B981;
-      --emerald-dim: rgba(16, 185, 129, 0.12);
+      --emerald-dim: rgba(16, 185, 129, 0.14);
+      --amber: #F59E0B;
+      
       --text: #F8FAFC;
       --text-muted: #94A3B8;
       --text-dim: #64748B;
+      
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
       --radius-xl: 30px;
-      --glass-blur: blur(20px);
-      --transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --glass-blur: blur(24px) saturate(180%);
+      --transition: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-spring: 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,7 +57,7 @@
       scroll-behavior: smooth;
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -51,25 +71,99 @@
       position: relative;
     }
 
-    /* Ambient Subtle Lighting (No moving particles) */
-    .hero-glow {
+    /* Tabular numbers across crypto statistics */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Ambient Subtle Cyber Lighting */
+    .hero-glow-cyan {
       position: absolute;
-      top: 0;
-      left: 50%;
+      top: -100px;
+      left: 30%;
       transform: translateX(-50%);
-      width: min(1000px, 100vw);
-      height: 600px;
-      background: radial-gradient(circle at 50% 15%, rgba(0, 229, 255, 0.12) 0%, rgba(59, 130, 246, 0.06) 45%, transparent 70%);
+      width: min(750px, 90vw);
+      height: 550px;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.14) 0%, rgba(0, 229, 255, 0.02) 55%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(40px);
+    }
+
+    .hero-glow-violet {
+      position: absolute;
+      top: 50px;
+      left: 70%;
+      transform: translateX(-50%);
+      width: min(650px, 85vw);
+      height: 500px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.02) 50%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(50px);
+    }
+
+    .cyber-grid-overlay {
+      position: absolute;
+      inset: 0;
+      height: 1000px;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 85%);
+      -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 85%);
       pointer-events: none;
       z-index: 0;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1220px;
       margin: 0 auto;
       padding: 0 24px;
       position: relative;
       z-index: 1;
+    }
+
+    /* Live Marquee Price Ticker Strip */
+    .ticker-bar {
+      position: relative;
+      background: rgba(11, 14, 22, 0.9);
+      border-bottom: 1px solid var(--border);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      white-space: nowrap;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      z-index: 90;
+      margin-top: 72px;
+    }
+    .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      gap: 36px;
+      animation: tickerScroll 40s linear infinite;
+    }
+    .ticker-track:hover {
+      animation-play-state: paused;
+    }
+    @keyframes tickerScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .ticker-item .sym { color: #fff; font-weight: 700; }
+    .ticker-item .val { font-family: 'JetBrains Mono', monospace; color: #fff; }
+    .ticker-item .gain { color: var(--emerald); font-weight: 700; font-size: 11px; }
+    .ticker-item .pulse-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
     }
 
     /* Header & Navbar */
@@ -78,7 +172,7 @@
       top: 0; left: 0; right: 0;
       height: 72px;
       z-index: 100;
-      background: rgba(10, 11, 15, 0.85);
+      background: rgba(7, 9, 14, 0.85);
       backdrop-filter: var(--glass-blur);
       -webkit-backdrop-filter: var(--glass-blur);
       border-bottom: 1px solid var(--border);
@@ -89,9 +183,9 @@
       transition: background var(--transition);
     }
     .navbar.scrolled {
-      background: rgba(10, 11, 15, 0.95);
+      background: rgba(7, 9, 14, 0.95);
       border-bottom-color: var(--border-highlight);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     .brand {
@@ -102,21 +196,22 @@
       color: #fff;
     }
     .brand-logo-wrap {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
     }
     .brand-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
     .brand-text-col { display: flex; flex-direction: column; }
-    .brand-name { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
-    .brand-name .highlight { color: var(--primary); }
-    .brand-sub { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .brand-name { font-size: 20px; font-weight: 850; letter-spacing: -0.5px; line-height: 1.1; }
+    .brand-name .highlight { color: var(--primary); text-shadow: 0 0 16px rgba(0, 229, 255, 0.5); }
+    .brand-sub { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
 
     .nav-center {
       display: none;
@@ -132,9 +227,19 @@
       font-size: 14px;
       font-weight: 600;
       transition: color var(--transition);
+      position: relative;
     }
-    .nav-center a:hover, .nav-center a.nav-active {
+    .nav-center a:hover {
       color: #fff;
+    }
+    .nav-center a:hover::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0; right: 0;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 2px;
     }
 
     .nav-right {
@@ -154,10 +259,12 @@
       font-weight: 700;
       text-decoration: none;
       transition: all var(--transition);
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.2);
     }
     .btn-get-app:hover {
       background: var(--primary);
       transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4);
     }
 
     .menu-toggle-btn {
@@ -182,8 +289,8 @@
     .sidebar-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
       z-index: 199;
       opacity: 0;
       pointer-events: none;
@@ -195,7 +302,7 @@
       position: fixed;
       top: 0; right: 0; bottom: 0;
       width: min(320px, 86vw);
-      background: #0E1118;
+      background: #0B0E16;
       border-left: 1px solid var(--border);
       z-index: 200;
       transform: translateX(100%);
@@ -227,7 +334,7 @@
 
     /* Hero Section */
     .hero-section {
-      padding: 150px 0 70px;
+      padding: 100px 0 70px;
       text-align: center;
       position: relative;
     }
@@ -237,8 +344,9 @@
       gap: 8px;
       padding: 6px 16px;
       border-radius: 20px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.15);
       font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
@@ -246,24 +354,25 @@
     }
     .hero-pill-badge .dot {
       width: 7px; height: 7px; border-radius: 50%; background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
     }
     .hero-title {
-      font-size: clamp(38px, 6vw, 68px);
-      font-weight: 850;
-      letter-spacing: -1.8px;
-      line-height: 1.08;
-      max-width: 900px;
+      font-size: clamp(40px, 6.2vw, 72px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.06;
+      max-width: 940px;
       margin: 0 auto 24px;
     }
     .gradient-text {
-      background: linear-gradient(135deg, #FFFFFF 20%, #93C5FD 70%, #00E5FF 100%);
+      background: linear-gradient(135deg, #FFFFFF 20%, #93C5FD 55%, #00E5FF 85%, #8B5CF6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero-lead {
       font-size: clamp(16px, 2vw, 19px);
       color: var(--text-muted);
-      max-width: 660px;
+      max-width: 680px;
       margin: 0 auto 36px;
       line-height: 1.6;
     }
@@ -284,15 +393,19 @@
       border-radius: 16px;
       background: var(--bg-card);
       border: 1px solid var(--border);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
       text-decoration: none;
       color: #fff;
       transition: all var(--transition);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
     }
     .store-badge-btn:hover {
       background: var(--bg-card-hover);
       border-color: var(--border-highlight);
       transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     }
     .store-badge-btn svg { width: 28px; height: 28px; flex-shrink: 0; }
     .store-badge-text { display: flex; flex-direction: column; text-align: left; }
@@ -318,17 +431,19 @@
       display: inline-block;
       font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
       color: var(--primary); margin-bottom: 12px;
+      background: var(--primary-dim); padding: 4px 12px; border-radius: 20px;
+      border: 1px solid var(--border-cyan);
     }
     .section-title {
       font-size: clamp(28px, 4vw, 44px);
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: -1px;
       line-height: 1.2;
       margin-bottom: 14px;
     }
     .section-description {
       color: var(--text-muted);
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
       font-size: 16px;
     }
@@ -345,19 +460,19 @@
     }
     @media (min-width: 980px) {
       .showcase-layout {
-        grid-template-columns: minmax(360px, 400px) 1.2fr;
+        grid-template-columns: minmax(375px, 410px) 1.25fr;
         gap: 60px;
       }
     }
 
-    /* iPhone Frame Mockup (Clean, realistic) */
+    /* iPhone 16 Pro Frame Mockup */
     .phone-mockup-frame {
       width: min(375px, 94vw);
-      height: 740px;
+      height: 750px;
       background: #000;
-      border-radius: 52px;
-      border: 4px solid #2A2F3D;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      border-radius: 54px;
+      border: 4px solid #282C3A;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 0 0 2px rgba(255, 255, 255, 0.05);
       margin: 0 auto;
       overflow: hidden;
       display: flex;
@@ -369,7 +484,7 @@
       top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      width: 106px;
+      width: 110px;
       height: 28px;
       background: #000;
       border-radius: 20px;
@@ -378,19 +493,36 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 10px;
+      cursor: pointer;
+      transition: all var(--transition-spring);
+    }
+    .phone-island:hover, .phone-island.expanded {
+      width: 220px;
+      background: #121622;
+      box-shadow: 0 4px 18px rgba(0, 229, 255, 0.25);
     }
     .island-cam { width: 10px; height: 10px; border-radius: 50%; background: #16181F; border: 1px solid #232733; }
     .island-sens { width: 8px; height: 8px; border-radius: 50%; background: #0F1218; }
+    .island-pill-msg {
+      display: none;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .phone-island.expanded .island-pill-msg { display: block; }
+    .phone-island.expanded .island-cam { display: none; }
+    .phone-island.expanded .island-sens { display: none; }
 
     .phone-screen-body {
       flex: 1;
-      background: #0D0F16;
+      background: #0A0D15;
       display: flex;
       flex-direction: column;
       padding: 48px 16px 16px;
       color: #fff;
       overflow-y: auto;
       scrollbar-width: none;
+      position: relative;
     }
     .phone-screen-body::-webkit-scrollbar { display: none; }
 
@@ -404,17 +536,18 @@
       color: var(--text-muted);
     }
     .phone-view-panel { display: none; }
-    .phone-view-panel.active { display: block; animation: viewFade 0.2s ease; }
-    @keyframes viewFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .phone-view-panel.active { display: block; animation: viewFade 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes viewFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Screen 1: Wallet Overview */
     .wallet-header-card {
-      background: rgba(22, 28, 42, 0.75);
-      border: 1px solid var(--border);
-      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(22, 28, 44, 0.85) 0%, rgba(14, 18, 30, 0.95) 100%);
+      border: 1px solid var(--border-highlight);
+      border-radius: 22px;
       padding: 18px;
       margin-bottom: 16px;
       text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
     .wallet-account-row {
       display: flex;
@@ -430,6 +563,11 @@
       font-weight: 700;
       color: #fff;
     }
+    .privacy-toggle-btn {
+      background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 2px;
+      display: flex; align-items: center;
+    }
+    .privacy-toggle-btn:hover { color: var(--primary); }
     .ens-tag {
       background: var(--primary-dim);
       border: 1px solid var(--border-cyan);
@@ -438,9 +576,10 @@
       font-size: 11px;
       color: var(--primary);
       font-weight: 700;
+      cursor: pointer;
     }
     .balance-title { font-size: 11px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
-    .balance-main-num { font-size: 32px; font-weight: 850; letter-spacing: -1px; margin: 2px 0; }
+    .balance-main-num { font-size: 33px; font-weight: 900; letter-spacing: -1px; margin: 3px 0; }
     .balance-gain-row { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--emerald); font-weight: 700; }
 
     /* Core Action Buttons */
@@ -448,61 +587,90 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .action-tile-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      padding: 10px 4px;
-      border-radius: 14px;
-      background: var(--bg-subtle);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      color: #fff;
+      border-radius: 14px;
+      padding: 10px 4px;
       cursor: pointer;
+      color: #fff;
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 600;
       transition: all var(--transition);
     }
-    .action-tile-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--border-highlight); }
+    .action-tile-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+    .action-tile-btn:active {
+      transform: scale(0.96);
+    }
     .action-tile-icon {
-      width: 34px; height: 34px; border-radius: 50%;
+      width: 38px; height: 38px; border-radius: 50%;
       background: rgba(255, 255, 255, 0.08);
       display: flex; align-items: center; justify-content: center;
-      color: var(--primary);
+    }
+    .action-tile-btn.prominent .action-tile-icon {
+      background: var(--primary-dim); color: var(--primary);
+      border: 1px solid var(--border-cyan);
     }
 
-    /* Chain filter selector */
+    /* Chain Filter Pills */
     .chain-pill-bar {
-      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
     }
+    .chain-pill-bar::-webkit-scrollbar { display: none; }
     .chain-pill {
-      flex-shrink: 0; padding: 4px 10px; border-radius: 12px; background: var(--bg-subtle);
-      border: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition);
     }
-    .chain-pill.active { background: #fff; color: #000; border-color: #fff; }
+    .chain-pill:hover, .chain-pill.active {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+    }
 
-    /* Token row item */
+    /* Token Row Cards */
     .token-row-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-radius: 14px;
-      background: var(--bg-subtle);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       margin-bottom: 8px;
       cursor: pointer;
       transition: all var(--transition);
     }
     .token-row-card:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.07);
       border-color: var(--border-highlight);
+      transform: translateX(2px);
     }
     .token-left { display: flex; align-items: center; gap: 10px; }
     .token-symbol-icon {
-      width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
       background: rgba(255, 255, 255, 0.06); flex-shrink: 0;
     }
     .token-symbol-icon svg { width: 22px; height: 22px; }
@@ -516,24 +684,27 @@
     /* Screen 2: Token Analytics View */
     .token-detail-card {
       text-align: center;
-      padding: 8px 0 16px;
+      padding: 6px 0 14px;
     }
     .chart-box {
-      background: rgba(18, 23, 35, 0.7);
+      background: rgba(18, 23, 35, 0.75);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 14px;
       margin-bottom: 14px;
+      position: relative;
     }
-    .chart-box svg { width: 100%; height: 75px; }
+    .chart-box svg { width: 100%; height: 80px; display: block; }
     .chart-pill-row {
       display: flex; justify-content: space-between; border-top: 1px solid var(--border);
       padding-top: 8px; margin-top: 8px;
     }
     .chart-pill-btn {
       background: transparent; border: none; color: var(--text-dim); font-size: 10px;
-      font-weight: 700; padding: 2px 8px; border-radius: 6px; cursor: pointer;
+      font-weight: 700; padding: 3px 8px; border-radius: 6px; cursor: pointer;
+      transition: all var(--transition);
     }
+    .chart-pill-btn:hover { color: #fff; }
     .chart-pill-btn.active { background: #fff; color: #000; }
 
     .user-holding-banner {
@@ -552,26 +723,40 @@
       border-radius: 14px;
       padding: 14px;
       text-align: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .fiat-input-val { font-size: 32px; font-weight: 850; color: #fff; }
     .fiat-equiv { font-size: 12px; color: var(--emerald); font-weight: 700; margin-top: 2px; }
+
+    .fiat-quick-amounts {
+      display: flex; gap: 6px; justify-content: center; margin-bottom: 14px;
+    }
+    .fiat-chip {
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: 700;
+      color: var(--text-muted); cursor: pointer; transition: all var(--transition);
+    }
+    .fiat-chip:hover, .fiat-chip.active { background: var(--primary-dim); color: var(--primary); border-color: var(--border-cyan); }
 
     .pay-method-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
+      padding: 11px 12px;
       border-radius: 12px;
       background: var(--bg-subtle);
       border: 1px solid var(--border);
       margin-bottom: 8px;
       cursor: pointer;
+      transition: all var(--transition);
     }
-    .pay-method-row:hover { background: rgba(255, 255, 255, 0.06); }
+    .pay-method-row:hover, .pay-method-row.selected {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: var(--border-cyan);
+    }
     .pay-method-left { display: flex; align-items: center; gap: 10px; }
-    .pay-method-title { font-size: 13px; font-weight: 700; color: #fff; }
-    .pay-method-sub { font-size: 11px; color: var(--text-dim); }
+    .pay-method-title { font-size: 12px; font-weight: 700; color: #fff; }
+    .pay-method-sub { font-size: 10px; color: var(--text-dim); }
 
     /* Screen 4: Send & Transfer */
     .send-field-group {
@@ -586,13 +771,27 @@
     }
     .send-input-frame input {
       background: transparent; border: none; outline: none; color: #fff; font-size: 13px; width: 100%;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .fee-pill-box {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 12px; border-radius: 12px; background: var(--bg-subtle);
-      border: 1px solid var(--border); font-size: 11px; color: var(--text-muted);
-      margin-bottom: 16px;
+    .quick-recipients-row {
+      display: flex; gap: 6px; margin-top: 6px;
     }
+    .recipient-chip {
+      font-size: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 7px; color: var(--primary); cursor: pointer;
+    }
+    .recipient-chip:hover { background: rgba(255, 255, 255, 0.1); }
+
+    .fee-tiers-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px;
+    }
+    .fee-tier-card {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+      border-radius: 10px; padding: 7px 4px; text-align: center; cursor: pointer;
+    }
+    .fee-tier-card.active { border-color: var(--primary); background: var(--primary-dim); }
+    .fee-tier-name { font-size: 10px; color: var(--text-dim); }
+    .fee-tier-price { font-size: 11px; font-weight: 700; color: #fff; }
 
     .btn-screen-action {
       width: 100%;
@@ -605,9 +804,19 @@
       font-weight: 700;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: background var(--transition);
+      transition: all var(--transition);
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
     }
-    .btn-screen-action:hover { background: var(--primary); }
+    .btn-screen-action:hover { background: var(--primary); transform: translateY(-1px); }
+    .btn-screen-action:active { transform: scale(0.97); }
+
+    /* Phone Receive Overlay Sheet inside Mockup */
+    .phone-receive-modal {
+      position: absolute; inset: 0; background: rgba(10, 13, 21, 0.95);
+      backdrop-filter: blur(12px); z-index: 60; display: none; flex-direction: column;
+      padding: 50px 16px 20px; text-align: center; animation: viewFade 0.2s ease;
+    }
+    .phone-receive-modal.open { display: flex; }
 
     /* Interactive Showcase Tour Controls (Desktop column) */
     .tour-nav-column {
@@ -625,6 +834,8 @@
       cursor: pointer;
       text-align: left;
       transition: all var(--transition);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
     }
     .tour-nav-card:hover, .tour-nav-card.active {
       background: var(--bg-card-hover);
@@ -633,6 +844,7 @@
     }
     .tour-nav-card.active {
       border-left: 3px solid var(--primary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
     .tour-nav-icon {
       width: 44px; height: 44px; border-radius: 12px;
@@ -656,6 +868,8 @@
       border-radius: var(--radius-lg);
       padding: 32px 28px;
       transition: all var(--transition);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
     }
     .feature-card:hover {
       background: var(--bg-card-hover);
@@ -672,29 +886,48 @@
     .feature-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
     /* ENS Domain Workstation Section */
-    .ens-section { padding: 80px 0; }
+    .ens-section { padding: 90px 0; }
     .ens-workstation-box {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
       padding: clamp(24px, 4vw, 44px);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
     .ens-search-bar {
       display: flex;
       align-items: center;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-highlight);
       border-radius: 14px;
       padding: 6px 16px;
-      margin: 24px 0 20px;
+      margin: 24px 0 16px;
+      transition: border-color var(--transition);
+    }
+    .ens-search-bar:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.2);
     }
     .ens-search-bar input {
       flex: 1; background: transparent; border: none; outline: none;
-      color: #fff; font-size: 16px; font-family: monospace; padding: 10px 0;
+      color: #fff; font-size: 18px; font-family: 'JetBrains Mono', monospace; padding: 10px 0;
     }
-    .ens-suffix { color: var(--primary); font-weight: 800; font-size: 16px; margin-left: 8px; }
+    .ens-suffix { color: var(--primary); font-weight: 800; font-size: 18px; margin-left: 8px; }
+    
+    .ens-slider-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: rgba(14, 18, 27, 0.6); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 18px; margin-bottom: 16px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .ens-slider-row input[type="range"] {
+      flex: 1; accent-color: var(--primary);
+    }
+
     .ens-calc-box {
-      background: rgba(14, 18, 27, 0.6);
+      background: rgba(14, 18, 27, 0.8);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 16px 20px;
@@ -704,13 +937,24 @@
       font-size: 14px;
       color: var(--text-muted);
     }
-    .ens-calc-val { color: #fff; font-weight: 700; }
+    .ens-calc-val { color: #fff; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
 
     /* Supported Multi-Chain Ecosystem */
     .chains-section { padding: 90px 0; }
+    .chains-filter-bar {
+      display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;
+    }
+    .chains-filter-btn {
+      background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 13px; font-weight: 600; padding: 6px 16px;
+      border-radius: 16px; cursor: pointer; transition: all var(--transition);
+    }
+    .chains-filter-btn:hover, .chains-filter-btn.active {
+      background: #fff; color: #000; border-color: #fff;
+    }
     .chains-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 16px;
     }
     .chain-card {
@@ -722,18 +966,22 @@
       align-items: center;
       gap: 14px;
       transition: all var(--transition);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
     }
     .chain-card:hover {
       background: var(--bg-card-hover);
       border-color: var(--border-highlight);
+      transform: translateY(-2px);
     }
     .chain-icon-wrap {
-      width: 40px; height: 40px; border-radius: 50%;
+      width: 42px; height: 42px; border-radius: 50%;
       background: var(--bg-subtle); display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
     .chain-info { flex: 1; }
-    .chain-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .chain-name { font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .chain-ping { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
     .chain-meta { font-size: 11px; color: var(--text-dim); }
 
     /* Security Architecture Section */
@@ -742,20 +990,62 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
+      margin-bottom: 50px;
     }
     .security-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 32px 24px;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
     }
     .security-card h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; }
     .security-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
+    /* Security Matrix Table */
+    .security-matrix-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: clamp(20px, 4vw, 36px);
+      overflow-x: auto;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+    .security-matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+    .security-matrix-table th {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-highlight);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+    }
+    .security-matrix-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .security-matrix-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .col-highlight {
+      color: var(--primary) !important;
+      font-weight: 700;
+      background: rgba(0, 229, 255, 0.03);
+    }
+
     /* FAQ Section */
     .faq-section { padding: 90px 0; }
     .faq-list {
-      max-width: 760px;
+      max-width: 780px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -767,6 +1057,8 @@
       border-radius: 16px;
       overflow: hidden;
       transition: all var(--transition);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
     }
     .faq-question {
       padding: 20px 24px;
@@ -785,9 +1077,9 @@
       line-height: 1.6;
       display: none;
     }
-    .faq-item.open .faq-answer { display: block; }
-    .faq-chevron { transition: transform 0.2s ease; }
-    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-item.open .faq-answer { display: block; animation: viewFade 0.2s ease; }
+    .faq-chevron { transition: transform 0.2s ease; color: var(--text-dim); }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--primary); }
 
     /* Download Spotlight */
     .download-section {
@@ -795,20 +1087,22 @@
       text-align: center;
     }
     .download-card-banner {
-      background: linear-gradient(180deg, rgba(22, 28, 42, 0.8) 0%, rgba(12, 15, 23, 0.9) 100%);
+      background: linear-gradient(180deg, rgba(22, 28, 44, 0.85) 0%, rgba(11, 15, 24, 0.95) 100%);
       border: 1px solid var(--border-highlight);
       border-radius: var(--radius-xl);
-      padding: clamp(32px, 5vw, 64px) 24px;
-      max-width: 900px;
+      padding: clamp(36px, 5vw, 68px) 24px;
+      max-width: 920px;
       margin: 0 auto;
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
     }
 
     /* Footer */
     footer {
       border-top: 1px solid var(--border);
-      padding: 40px 0;
+      padding: 48px 0;
       font-size: 13px;
       color: var(--text-dim);
+      background: #06080C;
     }
     .footer-content {
       display: flex;
@@ -830,25 +1124,52 @@
 
     /* Modal */
     .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(10px); z-index: 300; display: none; align-items: center; justify-content: center;
       padding: 20px;
     }
     .modal-backdrop.open { display: flex; }
     .modal-box {
-      background: #11141E; border: 1px solid var(--border-highlight); border-radius: var(--radius-xl);
-      padding: 32px; max-width: 440px; width: 100%; text-align: center; position: relative;
+      background: #101420; border: 1px solid var(--border-highlight); border-radius: var(--radius-xl);
+      padding: 32px; max-width: 480px; width: 100%; text-align: center; position: relative;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
     }
     .modal-close {
       position: absolute; top: 18px; right: 18px; background: transparent; border: none;
-      color: var(--text-muted); cursor: pointer; padding: 4px;
+      color: var(--text-muted); cursor: pointer; padding: 4px; font-size: 16px;
     }
+    .modal-close:hover { color: #fff; }
+
+    .modal-tabs {
+      display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0, 0, 0, 0.4);
+      padding: 4px; border-radius: 12px;
+    }
+    .modal-tab-btn {
+      flex: 1; padding: 8px; border-radius: 8px; background: transparent; border: none;
+      color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .modal-tab-btn.active {
+      background: var(--bg-card); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Global Toast */
+    .toast-pill {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: rgba(18, 24, 38, 0.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border-cyan); border-radius: 30px; padding: 10px 22px;
+      color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); z-index: 400; transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+    .toast-pill.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
-  <!-- Ambient Light Mesh (Static, zero CPU load) -->
-  <div class="hero-glow"></div>
+  <!-- Ambient Light Mesh (Zero CPU load) -->
+  <div class="hero-glow-cyan"></div>
+  <div class="hero-glow-violet"></div>
+  <div class="cyber-grid-overlay"></div>
 
   <!-- Header & Navigation -->
   <header class="navbar" id="navbar">
@@ -872,7 +1193,7 @@
     </nav>
 
     <div class="nav-right">
-      <a href="#download" class="btn-get-app">
+      <a href="#download" class="btn-get-app" onclick="openDownloadModal('apple'); return false;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
@@ -888,6 +1209,32 @@
       </button>
     </div>
   </header>
+
+  <!-- Live Multi-Chain Price Ticker Strip -->
+  <div class="ticker-bar">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="pulse-dot"></span><span class="sym">ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
+      <div class="ticker-item"><span class="sym">BTC</span><span class="val">$64,120.00</span><span class="gain">▲ +2.15%</span></div>
+      <div class="ticker-item"><span class="sym">SOL</span><span class="val">$152.40</span><span class="gain">▲ +6.38%</span></div>
+      <div class="ticker-item"><span class="sym">ARB</span><span class="val">$0.642</span><span class="gain">▲ +3.10%</span></div>
+      <div class="ticker-item"><span class="sym">BASE ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
+      <div class="ticker-item"><span class="sym">OP</span><span class="val">$1.84</span><span class="gain">▲ +5.20%</span></div>
+      <div class="ticker-item"><span class="sym">BNB</span><span class="val">$592.10</span><span class="gain">▲ +1.92%</span></div>
+      <div class="ticker-item"><span class="sym">POL</span><span class="val">$0.418</span><span class="gain">▲ +2.75%</span></div>
+      <div class="ticker-item"><span class="sym">AVAX</span><span class="val">$28.65</span><span class="gain">▲ +4.10%</span></div>
+      
+      <!-- Duplicate track for infinite loop -->
+      <div class="ticker-item"><span class="pulse-dot"></span><span class="sym">ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
+      <div class="ticker-item"><span class="sym">BTC</span><span class="val">$64,120.00</span><span class="gain">▲ +2.15%</span></div>
+      <div class="ticker-item"><span class="sym">SOL</span><span class="val">$152.40</span><span class="gain">▲ +6.38%</span></div>
+      <div class="ticker-item"><span class="sym">ARB</span><span class="val">$0.642</span><span class="gain">▲ +3.10%</span></div>
+      <div class="ticker-item"><span class="sym">BASE ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
+      <div class="ticker-item"><span class="sym">OP</span><span class="val">$1.84</span><span class="gain">▲ +5.20%</span></div>
+      <div class="ticker-item"><span class="sym">BNB</span><span class="val">$592.10</span><span class="gain">▲ +1.92%</span></div>
+      <div class="ticker-item"><span class="sym">POL</span><span class="val">$0.418</span><span class="gain">▲ +2.75%</span></div>
+      <div class="ticker-item"><span class="sym">AVAX</span><span class="val">$28.65</span><span class="gain">▲ +4.10%</span></div>
+    </div>
+  </div>
 
   <!-- Mobile Drawer Overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -906,11 +1253,11 @@
       </button>
     </div>
     <ul class="sidebar-nav-list">
-      <li><a href="#tour" onclick="closeSidebar()">App Tour</a></li>
+      <li><a href="#tour" onclick="closeSidebar()">App Tour &amp; Simulator</a></li>
       <li><a href="#purchase" onclick="closeSidebar()">Buy &amp; Add Tokens</a></li>
-      <li><a href="#ens" onclick="closeSidebar()">ENS Identity</a></li>
+      <li><a href="#ens" onclick="closeSidebar()">ENS Identity Hub</a></li>
       <li><a href="#networks" onclick="closeSidebar()">Supported Networks</a></li>
-      <li><a href="#security" onclick="closeSidebar()">Security Model</a></li>
+      <li><a href="#security" onclick="closeSidebar()">Security Architecture</a></li>
       <li><a href="#download" onclick="closeSidebar()">Downloads</a></li>
       <li><a href="privacy.html">Privacy Policy</a></li>
       <li><a href="support.html">Support</a></li>
@@ -926,17 +1273,17 @@
       <div class="container">
         <div class="hero-pill-badge">
           <span class="dot"></span>
-          <span>Hardware-Secured &bull; 12+ Blockchains &bull; Zero Tracking</span>
+          <span>Hardware Silicon Enclave &bull; 12+ Blockchains &bull; Zero Cloud Telemetry</span>
         </div>
 
         <h1 class="hero-title">
           The Multi-Chain Wallet <br>
-          <span class="gradient-text">Built for Self-Custody.</span>
+          <span class="gradient-text">Built for Pure Self-Custody.</span>
         </h1>
 
         <p class="hero-lead">
-          Your cryptographic private keys never leave your device's hardware Secure Enclave. 
-          Track real-time prices, hold tokens across 12+ blockchains, and buy crypto instantly with Apple Pay or Google Pay — with zero cloud tracking.
+          Your cryptographic private keys never leave your physical hardware Secure Enclave. 
+          Manage tokens across 12+ blockchains, resolve native ENS profiles, and buy crypto instantly with Apple Pay or Google Pay — with zero cloud tracking.
         </p>
 
         <!-- Official Store Badges -->
@@ -990,22 +1337,24 @@
     <section class="showcase-section" id="tour">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Interactive App Tour</span>
-          <h2 class="section-title">Designed for Everyday Self-Custody</h2>
-          <p class="section-description">A clean, effortless experience crafted for both newcomers and seasoned DeFi users. Explore the 5 core views below.</p>
+          <span class="section-tag">Interactive App Simulator</span>
+          <h2 class="section-title">Experience the Real-Time Cockpit</h2>
+          <p class="section-description">Test the actual mobile wallet workflows directly in the browser simulator below. Click the phone actions, pills, and island.</p>
         </div>
 
         <div class="showcase-layout">
           <!-- iPhone Hardware Frame -->
           <div class="phone-mockup-frame">
-            <div class="phone-island">
+            <!-- Dynamic Island with Interactive State -->
+            <div class="phone-island" id="phoneIsland" onclick="toggleDynamicIsland()" title="Click to test Secure Enclave status">
               <div class="island-cam"></div>
+              <span class="island-pill-msg">🔒 Enclave AES-256 Active</span>
               <div class="island-sens"></div>
             </div>
 
             <div class="phone-screen-body" id="phoneScreenBody">
               <div class="phone-status-bar">
-                <span>9:41</span>
+                <span class="tabular-nums">9:41</span>
                 <span>5G &bull; 100%</span>
               </div>
 
@@ -1013,18 +1362,23 @@
               <div class="phone-view-panel active" id="viewTokens">
                 <div class="wallet-header-card">
                   <div class="wallet-account-row">
-                    <span class="account-badge">Primary Vault</span>
-                    <span class="ens-tag">vitalik.eth</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="account-badge">Primary Vault</span>
+                      <button class="privacy-toggle-btn" onclick="toggleDiscreetMode()" id="discreetBtn" title="Toggle balance privacy">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                      </button>
+                    </div>
+                    <span class="ens-tag" onclick="showAppTour('ens')">vitalik.eth</span>
                   </div>
-                  <div class="balance-title">Total Balance</div>
-                  <div class="balance-main-num">$34,842.10</div>
+                  <div class="balance-title">Consolidated Balance</div>
+                  <div class="balance-main-num tabular-nums" id="portfolioBalanceNum">$34,842.10</div>
                   <div class="balance-gain-row">
-                    <span>▲ +$1,602.40 (+4.82%)</span>
+                    <span id="portfolioGainText">▲ +$1,602.40 (+4.82%) 24h</span>
                   </div>
                 </div>
 
                 <div class="wallet-action-grid">
-                  <button class="action-tile-btn" onclick="showAppTour('buy')">
+                  <button class="action-tile-btn prominent" onclick="showAppTour('buy')">
                     <div class="action-tile-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </div>
@@ -1036,13 +1390,13 @@
                     </div>
                     <span>Send</span>
                   </button>
-                  <button class="action-tile-btn" onclick="showAppTour('tokens')">
+                  <button class="action-tile-btn" onclick="openPhoneReceiveModal()">
                     <div class="action-tile-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path></svg>
                     </div>
                     <span>Receive</span>
                   </button>
-                  <button class="action-tile-btn" onclick="showAppTour('tokens')">
+                  <button class="action-tile-btn" onclick="triggerSimulatedSwap()">
                     <div class="action-tile-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
                     </div>
@@ -1050,76 +1404,96 @@
                   </button>
                 </div>
 
+                <!-- Interactive Filter Pills -->
                 <div class="chain-pill-bar">
-                  <span class="chain-pill active">All Chains</span>
-                  <span class="chain-pill">Ethereum</span>
-                  <span class="chain-pill">Bitcoin</span>
-                  <span class="chain-pill">Solana</span>
-                  <span class="chain-pill">Arbitrum</span>
+                  <span class="chain-pill active" onclick="filterSimulatorTokens('all', this)">All Chains</span>
+                  <span class="chain-pill" onclick="filterSimulatorTokens('ethereum', this)">Ethereum</span>
+                  <span class="chain-pill" onclick="filterSimulatorTokens('bitcoin', this)">Bitcoin</span>
+                  <span class="chain-pill" onclick="filterSimulatorTokens('solana', this)">Solana</span>
+                  <span class="chain-pill" onclick="filterSimulatorTokens('arbitrum', this)">Arbitrum</span>
+                  <span class="chain-pill" onclick="filterSimulatorTokens('base', this)">Base</span>
                 </div>
 
-                <!-- Token Rows -->
-                <div class="token-row-card" onclick="showAppTour('detail')">
-                  <div class="token-left">
-                    <div class="token-symbol-icon" style="background:rgba(98,126,234,0.18);">
-                      <svg viewBox="0 0 256 417"><path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="#627EEA"/><path d="M127.96 0L0 212.32L127.96 287.96V157.34V0Z" fill="#8B9FF0"/><path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="#627EEA"/><path d="M127.96 416.9V311.18L0 235.54L127.96 416.9Z" fill="#8B9FF0"/><path d="M127.96 287.96L255.92 212.32L127.96 157.34V287.96Z" fill="#4560C6"/><path d="M0 212.32L127.96 287.96V157.34L0 212.32Z" fill="#627EEA"/></svg>
+                <!-- Token Rows Container -->
+                <div id="simTokensContainer">
+                  <div class="token-row-card" data-chain="ethereum" onclick="showTokenAnalytics('ETH', '$3,485.20', '+4.82%', '4.8250 ETH', '$16,816.09')">
+                    <div class="token-left">
+                      <div class="token-symbol-icon" style="background:rgba(98,126,234,0.18);">
+                        <svg viewBox="0 0 256 417"><path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="#627EEA"/><path d="M127.96 0L0 212.32L127.96 287.96V157.34V0Z" fill="#8B9FF0"/><path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="#627EEA"/><path d="M127.96 416.9V311.18L0 235.54L127.96 416.9Z" fill="#8B9FF0"/><path d="M127.96 287.96L255.92 212.32L127.96 157.34V287.96Z" fill="#4560C6"/><path d="M0 212.32L127.96 287.96V157.34L0 212.32Z" fill="#627EEA"/></svg>
+                      </div>
+                      <div>
+                        <div class="token-name-txt">Ethereum</div>
+                        <div class="token-price-txt tabular-nums">$3,485.20 <span class="token-change-green">+4.82%</span></div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="token-name-txt">Ethereum</div>
-                      <div class="token-price-txt">$3,485.20 <span class="token-change-green">+4.82%</span></div>
+                    <div class="token-right">
+                      <div class="token-holding-txt tabular-nums">4.8250 ETH</div>
+                      <div class="token-fiat-txt tabular-nums">$16,816.09</div>
                     </div>
                   </div>
-                  <div class="token-right">
-                    <div class="token-holding-txt">4.8250 ETH</div>
-                    <div class="token-fiat-txt">$16,816.09</div>
-                  </div>
-                </div>
 
-                <div class="token-row-card" onclick="showAppTour('detail')">
-                  <div class="token-left">
-                    <div class="token-symbol-icon" style="background:rgba(247,147,26,0.18);">
-                      <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#F7931A"/><path d="M46.1 27.4c.6-4.3-2.6-6.6-7.1-8.1l1.5-5.8-3.5-.9-1.4 5.7c-.9-.2-1.9-.4-2.8-.7l1.4-5.7-3.5-.9-1.5 5.8c-.8-.2-1.5-.4-2.2-.5l.0-.1-4.9-1.2-1 3.8s2.6.6 2.6.6c1.4.4 1.7 1.3 1.6 2.1l-1.6 6.5c.1 0 .2.1.3.1l-.3-.1-2.3 9.1c-.2.5-.6 1.2-1.7.9 0 0-2.6-.6-2.6-.6l-1.8 4.1 4.6 1.1c.9.2 1.7.5 2.6.7l-1.5 6.1 3.5.9 1.5-5.9c1 .3 1.9.5 2.8.7l-1.5 5.9 3.5.9 1.5-6c6 .9 10.5.5 12.4-4.8 1.5-4.2-.1-6.6-3.1-8.2 2.2-.5 3.9-2 4.3-5.1zm-7.7 11.2c-1.1 4.4-8.5 2-10.9 1.4l1.9-7.8c2.4.6 10.1 1.8 9 6.4zm1.1-11.3c-1 4-7.2 2-9.2 1.5l1.8-7.1c2 .5 8.4 1.5 7.4 5.6z" fill="#FFF"/></svg>
+                  <div class="token-row-card" data-chain="bitcoin" onclick="showTokenAnalytics('BTC', '$64,120.00', '+2.15%', '0.1850 BTC', '$11,862.20')">
+                    <div class="token-left">
+                      <div class="token-symbol-icon" style="background:rgba(247,147,26,0.18);">
+                        <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#F7931A"/><path d="M46.1 27.4c.6-4.3-2.6-6.6-7.1-8.1l1.5-5.8-3.5-.9-1.4 5.7c-.9-.2-1.9-.4-2.8-.7l1.4-5.7-3.5-.9-1.5 5.8c-.8-.2-1.5-.4-2.2-.5l.0-.1-4.9-1.2-1 3.8s2.6.6 2.6.6c1.4.4 1.7 1.3 1.6 2.1l-1.6 6.5c.1 0 .2.1.3.1l-.3-.1-2.3 9.1c-.2.5-.6 1.2-1.7.9 0 0-2.6-.6-2.6-.6l-1.8 4.1 4.6 1.1c.9.2 1.7.5 2.6.7l-1.5 6.1 3.5.9 1.5-5.9c1 .3 1.9.5 2.8.7l-1.5 5.9 3.5.9 1.5-6c6 .9 10.5.5 12.4-4.8 1.5-4.2-.1-6.6-3.1-8.2 2.2-.5 3.9-2 4.3-5.1zm-7.7 11.2c-1.1 4.4-8.5 2-10.9 1.4l1.9-7.8c2.4.6 10.1 1.8 9 6.4zm1.1-11.3c-1 4-7.2 2-9.2 1.5l1.8-7.1c2 .5 8.4 1.5 7.4 5.6z" fill="#FFF"/></svg>
+                      </div>
+                      <div>
+                        <div class="token-name-txt">Bitcoin</div>
+                        <div class="token-price-txt tabular-nums">$64,120.00 <span class="token-change-green">+2.15%</span></div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="token-name-txt">Bitcoin</div>
-                      <div class="token-price-txt">$64,120.00 <span class="token-change-green">+2.15%</span></div>
+                    <div class="token-right">
+                      <div class="token-holding-txt tabular-nums">0.1850 BTC</div>
+                      <div class="token-fiat-txt tabular-nums">$11,862.20</div>
                     </div>
                   </div>
-                  <div class="token-right">
-                    <div class="token-holding-txt">0.1850 BTC</div>
-                    <div class="token-fiat-txt">$11,862.20</div>
-                  </div>
-                </div>
 
-                <div class="token-row-card" onclick="showAppTour('detail')">
-                  <div class="token-left">
-                    <div class="token-symbol-icon" style="background:rgba(20,241,149,0.18);">
-                      <svg viewBox="0 0 397 311"><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h316.5c5.6 0 8.4 6.7 4.5 10.6l-57.9 57.9c-2.4 2.4-5.7 3.8-9.2 3.8H7.2c-5.6 0-8.4-6.7-4.5-10.6l61.9-57.9z" fill="#14F195"/><path d="M64.6 3.8C67 1.4 70.3 0 73.8 0h316.5c5.6 0 8.4 6.7 4.5 10.6L336.9 68.5c-2.4 2.4-5.7 3.8-9.2 3.8H11.2c-5.6 0-8.4-6.7-4.5-10.6L64.6 3.8z" fill="#DC1FFF"/><path d="M333.1 120.9c-2.4-2.4-5.7-3.8-9.2-3.8H7.4c-5.6 0-8.4 6.7-4.5 10.6l57.9 57.9c2.4 2.4 5.7 3.8 9.2 3.8h316.5c5.6 0 8.4-6.7 4.5-10.6l-57.9-57.9z" fill="#00FFA3"/></svg>
+                  <div class="token-row-card" data-chain="solana" onclick="showTokenAnalytics('SOL', '$152.40', '+6.38%', '24.50 SOL', '$3,733.80')">
+                    <div class="token-left">
+                      <div class="token-symbol-icon" style="background:rgba(20,241,149,0.18);">
+                        <svg viewBox="0 0 397 311"><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h316.5c5.6 0 8.4 6.7 4.5 10.6l-57.9 57.9c-2.4 2.4-5.7 3.8-9.2 3.8H7.2c-5.6 0-8.4-6.7-4.5-10.6l61.9-57.9z" fill="#14F195"/><path d="M64.6 3.8C67 1.4 70.3 0 73.8 0h316.5c5.6 0 8.4 6.7 4.5 10.6L336.9 68.5c-2.4 2.4-5.7 3.8-9.2 3.8H11.2c-5.6 0-8.4-6.7-4.5-10.6L64.6 3.8z" fill="#DC1FFF"/><path d="M333.1 120.9c-2.4-2.4-5.7-3.8-9.2-3.8H7.4c-5.6 0-8.4 6.7-4.5 10.6l57.9 57.9c2.4 2.4 5.7 3.8 9.2 3.8h316.5c5.6 0 8.4-6.7 4.5-10.6l-57.9-57.9z" fill="#00FFA3"/></svg>
+                      </div>
+                      <div>
+                        <div class="token-name-txt">Solana</div>
+                        <div class="token-price-txt tabular-nums">$152.40 <span class="token-change-green">+6.38%</span></div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="token-name-txt">Solana</div>
-                      <div class="token-price-txt">$152.40 <span class="token-change-green">+6.38%</span></div>
+                    <div class="token-right">
+                      <div class="token-holding-txt tabular-nums">24.50 SOL</div>
+                      <div class="token-fiat-txt tabular-nums">$3,733.80</div>
                     </div>
                   </div>
-                  <div class="token-right">
-                    <div class="token-holding-txt">24.50 SOL</div>
-                    <div class="token-fiat-txt">$3,733.80</div>
-                  </div>
-                </div>
 
-                <div class="token-row-card" onclick="showAppTour('detail')">
-                  <div class="token-left">
-                    <div class="token-symbol-icon" style="background:rgba(39,117,202,0.18);">
-                      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#2775CA"/><path d="M50 18C32.3 18 18 32.3 18 50C18 67.7 32.3 82 50 82C67.7 82 82 67.7 82 50C82 32.3 67.7 18 50 18ZM46 30H54V34.5C59 35.5 62.5 39.5 62.5 44H55C55 41.5 53 40 50 40C47 40 45 41.5 45 43.5C45 45.5 46.5 46.8 51.5 48C57.5 49.5 63 52 63 58C63 62.5 59.5 66.5 54 67.5V72H46V67.5C41 66.5 37 62.5 37 57.5H44.5C44.5 60.5 47 62 50 62C53.5 62 55.5 60.5 55.5 58C55.5 55.5 53.5 54.5 48.5 53C42.5 51.5 37 49 37 43.5C37 39 40.5 35.5 46 34.5V30Z" fill="#FFF"/></svg>
+                  <div class="token-row-card" data-chain="arbitrum" onclick="showTokenAnalytics('ARB', '$0.642', '+3.10%', '1,500 ARB', '$963.00')">
+                    <div class="token-left">
+                      <div class="token-symbol-icon" style="background:rgba(40,160,240,0.18);">
+                        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#28A0F0" fill-opacity="0.2" stroke="#28A0F0" stroke-width="3"/><path d="M50 18L24 64H38L50 42L62 64H76L50 18Z" fill="#28A0F0"/><path d="M50 54L38 76H62L50 54Z" fill="#FFF"/></svg>
+                      </div>
+                      <div>
+                        <div class="token-name-txt">Arbitrum</div>
+                        <div class="token-price-txt tabular-nums">$0.642 <span class="token-change-green">+3.10%</span></div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="token-name-txt">USD Coin</div>
-                      <div class="token-price-txt">$1.00 <span style="color:var(--text-dim);">0.00%</span></div>
+                    <div class="token-right">
+                      <div class="token-holding-txt tabular-nums">1,500 ARB</div>
+                      <div class="token-fiat-txt tabular-nums">$963.00</div>
                     </div>
                   </div>
-                  <div class="token-right">
-                    <div class="token-holding-txt">1,430.00 USDC</div>
-                    <div class="token-fiat-txt">$1,430.00</div>
+
+                  <div class="token-row-card" data-chain="ethereum" onclick="showTokenAnalytics('USDC', '$1.00', '0.00%', '1,430.00 USDC', '$1,430.00')">
+                    <div class="token-left">
+                      <div class="token-symbol-icon" style="background:rgba(39,117,202,0.18);">
+                        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#2775CA"/><path d="M50 18C32.3 18 18 32.3 18 50C18 67.7 32.3 82 50 82C67.7 82 82 67.7 82 50C82 32.3 67.7 18 50 18ZM46 30H54V34.5C59 35.5 62.5 39.5 62.5 44H55C55 41.5 53 40 50 40C47 40 45 41.5 45 43.5C45 45.5 46.5 46.8 51.5 48C57.5 49.5 63 52 63 58C63 62.5 59.5 66.5 54 67.5V72H46V67.5C41 66.5 37 62.5 37 57.5H44.5C44.5 60.5 47 62 50 62C53.5 62 55.5 60.5 55.5 58C55.5 55.5 53.5 54.5 48.5 53C42.5 51.5 37 49 37 43.5C37 39 40.5 35.5 46 34.5V30Z" fill="#FFF"/></svg>
+                      </div>
+                      <div>
+                        <div class="token-name-txt">USD Coin</div>
+                        <div class="token-price-txt tabular-nums">$1.00 <span style="color:var(--text-dim);">0.00%</span></div>
+                      </div>
+                    </div>
+                    <div class="token-right">
+                      <div class="token-holding-txt tabular-nums">1,430.00 USDC</div>
+                      <div class="token-fiat-txt tabular-nums">$1,430.00</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1128,63 +1502,76 @@
               <div class="phone-view-panel" id="viewDetail">
                 <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                   <button style="background:transparent; border:none; color:var(--primary); font-size:12px; font-weight:700; cursor:pointer;" onclick="showAppTour('tokens')">&larr; Back to Tokens</button>
-                  <span style="font-size:11px; color:var(--text-dim);">Ethereum Mainnet</span>
+                  <span style="font-size:11px; color:var(--text-dim);" id="analyticsChainName">Ethereum Mainnet</span>
                 </div>
 
                 <div class="token-detail-card">
-                  <div style="font-size:14px; color:var(--text-muted);">Ethereum Price</div>
-                  <div style="font-size:34px; font-weight:850; letter-spacing:-1px;">$3,485.20</div>
-                  <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:12px; background:var(--emerald-dim); color:var(--emerald); font-size:12px; font-weight:700;">▲ +4.82% ($160.20)</span>
+                  <div style="font-size:14px; color:var(--text-muted);" id="analyticsTokenTitle">Ethereum Price</div>
+                  <div style="font-size:34px; font-weight:850; letter-spacing:-1px;" class="tabular-nums" id="analyticsPriceNum">$3,485.20</div>
+                  <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:12px; background:var(--emerald-dim); color:var(--emerald); font-size:12px; font-weight:700;" id="analyticsGainBadge">▲ +4.82% ($160.20)</span>
                 </div>
 
                 <div class="chart-box">
-                  <svg viewBox="0 0 300 75" fill="none">
-                    <path d="M0,55 Q40,30 80,42 T160,20 T240,30 T300,8 L300,75 L0,75 Z" fill="rgba(0,229,255,0.08)"/>
-                    <path d="M0,55 Q40,30 80,42 T160,20 T240,30 T300,8" stroke="#00E5FF" stroke-width="2.5" stroke-linecap="round"/>
+                  <svg viewBox="0 0 300 80" fill="none" id="analyticsChartSvg">
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.3"/>
+                        <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.0"/>
+                      </linearGradient>
+                    </defs>
+                    <path id="chartAreaPath" d="M0,58 Q40,32 80,44 T160,22 T240,32 T300,10 L300,80 L0,80 Z" fill="url(#chartGrad)"/>
+                    <path id="chartLinePath" d="M0,58 Q40,32 80,44 T160,22 T240,32 T300,10" stroke="#00E5FF" stroke-width="2.5" stroke-linecap="round"/>
                   </svg>
                   <div class="chart-pill-row">
-                    <button class="chart-pill-btn active">1D</button>
-                    <button class="chart-pill-btn">1W</button>
-                    <button class="chart-pill-btn">1M</button>
-                    <button class="chart-pill-btn">1Y</button>
-                    <button class="chart-pill-btn">ALL</button>
+                    <button class="chart-pill-btn active" onclick="switchTimeframe('1D', this)">1D</button>
+                    <button class="chart-pill-btn" onclick="switchTimeframe('1W', this)">1W</button>
+                    <button class="chart-pill-btn" onclick="switchTimeframe('1M', this)">1M</button>
+                    <button class="chart-pill-btn" onclick="switchTimeframe('1Y', this)">1Y</button>
+                    <button class="chart-pill-btn" onclick="switchTimeframe('ALL', this)">ALL</button>
                   </div>
                 </div>
 
                 <div class="user-holding-banner">
                   <div style="font-size:11px; text-transform:uppercase; color:var(--text-dim); letter-spacing:0.5px;">Your Holding</div>
-                  <div style="font-size:19px; font-weight:800; color:#fff;">4.8250 ETH</div>
-                  <div style="font-size:12px; color:var(--primary);">$16,816.09 USD (48.3% of portfolio)</div>
+                  <div style="font-size:19px; font-weight:800; color:#fff;" class="tabular-nums" id="analyticsHoldAmt">4.8250 ETH</div>
+                  <div style="font-size:12px; color:var(--primary);" class="tabular-nums" id="analyticsHoldFiat">$16,816.09 USD (48.3% of vault)</div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
                   <div style="background:var(--bg-subtle); padding:8px 10px; border-radius:10px; border:1px solid var(--border);">
                     <div style="font-size:10px; color:var(--text-dim);">24h High</div>
-                    <div style="font-size:12px; font-weight:700;">$3,510.00</div>
+                    <div style="font-size:12px; font-weight:700;" class="tabular-nums" id="analyticsHighVal">$3,510.00</div>
                   </div>
                   <div style="background:var(--bg-subtle); padding:8px 10px; border-radius:10px; border:1px solid var(--border);">
-                    <div style="font-size:10px; color:var(--text-dim);">Market Cap</div>
-                    <div style="font-size:12px; font-weight:700;">$418.2B</div>
+                    <div style="font-size:10px; color:var(--text-dim);">24h Volume</div>
+                    <div style="font-size:12px; font-weight:700;" class="tabular-nums" id="analyticsVolVal">$18.4B</div>
                   </div>
                 </div>
 
-                <button class="btn-screen-action" onclick="showAppTour('buy')">Buy ETH Instantly</button>
+                <button class="btn-screen-action" onclick="showAppTour('buy')">Buy Assets Instantly</button>
               </div>
 
               <!-- VIEW 3: Buy & On-Ramp -->
               <div class="phone-view-panel" id="viewBuy">
                 <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                   <button style="background:transparent; border:none; color:var(--primary); font-size:12px; font-weight:700; cursor:pointer;" onclick="showAppTour('tokens')">&larr; Back</button>
-                  <span style="font-size:12px; font-weight:700;">Buy Crypto</span>
+                  <span style="font-size:12px; font-weight:700;">Buy Crypto On-Ramp</span>
                 </div>
 
                 <div class="fiat-input-box">
                   <div style="font-size:11px; text-transform:uppercase; color:var(--text-dim);">You Pay (USD)</div>
-                  <div class="fiat-input-val">$500.00</div>
-                  <div class="fiat-equiv">Receive ≈ 0.1435 ETH</div>
+                  <div class="fiat-input-val tabular-nums" id="fiatDisplayVal">$500.00</div>
+                  <div class="fiat-equiv tabular-nums" id="cryptoEstVal">Receive ≈ 0.1435 ETH</div>
                 </div>
 
-                <div class="pay-method-row">
+                <div class="fiat-quick-amounts">
+                  <button class="fiat-chip" onclick="setFiatAmount(100, this)">$100</button>
+                  <button class="fiat-chip" onclick="setFiatAmount(250, this)">$250</button>
+                  <button class="fiat-chip active" onclick="setFiatAmount(500, this)">$500</button>
+                  <button class="fiat-chip" onclick="setFiatAmount(1000, this)">$1,000</button>
+                </div>
+
+                <div class="pay-method-row selected" onclick="selectPayMethod('apple', this)">
                   <div class="pay-method-left">
                     <svg viewBox="0 0 170 170" fill="currentColor" width="20" height="20">
                       <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.81-11.96-14.31-7.01-10.66-12.27-22.39-15.77-35.19-3.5-12.8-5.25-24.58-5.25-35.34 0-14.89 3.73-27.18 11.19-36.87 7.46-9.69 16.9-14.65 28.33-14.88 4.7 0 10.05 1.25 16.05 3.75 6 2.5 9.77 3.86 11.31 4.08 1.9-.33 5.86-1.78 11.88-4.34 6.02-2.57 11.17-3.74 15.46-3.52 12.02.66 21.63 5.28 28.84 13.86-10.5 6.34-15.65 15.34-15.46 27 0 10.36 4.09 18.9 12.28 25.62 4.19 3.51 8.87 6.07 14.04 7.68-2.61 7.66-5.89 15.44-9.84 23.34zM119.22 33.15c0-7.39 2.66-14.36 7.97-20.91 5.31-6.55 11.83-10.74 19.57-12.57.8 3.17 1.2 6.2 1.2 9.09 0 7.39-2.73 14.36-8.2 20.91-5.46 6.55-12.16 10.74-20.1 12.57-.27-3.04-.44-6.07-.44-9.09z"/>
@@ -1194,10 +1581,10 @@
                       <div class="pay-method-sub">Instant 1-tap checkout</div>
                     </div>
                   </div>
-                  <span style="font-size:11px; color:var(--emerald); font-weight:700;">Fast</span>
+                  <span style="font-size:11px; color:var(--emerald); font-weight:700;">Fastest</span>
                 </div>
 
-                <div class="pay-method-row">
+                <div class="pay-method-row" onclick="selectPayMethod('card', this)">
                   <div class="pay-method-left">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                       <rect x="1" y="4" width="22" height="16" rx="3" ry="3"></rect><line x1="1" y1="10" x2="23" y2="10"></line>
@@ -1210,7 +1597,7 @@
                   <span style="font-size:11px; color:var(--text-muted);">&rarr;</span>
                 </div>
 
-                <div class="pay-method-row">
+                <div class="pay-method-row" onclick="selectPayMethod('bank', this)">
                   <div class="pay-method-left">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                       <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/>
@@ -1223,7 +1610,10 @@
                   <span style="font-size:11px; color:var(--emerald); font-weight:700;">0.5% Fee</span>
                 </div>
 
-                <button class="btn-screen-action" style="margin-top:14px;">Pay with Apple Pay</button>
+                <button class="btn-screen-action" style="margin-top:14px;" id="buyActionBtn" onclick="simulateBiometricPurchase()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span>Pay with Apple Pay</span>
+                </button>
               </div>
 
               <!-- VIEW 4: Streamlined Send -->
@@ -1236,25 +1626,41 @@
                 <div class="send-field-group">
                   <div class="send-field-label">Recipient Address or ENS</div>
                   <div class="send-input-frame">
-                    <input type="text" value="vitalik.eth" readonly>
-                    <span style="font-size:10px; font-weight:700; color:var(--emerald);">✓ Verified</span>
+                    <input type="text" id="sendRecipientInput" value="vitalik.eth" oninput="validateSendRecipient(this.value)">
+                    <span id="sendVerifyBadge" style="font-size:10px; font-weight:700; color:var(--emerald);">✓ Verified</span>
+                  </div>
+                  <div class="quick-recipients-row">
+                    <span class="recipient-chip" onclick="fillRecipient('vitalik.eth')">vitalik.eth</span>
+                    <span class="recipient-chip" onclick="fillRecipient('cold-vault.eth')">cold-vault.eth</span>
+                    <span class="recipient-chip" onclick="fillRecipient('binance.eth')">binance.eth</span>
                   </div>
                 </div>
 
                 <div class="send-field-group">
                   <div class="send-field-label">Amount (ETH)</div>
                   <div class="send-input-frame">
-                    <input type="text" value="0.5 ETH" readonly>
-                    <span style="font-size:11px; color:var(--text-dim);">≈ $1,742.60</span>
+                    <input type="text" id="sendAmountInput" value="0.5" oninput="updateSendEquiv(this.value)">
+                    <span style="font-size:11px; color:var(--text-dim);" class="tabular-nums" id="sendUsdEquiv">≈ $1,742.60</span>
                   </div>
                 </div>
 
-                <div class="fee-pill-box">
-                  <span>Network Fee (Auto-estimated):</span>
-                  <span style="color:var(--emerald); font-weight:700;">~$0.34 &bull; Fast</span>
+                <div class="send-field-label" style="text-align:left;">Network Priority Fee:</div>
+                <div class="fee-tiers-row">
+                  <div class="fee-tier-card" onclick="selectFeeTier('Eco', '$0.12', this)">
+                    <div class="fee-tier-name">Economy</div>
+                    <div class="fee-tier-price tabular-nums">~$0.12</div>
+                  </div>
+                  <div class="fee-tier-card active" onclick="selectFeeTier('Standard', '$0.34', this)">
+                    <div class="fee-tier-name">Normal</div>
+                    <div class="fee-tier-price tabular-nums">~$0.34</div>
+                  </div>
+                  <div class="fee-tier-card" onclick="selectFeeTier('Priority', '$0.78', this)">
+                    <div class="fee-tier-name">Priority</div>
+                    <div class="fee-tier-price tabular-nums">~$0.78</div>
+                  </div>
                 </div>
 
-                <button class="btn-screen-action">
+                <button class="btn-screen-action" id="sendConfirmBtn" onclick="simulateConfirmSend()">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   <span>Confirm with Face ID</span>
                 </button>
@@ -1264,22 +1670,58 @@
               <div class="phone-view-panel" id="viewENS">
                 <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                   <button style="background:transparent; border:none; color:var(--primary); font-size:12px; font-weight:700; cursor:pointer;" onclick="showAppTour('tokens')">&larr; Back</button>
-                  <span style="font-size:12px; font-weight:700;">ENS Profile</span>
+                  <span style="font-size:12px; font-weight:700;">ENS Profile Hub</span>
                 </div>
 
                 <div style="text-align:center; padding:12px 0 18px;">
-                  <div style="width:52px; height:52px; border-radius:50%; background:var(--primary-dim); border:1px solid var(--border-cyan); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; color:var(--primary); font-size:22px; font-weight:800;">@</div>
-                  <div style="font-size:18px; font-weight:800;">vitalik.eth</div>
-                  <div style="font-size:11px; color:var(--text-dim); font-family:monospace;">0xd8dA6BF26964aF9...45D37aA96045</div>
+                  <div style="width:56px; height:56px; border-radius:50%; background:var(--primary-dim); border:1px solid var(--border-cyan); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; color:var(--primary); font-size:24px; font-weight:800; box-shadow:0 0 16px rgba(0,229,255,0.25);">@</div>
+                  <div style="font-size:20px; font-weight:850;" id="ensSimulatorName">vitalik.eth</div>
+                  <div style="font-size:11px; color:var(--text-dim); font-family:'JetBrains Mono', monospace;">0xd8dA6BF26964aF9...45D37aA96045</div>
                 </div>
 
-                <div style="background:var(--bg-subtle); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:14px;">
+                <div style="background:var(--bg-subtle); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:12px; text-align:left;">
                   <div style="font-size:11px; color:var(--text-dim);">Primary Reverse Record</div>
-                  <div style="font-size:13px; font-weight:700; color:var(--emerald);">Active &bull; Resolved across all dApps</div>
+                  <div style="font-size:13px; font-weight:700; color:var(--emerald);">● Active &bull; Resolved across 12+ Chains</div>
                 </div>
 
-                <button class="btn-screen-action" onclick="showAppTour('tokens')">Done</button>
+                <div style="background:var(--bg-subtle); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:16px; text-align:left;">
+                  <div style="font-size:11px; color:var(--text-dim);">Protocol Expiration</div>
+                  <div style="font-size:13px; font-weight:700; color:#fff;">Nov 18, 2028 (Auto-Renewal Ready)</div>
+                </div>
+
+                <button class="btn-screen-action" onclick="showToast('Primary ENS name refreshed')">Save Changes</button>
               </div>
+
+              <!-- Phone Mockup Receive Modal (Slide-over) -->
+              <div class="phone-receive-modal" id="phoneReceiveModal">
+                <div style="font-size:16px; font-weight:800; margin-bottom:4px;">Receive Multi-Chain Assets</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:16px;">Scan to deposit ETH, BTC, SOL or EVM tokens</div>
+                
+                <div style="background:#fff; padding:14px; border-radius:16px; display:inline-block; margin:0 auto 16px;">
+                  <svg width="140" height="140" viewBox="0 0 100 100" fill="#000">
+                    <rect width="100" height="100" fill="#FFF"/>
+                    <path d="M10,10 h30 v30 h-30 z M15,15 v20 h20 v-20 z M20,20 h10 v10 h-10 z" fill="#000"/>
+                    <path d="M60,10 h30 v30 h-30 z M65,15 v20 h20 v-20 z M70,20 h10 v10 h-10 z" fill="#000"/>
+                    <path d="M10,60 h30 v30 h-30 z M15,65 v20 h20 v-20 z M20,70 h10 v10 h-10 z" fill="#000"/>
+                    <rect x="45" y="10" width="10" height="15" fill="#000"/>
+                    <rect x="45" y="30" width="10" height="10" fill="#000"/>
+                    <rect x="45" y="45" width="20" height="10" fill="#000"/>
+                    <rect x="10" y="45" width="25" height="10" fill="#000"/>
+                    <rect x="70" y="45" width="20" height="10" fill="#000"/>
+                    <rect x="45" y="60" width="10" height="30" fill="#000"/>
+                    <rect x="60" y="60" width="15" height="10" fill="#000"/>
+                    <rect x="75" y="75" width="15" height="15" fill="#000"/>
+                  </svg>
+                </div>
+
+                <div style="font-size:11px; font-family:'JetBrains Mono', monospace; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid var(--border); margin-bottom:16px; word-break:break-all;">
+                  0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+                </div>
+
+                <button class="btn-screen-action" style="margin-bottom:8px;" onclick="copyPhoneAddress()">Copy Address</button>
+                <button style="background:transparent; border:none; color:var(--text-muted); font-size:12px; cursor:pointer;" onclick="closePhoneReceiveModal()">Close</button>
+              </div>
+
             </div>
           </div>
 
@@ -1291,7 +1733,7 @@
               </div>
               <div class="tour-nav-content">
                 <h3>Multi-Chain Portfolio</h3>
-                <p>View your consolidated balances across Ethereum, Bitcoin, Solana, Arbitrum, Base, and more with instant USD recalculation.</p>
+                <p>View consolidated balances across Ethereum, Bitcoin, Solana, Arbitrum, Base, and more with instant USD recalculation and privacy mode.</p>
               </div>
             </div>
 
@@ -1301,7 +1743,7 @@
               </div>
               <div class="tour-nav-content">
                 <h3>Token Analytics &amp; Holdings</h3>
-                <p>Real-time price charts (1D to ALL), 24h market stats, and your personal token holdings breakdown in one place.</p>
+                <p>Interactive price curves from 1D to ALL timeframes, 24h market stats, and your personal token holdings breakdown in one place.</p>
               </div>
             </div>
 
@@ -1400,13 +1842,20 @@
               <p style="font-size:13px; color:var(--text-muted);">Check availability or preview annual registration fees</p>
             </div>
             <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--emerald); font-weight:700;">
-              <span>●</span> Connected to Official ENS Protocol
+              <span class="chain-ping"></span> Connected to Official ENS Protocol
             </span>
           </div>
 
           <div class="ens-search-bar">
             <input type="text" id="ensInput" value="satoshi" oninput="updateEnsQuote(this.value)" placeholder="Enter name">
             <span class="ens-suffix">.eth</span>
+          </div>
+
+          <!-- Registration Period Slider -->
+          <div class="ens-slider-row">
+            <span>Registration Period: <strong id="ensYearsLabel" style="color:#fff;">1 Year</strong></span>
+            <input type="range" id="ensYearSlider" min="1" max="5" value="1" oninput="updateEnsYearDuration(this.value)">
+            <span style="font-size:12px; color:var(--primary);">Annual Renewal</span>
           </div>
 
           <div class="ens-calc-box">
@@ -1426,91 +1875,118 @@
           <p class="section-description">Manage EVM rollups, major layer 1 networks, Solana, and Bitcoin SegWit with a single master recovery phrase.</p>
         </div>
 
-        <div class="chains-grid">
-          <div class="chain-card">
+        <div class="chains-filter-bar">
+          <button class="chains-filter-btn active" onclick="filterNetworksGrid('all', this)">All Networks</button>
+          <button class="chains-filter-btn" onclick="filterNetworksGrid('l1', this)">Layer 1</button>
+          <button class="chains-filter-btn" onclick="filterNetworksGrid('l2', this)">Layer 2 Rollups</button>
+          <button class="chains-filter-btn" onclick="filterNetworksGrid('nonevm', this)">Non-EVM</button>
+        </div>
+
+        <div class="chains-grid" id="networksGrid">
+          <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#627EEA;">
               <svg viewBox="0 0 256 417" width="22" height="22"><path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="currentColor"/><path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="currentColor"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Ethereum</div>
+              <div class="chain-name">Ethereum <span class="chain-ping"></span></div>
               <div class="chain-meta">Layer 1 &bull; Chain ID 1 &bull; ETH</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="nonevm">
             <div class="chain-icon-wrap" style="color:#F7931A;">
               <svg viewBox="0 0 64 64" width="22" height="22"><circle cx="32" cy="32" r="32" fill="#F7931A"/><path d="M46.1 27.4c.6-4.3-2.6-6.6-7.1-8.1l1.5-5.8-3.5-.9-1.4 5.7c-.9-.2-1.9-.4-2.8-.7l1.4-5.7-3.5-.9-1.5 5.8c-.8-.2-1.5-.4-2.2-.5l.0-.1-4.9-1.2-1 3.8s2.6.6 2.6.6c1.4.4 1.7 1.3 1.6 2.1l-1.6 6.5c.1 0 .2.1.3.1l-.3-.1-2.3 9.1c-.2.5-.6 1.2-1.7.9 0 0-2.6-.6-2.6-.6l-1.8 4.1 4.6 1.1c.9.2 1.7.5 2.6.7l-1.5 6.1 3.5.9 1.5-5.9c1 .3 1.9.5 2.8.7l-1.5 5.9 3.5.9 1.5-6c6 .9 10.5.5 12.4-4.8 1.5-4.2-.1-6.6-3.1-8.2 2.2-.5 3.9-2 4.3-5.1zm-7.7 11.2c-1.1 4.4-8.5 2-10.9 1.4l1.9-7.8c2.4.6 10.1 1.8 9 6.4zm1.1-11.3c-1 4-7.2 2-9.2 1.5l1.8-7.1c2 .5 8.4 1.5 7.4 5.6z" fill="#FFF"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Bitcoin</div>
+              <div class="chain-name">Bitcoin <span class="chain-ping"></span></div>
               <div class="chain-meta">Native SegWit &bull; BTC</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="nonevm">
             <div class="chain-icon-wrap" style="color:#14F195;">
               <svg viewBox="0 0 397 311" width="22" height="22"><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h316.5c5.6 0 8.4 6.7 4.5 10.6l-57.9 57.9c-2.4 2.4-5.7 3.8-9.2 3.8H7.2c-5.6 0-8.4-6.7-4.5-10.6l61.9-57.9z" fill="#14F195"/><path d="M64.6 3.8C67 1.4 70.3 0 73.8 0h316.5c5.6 0 8.4 6.7 4.5 10.6L336.9 68.5c-2.4 2.4-5.7 3.8-9.2 3.8H11.2c-5.6 0-8.4-6.7-4.5-10.6L64.6 3.8z" fill="#DC1FFF"/><path d="M333.1 120.9c-2.4-2.4-5.7-3.8-9.2-3.8H7.4c-5.6 0-8.4 6.7-4.5 10.6l57.9 57.9c2.4 2.4 5.7 3.8 9.2 3.8h316.5c5.6 0 8.4-6.7 4.5-10.6l-57.9-57.9z" fill="#00FFA3"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Solana</div>
+              <div class="chain-name">Solana <span class="chain-ping"></span></div>
               <div class="chain-meta">High-Speed L1 &bull; SOL</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="l2">
             <div class="chain-icon-wrap" style="color:#28A0F0;">
               <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#28A0F0" fill-opacity="0.2" stroke="#28A0F0" stroke-width="3"/><path d="M50 18L24 64H38L50 42L62 64H76L50 18Z" fill="#28A0F0"/><path d="M50 54L38 76H62L50 54Z" fill="#FFF"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Arbitrum One</div>
+              <div class="chain-name">Arbitrum One <span class="chain-ping"></span></div>
               <div class="chain-meta">Optimistic Rollup &bull; Chain 42161</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="l2">
             <div class="chain-icon-wrap" style="color:#0052FF;">
               <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#0052FF"/><path d="M50 25C63.8 25 75 36.2 75 50C75 63.8 63.8 75 50 75C36.2 75 25 63.8 25 50C25 36.2 36.2 25 50 25Z" fill="#FFF"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Base</div>
+              <div class="chain-name">Base <span class="chain-ping"></span></div>
               <div class="chain-meta">Coinbase L2 &bull; Chain 8453</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="l2">
             <div class="chain-icon-wrap" style="color:#FF0420;">
               <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#FF0420"/><circle cx="50" cy="50" r="22" fill="#FFF"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Optimism</div>
+              <div class="chain-name">Optimism <span class="chain-ping"></span></div>
               <div class="chain-meta">OP Mainnet &bull; Chain 10</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#8247E5;">
               <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#8247E5"/><path d="M50 26L70 38V62L50 74L30 62V38L50 26Z" fill="#FFF"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">Polygon</div>
+              <div class="chain-name">Polygon <span class="chain-ping"></span></div>
               <div class="chain-meta">PoS Network &bull; POL</div>
             </div>
           </div>
 
-          <div class="chain-card">
+          <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#F3BA2F;">
               <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#F3BA2F"/><path d="M50 24L65 39L50 54L35 39L50 24Z" fill="#FFF"/></svg>
             </div>
             <div class="chain-info">
-              <div class="chain-name">BNB Smart Chain</div>
+              <div class="chain-name">BNB Smart Chain <span class="chain-ping"></span></div>
               <div class="chain-meta">EVM Chain 56 &bull; BNB</div>
+            </div>
+          </div>
+
+          <div class="chain-card" data-cat="l1">
+            <div class="chain-icon-wrap" style="color:#E84142;">
+              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#E84142"/><path d="M35 68L50 32L65 68H35Z" fill="#FFF"/></svg>
+            </div>
+            <div class="chain-info">
+              <div class="chain-name">Avalanche C-Chain <span class="chain-ping"></span></div>
+              <div class="chain-meta">EVM Chain 43114 &bull; AVAX</div>
+            </div>
+          </div>
+
+          <div class="chain-card" data-cat="l2">
+            <div class="chain-icon-wrap" style="color:#000000; border:1px solid #fff;">
+              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#000"/><path d="M30 30H70V70H30Z" fill="#00E5FF"/></svg>
+            </div>
+            <div class="chain-info">
+              <div class="chain-name">Linea <span class="chain-ping"></span></div>
+              <div class="chain-meta">Consensys zkRollup &bull; Chain 59144</div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Security Architecture -->
+    <!-- Security Architecture Section -->
     <section class="security-section" id="security">
       <div class="container">
         <div class="section-header">
@@ -1525,7 +2001,7 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             </div>
             <h3>Hardware Silicon Isolation</h3>
-            <p>Your 12-word recovery seed is generated on-device and stored inside Apple's Secure Enclave Keychain or Android's Hardware Keystore with AES-256 GCM encryption.</p>
+            <p>Your 12-word recovery seed is generated locally and sealed inside Apple's Secure Enclave Keychain or Android's Hardware Keystore with AES-256 GCM encryption.</p>
           </div>
 
           <div class="security-card">
@@ -1533,7 +2009,7 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
             </div>
             <h3>Zero Cloud Tracking</h3>
-            <p>There are no user accounts, no login servers, and no telemetry databases. Your transaction history and balances are fetched directly from public RPC nodes.</p>
+            <p>There are no user accounts, no login servers, and no telemetry databases. Your transaction history and balances are fetched directly from decentralized JSON-RPC nodes.</p>
           </div>
 
           <div class="security-card">
@@ -1543,6 +2019,53 @@
             <h3>Open Source &amp; Auditable</h3>
             <p>Every single line of VaultETH code is public and open-source on GitHub. No proprietary black boxes or hidden backdoors.</p>
           </div>
+        </div>
+
+        <!-- Security Architecture Comparison Matrix -->
+        <div class="security-matrix-card">
+          <h3 style="font-size:20px; font-weight:800; margin-bottom:18px;">How VaultETH Compares</h3>
+          <table class="security-matrix-table">
+            <thead>
+              <tr>
+                <th>Security Feature</th>
+                <th class="col-highlight">VaultETH</th>
+                <th>Browser Extensions</th>
+                <th>Centralized Exchanges</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Private Key Custody</td>
+                <td class="col-highlight">Physical Secure Enclave</td>
+                <td>Browser LocalStorage</td>
+                <td>Centralized Database</td>
+              </tr>
+              <tr>
+                <td>Biometric Face ID / Fingerprint</td>
+                <td class="col-highlight">Hardware Enforced</td>
+                <td>Master Password (Software)</td>
+                <td>2FA / Email confirmation</td>
+              </tr>
+              <tr>
+                <td>User Analytics &amp; IP Telemetry</td>
+                <td class="col-highlight">Zero Tracking (0%)</td>
+                <td>Frequent tracking/RPC logging</td>
+                <td>Full KYC, IP, device profiling</td>
+              </tr>
+              <tr>
+                <td>Multi-Chain Address Derivation</td>
+                <td class="col-highlight">EVM + Solana + Bitcoin</td>
+                <td>Single Chain (mostly EVM only)</td>
+                <td>Custodial ledger entries</td>
+              </tr>
+              <tr>
+                <td>Transaction Signing Location</td>
+                <td class="col-highlight">100% Offline on Silicon</td>
+                <td>JavaScript memory runtime</td>
+                <td>Exchange backend servers</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -1632,19 +2155,36 @@
               Yes. VaultETH supports importing any standard 12 or 24-word BIP-39 recovery seed phrase or individual private keys. All your Ethereum, Solana, and multi-chain tokens will appear immediately.
             </div>
           </div>
+
+          <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+              <span>How does ENS (.eth) resolution work in VaultETH?</span>
+              <span class="faq-chevron">▼</span>
+            </div>
+            <div class="faq-answer">
+              VaultETH connects directly to Ethereum's official ENS Universal Resolver smart contract over JSON-RPC. When you type any name ending in .eth, it verifies the checksum and resolves both forward and reverse records instantaneously with zero middlemen.
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Download & QR Code Modal -->
+  <!-- Multi-Tab Download & QR Code Modal -->
   <div class="modal-backdrop" id="downloadModal" onclick="closeDownloadModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeDownloadModal()">✕</button>
-      <h3 style="font-size:22px; font-weight:800; margin-bottom:8px;" id="modalPlatformTitle">Download VaultETH</h3>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Scan the QR code with your mobile camera to install directly.</p>
       
-      <div style="background:#fff; padding:16px; border-radius:16px; display:inline-block; margin-bottom:18px;">
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="tabAppleBtn" onclick="switchModalTab('apple')">Apple iOS</button>
+        <button class="modal-tab-btn" id="tabAndroidBtn" onclick="switchModalTab('android')">Android</button>
+        <button class="modal-tab-btn" id="tabSourceBtn" onclick="switchModalTab('source')">GitHub Source</button>
+      </div>
+
+      <h3 style="font-size:22px; font-weight:800; margin-bottom:6px;" id="modalPlatformTitle">Download VaultETH for iOS</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;" id="modalPlatformSub">Scan with your iPhone camera to install via Apple TestFlight &amp; App Store.</p>
+      
+      <div style="background:#fff; padding:16px; border-radius:18px; display:inline-block; margin-bottom:18px; box-shadow:0 12px 30px rgba(0,0,0,0.5);" id="modalQrWrap">
         <!-- Clean QR SVG vector -->
         <svg width="160" height="160" viewBox="0 0 100 100" fill="#000">
           <rect width="100" height="100" fill="#FFF"/>
@@ -1662,15 +2202,26 @@
         </svg>
       </div>
 
-      <div style="font-size:12px; color:var(--text-dim);" id="modalPlatformSub">Available on App Store (TestFlight) &bull; Google Play</div>
+      <div style="display:flex; justify-content:center; gap:10px;">
+        <button class="btn-screen-action" style="padding:10px 18px; font-size:12px;" onclick="copyInstallLink()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span id="copyLinkBtnText">Copy Install Link</span>
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- Global Toast Notification Element -->
+  <div class="toast-pill" id="globalToast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="globalToastMsg">Action completed successfully</span>
   </div>
 
   <!-- Footer -->
   <footer>
     <div class="container footer-content">
       <div>
-        <div style="font-weight:700; color:#fff; margin-bottom:2px;">VaultETH</div>
+        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:4px;">VaultETH</div>
         <div>Universal self-custodial multi-chain vault. Open-source on GitHub.</div>
       </div>
 
@@ -1735,42 +2286,268 @@
       document.getElementById('phoneScreenBody').scrollTop = 0;
     }
 
-    // --- 4. ENS Protocol Quote Calculator ---
+    // --- 4. Interactive Phone Island ---
+    function toggleDynamicIsland() {
+      const island = document.getElementById('phoneIsland');
+      island.classList.toggle('expanded');
+      showToast('Hardware Secure Enclave: Locked & Verified');
+      setTimeout(() => {
+        island.classList.remove('expanded');
+      }, 3000);
+    }
+
+    // --- 5. Discreet Privacy Mode ---
+    let isDiscreet = false;
+    function toggleDiscreetMode() {
+      isDiscreet = !isDiscreet;
+      const balEl = document.getElementById('portfolioBalanceNum');
+      const btnEl = document.getElementById('discreetBtn');
+      if (isDiscreet) {
+        balEl.textContent = '••••••••';
+        btnEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+        showToast('Privacy mode enabled: balances concealed');
+      } else {
+        balEl.textContent = '$34,842.10';
+        btnEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+        showToast('Privacy mode disabled: balances visible');
+      }
+    }
+
+    // --- 6. Simulator Chain Filtering ---
+    function filterSimulatorTokens(chain, btn) {
+      document.querySelectorAll('.chain-pill-bar .chain-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('#simTokensContainer .token-row-card');
+      const balEl = document.getElementById('portfolioBalanceNum');
+      const gainEl = document.getElementById('portfolioGainText');
+
+      cards.forEach(card => {
+        if (chain === 'all' || card.getAttribute('data-chain') === chain) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (!isDiscreet) {
+        if (chain === 'ethereum') {
+          balEl.textContent = '$18,246.09';
+          gainEl.textContent = '▲ +$842.10 (+4.82%) 24h';
+        } else if (chain === 'bitcoin') {
+          balEl.textContent = '$11,862.20';
+          gainEl.textContent = '▲ +$252.00 (+2.15%) 24h';
+        } else if (chain === 'solana') {
+          balEl.textContent = '$3,733.80';
+          gainEl.textContent = '▲ +$230.10 (+6.38%) 24h';
+        } else if (chain === 'arbitrum') {
+          balEl.textContent = '$963.00';
+          gainEl.textContent = '▲ +$29.10 (+3.10%) 24h';
+        } else {
+          balEl.textContent = '$34,842.10';
+          gainEl.textContent = '▲ +$1,602.40 (+4.82%) 24h';
+        }
+      }
+    }
+
+    // --- 7. Token Analytics View Switcher ---
+    function showTokenAnalytics(sym, price, gain, holdAmt, holdFiat) {
+      document.getElementById('analyticsTokenTitle').textContent = `${sym} Price`;
+      document.getElementById('analyticsPriceNum').textContent = price;
+      document.getElementById('analyticsGainBadge').textContent = `▲ ${gain}`;
+      document.getElementById('analyticsHoldAmt').textContent = holdAmt;
+      document.getElementById('analyticsHoldFiat').textContent = `${holdFiat} USD`;
+      document.getElementById('analyticsChainName').textContent = `${sym} Network`;
+      showAppTour('detail');
+    }
+
+    // Chart Timeframe Switcher
+    const chartPaths = {
+      '1D': { line: 'M0,58 Q40,32 80,44 T160,22 T240,32 T300,10', area: 'M0,58 Q40,32 80,44 T160,22 T240,32 T300,10 L300,80 L0,80 Z' },
+      '1W': { line: 'M0,65 Q60,50 120,38 T200,20 T300,8', area: 'M0,65 Q60,50 120,38 T200,20 T300,8 L300,80 L0,80 Z' },
+      '1M': { line: 'M0,70 Q70,60 140,40 T220,15 T300,6', area: 'M0,70 Q70,60 140,40 T220,15 T300,6 L300,80 L0,80 Z' },
+      '1Y': { line: 'M0,75 Q80,68 150,30 T240,10 T300,4', area: 'M0,75 Q80,68 150,30 T240,10 T300,4 L300,80 L0,80 Z' },
+      'ALL': { line: 'M0,78 Q100,75 180,25 T260,8 T300,2', area: 'M0,78 Q100,75 180,25 T260,8 T300,2 L300,80 L0,80 Z' }
+    };
+
+    function switchTimeframe(tf, btn) {
+      document.querySelectorAll('.chart-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const data = chartPaths[tf] || chartPaths['1D'];
+      document.getElementById('chartLinePath').setAttribute('d', data.line);
+      document.getElementById('chartAreaPath').setAttribute('d', data.area);
+    }
+
+    // --- 8. Simulated Buy Workflow ---
+    let currentFiat = 500;
+    function setFiatAmount(amt, btn) {
+      currentFiat = amt;
+      document.querySelectorAll('.fiat-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('fiatDisplayVal').textContent = `$${amt}.00`;
+      const ethRec = (amt / 3485.20).toFixed(4);
+      document.getElementById('cryptoEstVal').textContent = `Receive ≈ ${ethRec} ETH`;
+    }
+
+    let selectedPayment = 'apple';
+    function selectPayMethod(method, row) {
+      selectedPayment = method;
+      document.querySelectorAll('.pay-method-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      const actionBtn = document.getElementById('buyActionBtn');
+      if (method === 'apple') {
+        actionBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Pay with Apple Pay</span>';
+      } else if (method === 'card') {
+        actionBtn.innerHTML = '<span>Pay with Credit / Debit Card</span>';
+      } else {
+        actionBtn.innerHTML = '<span>Continue with Bank Wire (SEPA)</span>';
+      }
+    }
+
+    function simulateBiometricPurchase() {
+      showToast('Face ID Verified • Order Submitted to Vault!');
+      const island = document.getElementById('phoneIsland');
+      island.classList.add('expanded');
+      setTimeout(() => island.classList.remove('expanded'), 2500);
+    }
+
+    // --- 9. Send Workflow Simulator ---
+    function validateSendRecipient(val) {
+      const badge = document.getElementById('sendVerifyBadge');
+      if (val.endsWith('.eth') || (val.startsWith('0x') && val.length === 42)) {
+        badge.textContent = '✓ Verified';
+        badge.style.color = 'var(--emerald)';
+      } else if (val.length > 0) {
+        badge.textContent = 'Resolving…';
+        badge.style.color = 'var(--primary)';
+      } else {
+        badge.textContent = '';
+      }
+    }
+
+    function fillRecipient(addr) {
+      const input = document.getElementById('sendRecipientInput');
+      input.value = addr;
+      validateSendRecipient(addr);
+    }
+
+    function updateSendEquiv(ethVal) {
+      const parsed = parseFloat(ethVal) || 0;
+      const usd = (parsed * 3485.20).toFixed(2);
+      document.getElementById('sendUsdEquiv').textContent = `≈ $${usd}`;
+    }
+
+    function selectFeeTier(tier, price, card) {
+      document.querySelectorAll('.fee-tier-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      showToast(`Network fee updated: ${tier} (${price})`);
+    }
+
+    function simulateConfirmSend() {
+      showToast('Transaction Broadcasted to Ethereum Mainnet!');
+    }
+
+    // --- 10. Phone Receive Modal ---
+    function openPhoneReceiveModal() {
+      document.getElementById('phoneReceiveModal').classList.add('open');
+    }
+    function closePhoneReceiveModal() {
+      document.getElementById('phoneReceiveModal').classList.remove('open');
+    }
+    function copyPhoneAddress() {
+      navigator.clipboard?.writeText('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045');
+      showToast('Address copied to clipboard!');
+      closePhoneReceiveModal();
+    }
+
+    function triggerSimulatedSwap() {
+      showToast('DEX Aggregator: Routing ETH → USDC with zero slippage');
+    }
+
+    // --- 11. ENS Protocol Quote Calculator ---
+    let ensYears = 1;
+    function updateEnsYearDuration(years) {
+      ensYears = parseInt(years);
+      document.getElementById('ensYearsLabel').textContent = `${ensYears} ${ensYears === 1 ? 'Year' : 'Years'}`;
+      updateEnsQuote(document.getElementById('ensInput').value);
+    }
+
     function updateEnsQuote(val) {
       const clean = (val || '').replace(/\.eth$/i, '').trim();
       const quoteEl = document.getElementById('ensQuoteText');
       if (!quoteEl) return;
 
+      let ethPerYear = 0.0016;
+      let usdPerYear = 5.00;
+
       if (clean.length <= 2) {
         quoteEl.textContent = 'Min. 3 characters required';
+        return;
       } else if (clean.length === 3) {
-        quoteEl.textContent = '~0.18 ETH / yr ($640/yr)';
+        ethPerYear = 0.18;
+        usdPerYear = 640.00;
       } else if (clean.length === 4) {
-        quoteEl.textContent = '~0.045 ETH / yr ($160/yr)';
+        ethPerYear = 0.045;
+        usdPerYear = 160.00;
       } else {
-        quoteEl.textContent = '~0.0016 ETH / yr ($5.00/yr)';
+        ethPerYear = 0.0016;
+        usdPerYear = 5.00;
       }
+
+      const totalEth = (ethPerYear * ensYears).toFixed(4);
+      const totalUsd = (usdPerYear * ensYears).toFixed(2);
+      quoteEl.textContent = `~${totalEth} ETH (${totalUsd} USD total)`;
+
+      const simNameEl = document.getElementById('ensSimulatorName');
+      if (simNameEl) simNameEl.textContent = clean + '.eth';
     }
 
-    // --- 5. FAQ Accordion ---
+    // --- 12. Supported Networks Grid Filter ---
+    function filterNetworksGrid(category, btn) {
+      document.querySelectorAll('.chains-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('#networksGrid .chain-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-cat') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // --- 13. FAQ Accordion ---
     function toggleFaq(item) {
       item.classList.toggle('open');
     }
 
-    // --- 6. Download Modal ---
-    function openDownloadModal(platform) {
+    // --- 14. Download Modal & Tab Switching ---
+    let activeModalPlatform = 'apple';
+    function switchModalTab(platform) {
+      activeModalPlatform = platform;
+      document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+      
       const title = document.getElementById('modalPlatformTitle');
       const sub = document.getElementById('modalPlatformSub');
+
       if (platform === 'apple') {
-        title.textContent = 'Get VaultETH on Apple';
-        sub.textContent = 'Scan to install via Apple TestFlight & App Store (iOS 17+)';
+        document.getElementById('tabAppleBtn').classList.add('active');
+        title.textContent = 'Download VaultETH for iOS';
+        sub.textContent = 'Scan with your iPhone camera to install via Apple TestFlight & App Store.';
       } else if (platform === 'android') {
-        title.textContent = 'Get VaultETH on Android';
-        sub.textContent = 'Scan to install via Google Play & APK (Android 10+)';
+        document.getElementById('tabAndroidBtn').classList.add('active');
+        title.textContent = 'Download VaultETH for Android';
+        sub.textContent = 'Scan with your Android camera to install via Google Play & APK.';
       } else {
-        title.textContent = 'Download VaultETH';
-        sub.textContent = 'Scan with your iPhone or Android camera to install';
+        document.getElementById('tabSourceBtn').classList.add('active');
+        title.textContent = 'VaultETH Open-Source Repository';
+        sub.textContent = 'Clone and build natively with Xcode or Android Studio.';
       }
+    }
+
+    function openDownloadModal(platform) {
+      switchModalTab(platform || 'apple');
       document.getElementById('downloadModal').classList.add('open');
     }
 
@@ -1778,10 +2555,34 @@
       document.getElementById('downloadModal').classList.remove('open');
     }
 
+    function copyInstallLink() {
+      let link = 'https://github.com/ganiyucall911/VaultETH';
+      if (activeModalPlatform === 'apple') link = 'https://testflight.apple.com/join/vaulteth';
+      navigator.clipboard?.writeText(link);
+      showToast('Install URL copied to clipboard!');
+      document.getElementById('copyLinkBtnText').textContent = 'Copied!';
+      setTimeout(() => {
+        document.getElementById('copyLinkBtnText').textContent = 'Copy Install Link';
+      }, 2000);
+    }
+
+    // --- 15. Global Toast Feedback ---
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById('globalToast');
+      document.getElementById('globalToastMsg').textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
+    }
+
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeDownloadModal();
         closeSidebar();
+        closePhoneReceiveModal();
       }
     });
   </script>

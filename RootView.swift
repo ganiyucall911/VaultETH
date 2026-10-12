@@ -640,6 +640,9 @@ struct HomeView: View {
 
     private func copyAddress(_ addr: String) {
         UIPasteboard.general.string = addr
+        #if canImport(UIKit)
+        VaultHaptics.success()
+        #endif
         withAnimation { copiedToast = true }
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -1271,6 +1274,8 @@ struct WelcomeView: View {
         .padding(14)
         .vaultGlass(cornerRadius: 16)
     }
+}
+
 // MARK: - Token Detail Sheet
 
 struct TokenDetailSheet: View {

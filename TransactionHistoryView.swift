@@ -73,9 +73,15 @@ struct TransactionHistoryView: View {
                             .contextMenu {
                                 Button("Copy Hash", systemImage: "doc.on.doc") {
                                     UIPasteboard.general.string = tx.hash
+                                    #if canImport(UIKit)
+                                    VaultHaptics.success()
+                                    #endif
                                 }
                                 Button("Copy Recipient", systemImage: "wallet.pass") {
                                     UIPasteboard.general.string = tx.toAddress
+                                    #if canImport(UIKit)
+                                    VaultHaptics.success()
+                                    #endif
                                 }
                                 if let explorerBase = tx.blockExplorerURL ?? "https://etherscan.io",
                                    let url = URL(string: "\(explorerBase)/tx/\(tx.hash)") {

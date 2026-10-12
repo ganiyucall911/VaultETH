@@ -162,15 +162,24 @@ private struct VaultCardRow: View {
                         Menu("Copy Address") {
                             Button("Copy EVM Address (0x…)", systemImage: "doc.on.doc") {
                                 UIPasteboard.general.string = account.address
+                                #if canImport(UIKit)
+                                VaultHaptics.success()
+                                #endif
                             }
                             if let sol = account.solanaAddress {
                                 Button("Copy Solana Address", systemImage: "doc.on.doc") {
                                     UIPasteboard.general.string = sol
+                                    #if canImport(UIKit)
+                                    VaultHaptics.success()
+                                    #endif
                                 }
                             }
                             if let btc = account.bitcoinAddress {
                                 Button("Copy Bitcoin Address", systemImage: "doc.on.doc") {
                                     UIPasteboard.general.string = btc
+                                    #if canImport(UIKit)
+                                    VaultHaptics.success()
+                                    #endif
                                 }
                             }
                         }

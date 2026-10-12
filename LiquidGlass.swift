@@ -160,4 +160,79 @@ extension View {
     func vaultButton(_ variant: VaultButtonStyle.Variant = .prominent, cornerRadius: CGFloat = 16) -> some View {
         buttonStyle(VaultButtonStyle(variant: variant, cornerRadius: cornerRadius))
     }
+
+    func vaultGlow(_ color: Color = .vaultCyan, radius: CGFloat = 16, opacity: Double = 0.35) -> some View {
+        modifier(VaultGlow(color: color, radius: radius, opacity: opacity))
+    }
+
+    func vaultShimmer() -> some View {
+        modifier(VaultShimmer())
+    }
 }
+
+// MARK: - Shimmer Skeleton & Glow Modifiers
+
+struct VaultShimmer: ViewModifier {
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                GeometryReader { geo in
+                    LinearGradient(
+                        colors: [
+                            Color.clear,
+                            Color.white.opacity(0.18),
+                            Color.clear
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(width: geo.size.width * 2)
+                    .offset(x: -geo.size.width + (phase * geo.size.width * 2))
+                }
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(.linear(duration: 1.8).repeatForever(autoreverses: false)) {
+                    phase = 1
+                }
+            }
+    }
+}
+
+struct VaultGlow: ViewModifier {
+    var color: Color = .vaultCyan
+    var radius: CGFloat = 16
+    var opacity: Double = 0.35
+
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: color.opacity(opacity), radius: radius)
+    }
+}
+
+// MARK: - Tactile Haptic System
+
+#if canImport(UIKit)
+import UIKit
+
+enum VaultHaptics {
+    static func selection() {
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
+    static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
+        UIImpactFeedbackGenerator(style: style).impactOccurred()
+    }
+    static func success() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+    static func warning() {
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+    }
+    static func error() {
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
+    }
+}
+#endif
+
