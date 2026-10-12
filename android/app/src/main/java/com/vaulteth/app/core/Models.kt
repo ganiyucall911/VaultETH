@@ -248,3 +248,11 @@ val DefaultTokenAssets: List<TokenItem> = listOf(
     TokenItem("arb", "ARB", "Arbitrum", "$1.18", "+3.20%", true, "850.00 ARB", "$1,003.00", 0xFF28A0F0)
 )
 
+data class ProtocolFeeConfig(
+    val isEnabled: Boolean = false,
+    val treasuryAddress: String = "",
+    val feeBasisPoints: Int = 15,
+    val isTransparent: Boolean = true,
+    val totalCollectedWei: String = "0"
+)
+

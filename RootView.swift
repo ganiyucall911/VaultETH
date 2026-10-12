@@ -926,6 +926,7 @@ struct SettingsView: View {
     @EnvironmentObject private var store: WalletStore
     @State private var showNetworkPicker = false
     @State private var showENSManager = false
+    @State private var showTreasurySettings = false
     @State private var showPrivacyPolicy = false
     @State private var showSupportFAQ = false
 
@@ -996,6 +997,30 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Treasury & Platform Monetization") {
+                Button {
+                    showTreasurySettings = true
+                } label: {
+                    HStack {
+                        Image(systemName: "dollarsign.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(Color.vaultEmerald)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Protocol Treasury & Routing")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Text(store.feeConfig.isEnabled ? "Active • \(store.feeConfig.feeBasisPoints) bps (\(store.feeConfig.isTransparent ? "Seen / Itemized" : "Unseen / Consolidated"))" : "Fee Collection Inactive")
+                                .font(.caption)
+                                .foregroundStyle(store.feeConfig.isEnabled ? Color.vaultEmerald : Color.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
             Section("Vault Security") {
                 HStack(spacing: 12) {
                     Image(systemName: "lock.shield.fill")
@@ -1056,11 +1081,142 @@ struct SettingsView: View {
                 ENSManagerView(account: account)
             }
         }
+        .sheet(isPresented: $showTreasurySettings) {
+            NavigationStack { ProtocolTreasurySheet() }
+        }
         .sheet(isPresented: $showPrivacyPolicy) {
             NavigationStack { InAppPrivacyPolicySheet() }
         }
         .sheet(isPresented: $showSupportFAQ) {
             NavigationStack { InAppSupportFAQSheet() }
+        }
+    }
+}
+
+// MARK: - Protocol Treasury & Monetization Management Sheet
+
+struct ProtocolTreasurySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: WalletStore
+
+    @State private var isEnabled: Bool = false
+    @State private var treasuryAddress: String = ""
+    @State private var feeBasisPoints: UInt16 = 15
+    @State private var isTransparent: Bool = true
+    @State private var saveNotice: String?
+
+    private let feeTiers: [UInt16] = [5, 10, 15, 25, 50]
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Monetization Engine Active", isOn: $isEnabled)
+                    .tint(Color.vaultEmerald)
+
+                Text("When active, outgoing transfers accrue a micro-routing fee routed directly to your personal treasury wallet address.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Monetization Status")
+            }
+
+            Section {
+                TextField("0x... Treasury Payout Wallet", text: $treasuryAddress)
+                    .font(.caption.monospaced())
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+
+                if let currentAccount = store.selectedAccount {
+                    Button("Use Current Active Account") {
+                        treasuryAddress = currentAccount.address
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Color.vaultCyan)
+                }
+            } header: {
+                Text("Treasury Payout Destination")
+            } footer: {
+                Text("All accrued charges on native transfers are sent directly to this address on the destination network.")
+            }
+
+            Section {
+                Picker("Fee Rate", selection: $feeBasisPoints) {
+                    ForEach(feeTiers, id: \.self) { bps in
+                        Text("\(Double(bps) / 100.0, specifier: "%.2f")% (\(bps) bps)").tag(bps)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Fee Visibility Mode")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Picker("Fee Visibility", selection: $isTransparent) {
+                        Text("Seen (Itemized)").tag(true)
+                        Text("Unseen (Consolidated)").tag(false)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .padding(.vertical, 4)
+
+                Text(isTransparent
+                     ? "Seen Mode: Outgoing transaction review displays a transparent 'Vault Protocol Routing' line item."
+                     : "Unseen Mode: The fee is silently incorporated into the estimated execution & network outlay.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Fee Rate & Visibility")
+            }
+
+            Section {
+                HStack {
+                    Text("Total Collected (Lifetime)")
+                    Spacer()
+                    let collectedWei = Data(hex: store.feeConfig.totalCollectedWei)
+                    Text(ETHAmount.format(wei: collectedWei) + " " + store.selectedNetwork.symbol)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(Color.vaultEmerald)
+                }
+            } header: {
+                Text("Accrued Platform Revenue")
+            }
+
+            if let notice = saveNotice {
+                Section {
+                    Text(notice)
+                        .font(.caption.bold())
+                        .foregroundStyle(Color.vaultEmerald)
+                }
+            }
+        }
+        .navigationTitle("Treasury Monetization")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Done") { dismiss() }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    let clean = treasuryAddress.trimmingCharacters(in: .whitespacesAndNewlines)
+                    store.updateFeeConfig(
+                        isEnabled: isEnabled,
+                        treasuryAddress: clean,
+                        feeBasisPoints: feeBasisPoints,
+                        isTransparent: isTransparent
+                    )
+                    saveNotice = "Configuration saved & active!"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        dismiss()
+                    }
+                }
+                .disabled(isEnabled && treasuryAddress.trimmingCharacters(in: .whitespacesAndNewlines).count != 42)
+            }
+        }
+        .onAppear {
+            isEnabled = store.feeConfig.isEnabled
+            treasuryAddress = store.feeConfig.treasuryAddress
+            feeBasisPoints = store.feeConfig.feeBasisPoints
+            isTransparent = store.feeConfig.isTransparent
         }
     }
 }

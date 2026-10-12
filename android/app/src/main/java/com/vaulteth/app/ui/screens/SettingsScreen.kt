@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vaulteth.app.core.BlockchainNetwork
+import com.vaulteth.app.core.ProtocolFeeConfig
 import com.vaulteth.app.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,6 +31,7 @@ fun SettingsScreen(
 
     var showPrivacyDialog by remember { mutableStateOf(false) }
     var showSupportDialog by remember { mutableStateOf(false) }
+    var feeConfig by remember { mutableStateOf(ProtocolFeeConfig(isEnabled = false, treasuryAddress = "", feeBasisPoints = 15, isTransparent = true)) }
 
     Scaffold(
         containerColor = VaultBackground,
@@ -182,6 +184,68 @@ fun SettingsScreen(
                         ) {
                             Text("Vault Management", color = VaultTextSecondary)
                             Text("Manage in Wallets Tab", fontWeight = FontWeight.SemiBold, color = VaultTextPrimary)
+                        }
+                    }
+                }
+            }
+
+            // Section: Treasury & Monetization
+            item {
+                Text(
+                    text = "TREASURY & MONETIZATION",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    color = VaultTextMuted
+                )
+            }
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().border(1.dp, VaultBorder, RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(containerColor = VaultSurface)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Protocol Fee Routing", fontWeight = FontWeight.SemiBold, color = VaultTextPrimary)
+                                Text("Configurable micro-charge sent to personal treasury", style = MaterialTheme.typography.bodySmall, color = VaultTextSecondary)
+                            }
+                            Switch(
+                                checked = feeConfig.isEnabled,
+                                onCheckedChange = { checked ->
+                                    feeConfig = feeConfig.copy(isEnabled = checked)
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = VaultEmerald,
+                                    checkedTrackColor = VaultEmerald.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
+                        if (feeConfig.isEnabled) {
+                            HorizontalDivider(color = VaultBorder)
+                            OutlinedTextField(
+                                value = feeConfig.treasuryAddress,
+                                onValueChange = { feeConfig = feeConfig.copy(treasuryAddress = it) },
+                                label = { Text("Treasury Wallet Address (0x...)") },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                textStyle = MaterialTheme.typography.bodySmall.copy(color = VaultTextPrimary)
+                            )
+                            HorizontalDivider(color = VaultBorder)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Fee Mode", color = VaultTextSecondary)
+                                Text(
+                                    if (feeConfig.isTransparent) "Seen (Itemized Breakdown)" else "Unseen (Consolidated Outlay)",
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = VaultEmerald
+                                )
+                            }
                         }
                     }
                 }

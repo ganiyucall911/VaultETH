@@ -5,37 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VaultETH | Self-Custodial Multi-Chain Wallet for iOS & Android</title>
   <meta name="description" content="Universal self-custodial multi-chain wallet for iOS and Android. Hardware Secure Enclave protection, real-time token tracking, Apple Pay & Google Pay on-ramping, and zero cloud tracking.">
-  <link rel="icon" type="image/png" href="assets/app-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/vault-logo.svg">
 
-  <!-- Google Fonts: Outfit for sleek modern display & JetBrains Mono for cryptographic addresses -->
+  <!-- Google Fonts: Outfit for executive display & JetBrains Mono for cryptographic precision -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #07090E;
-      --bg-surface: #0E121C;
-      --bg-card: rgba(16, 22, 34, 0.72);
-      --bg-card-hover: rgba(24, 32, 50, 0.88);
-      --bg-subtle: rgba(255, 255, 255, 0.04);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-highlight: rgba(255, 255, 255, 0.18);
-      --border-cyan: rgba(0, 229, 255, 0.38);
-      --border-violet: rgba(139, 92, 246, 0.38);
+      /* Matte Executive Obsidian Canvas (Cash App & Apple FinTech) */
+      --bg: #090B0E;
+      --bg-surface: #10141B;
+      --bg-card: rgba(16, 21, 28, 0.82);
+      --bg-card-hover: rgba(23, 30, 41, 0.94);
+      --bg-subtle: rgba(255, 255, 255, 0.05);
       
-      --primary: #00E5FF;
-      --primary-dim: rgba(0, 229, 255, 0.12);
-      --primary-glow: rgba(0, 229, 255, 0.35);
+      /* Crisp Platinum & Metallic Accents */
+      --border: rgba(255, 255, 255, 0.09);
+      --border-highlight: rgba(255, 255, 255, 0.20);
+      --border-subtle: rgba(255, 255, 255, 0.05);
       
-      --violet: #8B5CF6;
-      --violet-dim: rgba(139, 92, 246, 0.12);
-      --violet-glow: rgba(139, 92, 246, 0.35);
+      /* Cash App Signature Mint & Financial Growth */
+      --primary: #00D632;
+      --primary-hover: #00E637;
+      --primary-dim: rgba(0, 214, 50, 0.12);
+      --primary-glow: rgba(0, 214, 50, 0.26);
       
-      --blue: #3B82F6;
-      --emerald: #10B981;
-      --emerald-dim: rgba(16, 185, 129, 0.14);
+      --platinum: #F8FAFC;
+      --steel: #CBD5E1;
+      --emerald: #00D632;
+      --emerald-dim: rgba(0, 214, 50, 0.14);
       --amber: #F59E0B;
+      --blue: #3B82F6;
       
       --text: #F8FAFC;
       --text-muted: #94A3B8;
@@ -44,10 +46,10 @@
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
-      --radius-xl: 30px;
+      --radius-xl: 28px;
       
-      --glass-blur: blur(24px) saturate(180%);
-      --transition: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      --glass-blur: blur(20px) saturate(160%);
+      --transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       --transition-spring: 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -71,48 +73,23 @@
       position: relative;
     }
 
-    /* Tabular numbers across crypto statistics */
+    /* Tabular numbers across financial metrics */
     .tabular-nums {
       font-variant-numeric: tabular-nums;
     }
 
-    /* Ambient Subtle Cyber Lighting */
-    .hero-glow-cyan {
+    /* Subtle Executive Atmosphere (Zero neon laser clutter) */
+    .ambient-atmosphere {
       position: absolute;
-      top: -100px;
-      left: 30%;
+      top: 0;
+      left: 50%;
       transform: translateX(-50%);
-      width: min(750px, 90vw);
-      height: 550px;
-      background: radial-gradient(circle, rgba(0, 229, 255, 0.14) 0%, rgba(0, 229, 255, 0.02) 55%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-      filter: blur(40px);
-    }
-
-    .hero-glow-violet {
-      position: absolute;
-      top: 50px;
-      left: 70%;
-      transform: translateX(-50%);
-      width: min(650px, 85vw);
-      height: 500px;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.02) 50%, transparent 70%);
+      width: min(1000px, 95vw);
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 214, 50, 0.07) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 70%);
       pointer-events: none;
       z-index: 0;
       filter: blur(50px);
-    }
-
-    .cyber-grid-overlay {
-      position: absolute;
-      inset: 0;
-      height: 1000px;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-      background-size: 36px 36px;
-      mask-image: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 85%);
-      -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 85%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     .container {
@@ -196,21 +173,22 @@
       color: #fff;
     }
     .brand-logo-wrap {
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+      background: #000;
+      border: 1px solid var(--border-highlight);
+      box-shadow: 0 4px 14px rgba(0, 214, 50, 0.22);
+      padding: 2px;
     }
-    .brand-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .brand-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text-col { display: flex; flex-direction: column; }
     .brand-name { font-size: 20px; font-weight: 850; letter-spacing: -0.5px; line-height: 1.1; }
-    .brand-name .highlight { color: var(--primary); text-shadow: 0 0 16px rgba(0, 229, 255, 0.5); }
+    .brand-name .highlight { color: var(--primary); text-shadow: 0 0 16px rgba(0, 214, 50, 0.4); }
     .brand-sub { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
 
     .nav-center {
@@ -365,9 +343,31 @@
       margin: 0 auto 24px;
     }
     .gradient-text {
-      background: linear-gradient(135deg, #FFFFFF 20%, #93C5FD 55%, #00E5FF 85%, #8B5CF6 100%);
+      background: linear-gradient(180deg, #FFFFFF 20%, #E2E8F0 60%, #94A3B8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    .hero-brand-emblem-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 88px;
+      height: 88px;
+      border-radius: 26px;
+      background: #000;
+      border: 1px solid var(--border-highlight);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 214, 50, 0.22);
+      margin-bottom: 24px;
+      padding: 6px;
+      transition: transform var(--transition-spring);
+    }
+    .hero-brand-emblem-wrap:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+    .hero-vault-emblem {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     .hero-lead {
       font-size: clamp(16px, 2vw, 19px);
@@ -984,6 +984,102 @@
     .chain-ping { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
     .chain-meta { font-size: 11px; color: var(--text-dim); }
 
+    /* Institutional Treasury & Monetization Section */
+    .treasury-section { padding: 90px 0; }
+    .treasury-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+    .treasury-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 30px 24px;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      transition: all var(--transition);
+    }
+    .treasury-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+    .treasury-card h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .treasury-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
+    .treasury-pill-preview { display: flex; gap: 8px; flex-wrap: wrap; }
+    .treasury-mode-badge {
+      font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text-muted);
+    }
+    .treasury-mode-badge.seen { border-color: rgba(0, 214, 50, 0.4); color: var(--primary); background: var(--primary-dim); }
+    .treasury-mode-badge.unseen { border-color: rgba(255, 255, 255, 0.2); color: #fff; }
+    .treasury-tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag-item {
+      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid var(--border);
+    }
+    .treasury-calculator-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-xl);
+      padding: clamp(24px, 4vw, 44px);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    .calc-header-row {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 28px;
+    }
+    .calc-live-badge {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+      color: var(--primary); font-weight: 700; background: var(--primary-dim);
+      border: 1px solid rgba(0, 214, 50, 0.3); padding: 4px 12px; border-radius: 20px;
+    }
+    .calc-sliders-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;
+      margin-bottom: 28px;
+    }
+    .calc-input-group {
+      background: rgba(14, 18, 25, 0.7); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px 20px;
+    }
+    .calc-label-row {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+      font-size: 14px; color: var(--text-muted);
+    }
+    .treasury-range-slider {
+      width: 100%; height: 6px; accent-color: var(--primary); border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1); outline: none; margin-bottom: 8px;
+    }
+    .calc-slider-ticks {
+      display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim);
+    }
+    .calc-results-banner {
+      display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 20px;
+      background: rgba(11, 14, 20, 0.9); border: 1px solid var(--border-highlight);
+      border-radius: 16px; padding: 24px; margin-bottom: 20px; text-align: center;
+    }
+    .calc-result-col { flex: 1; min-width: 180px; }
+    .calc-divider-v { width: 1px; height: 50px; background: var(--border); display: none; }
+    @media (min-width: 640px) { .calc-divider-v { display: block; } }
+    .calc-result-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .calc-result-num { font-size: 28px; font-weight: 850; color: #fff; line-height: 1.1; margin-bottom: 4px; }
+    .calc-result-num.prominent { color: var(--primary); text-shadow: 0 0 20px rgba(0, 214, 50, 0.35); }
+    .calc-result-sub { font-size: 12px; color: var(--text-muted); }
+    .calc-footer-note {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      font-size: 12px; color: var(--text-dim);
+    }
+    .calc-configure-btn {
+      background: var(--bg-subtle); border: 1px solid var(--border); color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 10px; cursor: pointer;
+      transition: all var(--transition);
+    }
+    .calc-configure-btn:hover { background: #fff; color: #000; }
+
     /* Security Architecture Section */
     .security-section { padding: 90px 0; }
     .security-grid {
@@ -1167,19 +1263,18 @@
 <body>
 
   <!-- Ambient Light Mesh (Zero CPU load) -->
-  <div class="hero-glow-cyan"></div>
-  <div class="hero-glow-violet"></div>
-  <div class="cyber-grid-overlay"></div>
+  <!-- Executive Subtle Atmosphere -->
+  <div class="ambient-atmosphere"></div>
 
   <!-- Header & Navigation -->
   <header class="navbar" id="navbar">
     <a href="#" class="brand">
       <div class="brand-logo-wrap">
-        <img src="assets/app-icon.png" alt="VaultETH Logo" onerror="this.style.display='none';">
+        <img src="assets/vault-logo.svg" alt="VaultETH Logo">
       </div>
       <div class="brand-text-col">
         <div class="brand-name">Vault<span class="highlight">ETH</span></div>
-        <div class="brand-sub">Self-Custodial</div>
+        <div class="brand-sub">Private Asset Treasury</div>
       </div>
     </a>
 
@@ -1188,6 +1283,7 @@
       <a href="#purchase">Buy &amp; Add</a>
       <a href="#ens">ENS Domains</a>
       <a href="#networks">Networks</a>
+      <a href="#treasury">Treasury Engine</a>
       <a href="#security">Security</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -1244,7 +1340,7 @@
     <div class="sidebar-header">
       <div class="brand">
         <div class="brand-logo-wrap">
-          <img src="assets/app-icon.png" alt="VaultETH" onerror="this.style.display='none';">
+          <img src="assets/vault-logo.svg" alt="VaultETH">
         </div>
         <div class="brand-name">Vault<span class="highlight">ETH</span></div>
       </div>
@@ -1257,6 +1353,7 @@
       <li><a href="#purchase" onclick="closeSidebar()">Buy &amp; Add Tokens</a></li>
       <li><a href="#ens" onclick="closeSidebar()">ENS Identity Hub</a></li>
       <li><a href="#networks" onclick="closeSidebar()">Supported Networks</a></li>
+      <li><a href="#treasury" onclick="closeSidebar()">Treasury &amp; Monetization</a></li>
       <li><a href="#security" onclick="closeSidebar()">Security Architecture</a></li>
       <li><a href="#download" onclick="closeSidebar()">Downloads</a></li>
       <li><a href="privacy.html">Privacy Policy</a></li>
@@ -1271,19 +1368,24 @@
   <main>
     <section class="hero-section">
       <div class="container">
+        <!-- Iconic Doodle Safe Vault Door Emblem -->
+        <div class="hero-brand-emblem-wrap">
+          <img src="assets/vault-logo.svg" alt="Vault Doodle Door Emblem" class="hero-vault-emblem">
+        </div>
+
         <div class="hero-pill-badge">
           <span class="dot"></span>
           <span>Hardware Silicon Enclave &bull; 12+ Blockchains &bull; Zero Cloud Telemetry</span>
         </div>
 
         <h1 class="hero-title">
-          The Multi-Chain Wallet <br>
-          <span class="gradient-text">Built for Pure Self-Custody.</span>
+          Institutional Digital Vault. <br>
+          <span class="gradient-text">Engineered for Sovereign Capital.</span>
         </h1>
 
         <p class="hero-lead">
           Your cryptographic private keys never leave your physical hardware Secure Enclave. 
-          Manage tokens across 12+ blockchains, resolve native ENS profiles, and buy crypto instantly with Apple Pay or Google Pay — with zero cloud tracking.
+          Manage assets across 12+ blockchains, resolve native ENS identities, and fund accounts directly with Apple Pay or Google Pay — with zero cloud tracking.
         </p>
 
         <!-- Official Store Badges -->
@@ -1791,36 +1893,80 @@
         </div>
 
         <div class="features-grid">
+          <!-- 1. Apple Pay Official -->
           <div class="feature-card">
-            <div class="feature-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.84c.62-.75 1.04-1.8 0.92-2.84-.9.04-1.99.6-2.63 1.35-.57.65-1.07 1.72-.94 2.73.99.08 2.03-.49 2.65-1.24z"/></svg>
+            <div class="feature-icon-box" style="background:#000; border-color:rgba(255,255,255,0.18);">
+              <svg viewBox="0 0 165 70" width="44" height="20">
+                <path d="M23.1 36.3c0-8.9 7.2-13.8 7.5-14-4.1-6-10.6-6.8-12.8-6.9-5.5-.6-10.7 3.3-13.5 3.3-2.8 0-7.2-3.2-11.8-3.1-6.1.1-11.6 3.5-14.7 9-6.3 10.8-1.6 26.9 4.4 35.7 3 4.3 6.5 9.1 11.1 8.9 4.5-.2 6.2-2.9 11.6-2.9 5.3 0 6.9 2.9 11.6 2.8 4.8-.1 7.8-4.3 10.8-8.6 3.4-5 4.8-9.8 4.9-10.1-.1-.1-9.5-3.6-9.6-14.2zM17.8 10.3c2.4-3 4.1-7.1 3.6-11.3-3.6.1-7.9 2.4-10.4 5.4-2.2 2.6-4.2 6.8-3.7 10.8 4 .3 8.1-1.9 10.5-4.9z" fill="#FFF" transform="translate(14, 4) scale(0.65)"/>
+                <text x="58" y="44" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-weight="600" font-size="34" fill="#FFF">Pay</text>
+              </svg>
             </div>
             <h3>Apple Pay</h3>
-            <p>1-tap biometric checkout on iPhone, iPad, and Mac. Buy ETH, BTC, or SOL in seconds without entering card numbers manually.</p>
+            <p>1-tap biometric Face ID checkout on iPhone, iPad, and Mac. Instant settlement straight into your hardware-isolated vault.</p>
           </div>
 
+          <!-- 2. Google Pay Official -->
           <div class="feature-card">
-            <div class="feature-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="3" ry="3"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            <div class="feature-icon-box" style="background:#161B24; border-color:rgba(255,255,255,0.18);">
+              <svg viewBox="0 0 160 60" width="48" height="20">
+                <g transform="translate(10, 8) scale(1.6)">
+                  <path d="M23.5 12.3c0-.8-.1-1.7-.2-2.4H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7v3.1h3.9c2.3-2.1 3.6-5.2 3.6-8.9z" fill="#4285F4"/>
+                  <path d="M12 24c3.2 0 6-1.1 8-3l-3.9-3.1c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.2C3.2 21.2 7.3 24 12 24z" fill="#34A853"/>
+                  <path d="M5.2 14.1c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.3H1.2C.4 7.9 0 9.9 0 12s.4 4.1 1.2 5.7l4-3.6z" fill="#FBBC05"/>
+                  <path d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4C18 1.2 15.2 0 12 0 7.3 0 3.2 2.8 1.2 6.7l4 3.1c1-2.9 3.7-5 6.8-5z" fill="#EA4335"/>
+                </g>
+                <text x="60" y="40" font-family="'Google Sans', Roboto, sans-serif" font-weight="500" font-size="32" fill="#FFF">Pay</text>
+              </svg>
             </div>
-            <h3>Visa &amp; Mastercard</h3>
-            <p>Direct fiat purchase via standard debit and credit cards powered by compliant global infrastructure with instant delivery.</p>
+            <h3>Google Pay</h3>
+            <p>Frictionless checkout across Android devices with Google Wallet integration and cryptographic device confirmation.</p>
           </div>
 
+          <!-- 3. Visa Official -->
           <div class="feature-card">
-            <div class="feature-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/></svg>
+            <div class="feature-icon-box" style="background:#0F131D; border-color:rgba(255,255,255,0.18);">
+              <svg viewBox="0 0 140 45" width="50" height="18">
+                <path d="M53.3 2.5L34.9 42.5H23L14.1 10.9c-.8-3.3-1.6-4.3-4.2-5.7C5.9 3.1 1.6 1.2 0 0.4L.4 2.5h17.8c2.3 0 4.3 1.5 4.8 4.2l4.3 22.8 11.9-27h14.2zm27.4 26.9c.1-10.4-14.4-11-14.3-15.6 0-1.4 1.4-2.9 4.3-3.3 1.5-.2 5.5-.3 10.1 1.8l1.8-8.4c-2.5-.9-5.7-1.7-9.8-1.7-10.4 0-17.6 5.5-17.7 13.3-.2 5.8 5.2 9.1 9.2 11 4.1 2 5.5 3.3 5.5 5.1 0 2.8-3.3 4-6.4 4-4.3 0-6.7-.6-10.3-2.3l-1.9 8.7c2.4 1.1 6.8 2.1 11.4 2.1 10.8 0 17.8-5.3 17.8-14.7zm25.5 13.1h12.4l-10.8-40H97.4c-2.8 0-4.9 1.6-5.9 4l-16.9 36h13.2l2.6-7.3h16.2l2.1 7.3zm-14.1-15.4l5-13.8 2.9 13.8h-7.9z" fill="#FFF"/>
+                <path d="M9.9 5.2c-2.6-1.4-6.9-3.3-8.5-4.1l-.4 2.1c3.5 1.3 7.8 3.3 10.4 4.7 1.2.6 1.9 1.6 2.4 2.8l4.4 23.3L14.3 11c-.7-3.3-1.8-4.4-4.4-5.8z" fill="#F7B600"/>
+              </svg>
             </div>
-            <h3>SEPA &amp; Wire Transfers</h3>
-            <p>Lowest fee funding option for larger capital allocations. Transfer directly from your bank account with complete transparency.</p>
+            <h3>Visa Global Debit &amp; Credit</h3>
+            <p>Direct worldwide acquiring backed by Verified by Visa 3-D Secure protection with instant delivery to your private keys.</p>
           </div>
 
+          <!-- 4. Mastercard Official -->
           <div class="feature-card">
-            <div class="feature-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path></svg>
+            <div class="feature-icon-box" style="background:#0F131D; border-color:rgba(255,255,255,0.18);">
+              <svg viewBox="0 0 100 60" width="40" height="24">
+                <circle cx="34" cy="30" r="24" fill="#EB001B"/>
+                <circle cx="66" cy="30" r="24" fill="#F79E1B"/>
+                <path d="M50 12.3c6 4.7 9.8 11.8 9.8 17.7s-3.8 13-9.8 17.7c-6-4.7-9.8-11.8-9.8-17.7s3.8-13 9.8-17.7z" fill="#FF5F00"/>
+              </svg>
             </div>
-            <h3>Direct Crypto Transfers</h3>
-            <p>Transfer existing funds from Coinbase, Binance, Kraken, or hardware cold wallets using verified QR codes and ENS names.</p>
+            <h3>Mastercard Worldwide</h3>
+            <p>Seamless funding via Mastercard Identity Check with zero foreign transaction premiums and direct on-chain minting.</p>
+          </div>
+
+          <!-- 5. Stripe Official -->
+          <div class="feature-card">
+            <div class="feature-icon-box" style="background:#635BFF; border-color:#635BFF;">
+              <svg viewBox="0 0 100 40" width="44" height="18">
+                <path d="M28.7 17.3c0-2.8 2.3-4 6-4 3.5 0 7 1 9.6 2.7v-5.4c-3-1.2-6.6-1.8-9.6-1.8-9.3 0-15.5 4.8-15.5 13 0 12.7 17.4 10.6 17.4 16.1 0 3.3-2.9 4.4-6.9 4.4-4.3 0-8.8-1.7-12-3.8v5.7c3.5 1.6 8 2.4 12 2.4 9.6 0 16.3-4.6 16.3-13.2 0-13.7-17.5-11.3-17.5-16.1zm26.6-12.1l-9 2v5.5h5.4v5.1h-5.4v15.6c0 3.3 2.5 4.1 5.6 4.1 1.6 0 2.9-.2 3.9-.5v5.2c-1.6.6-3.8 1-6.4 1-7.6 0-12.4-4.2-12.4-12.3V17.7h-4.6v-5.1h4.6V6.3l12.9-2.8v6.7h.4z" fill="#FFF" transform="scale(0.85) translate(8, 2)"/>
+              </svg>
+            </div>
+            <h3>Stripe Financial Infrastructure</h3>
+            <p>Global compliant on-ramping powered by Stripe's bank-grade payment rail with SOC 1 &amp; SOC 2 Type II certified processing.</p>
+          </div>
+
+          <!-- 6. SEPA & Wire Transfers -->
+          <div class="feature-card">
+            <div class="feature-icon-box" style="background:#131B2A; border-color:rgba(255,255,255,0.18);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2" width="22" height="22">
+                <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/>
+              </svg>
+            </div>
+            <h3>SEPA &amp; Institutional Wires</h3>
+            <p>High-volume institutional funding via European SEPA Instant and US Fedwire transfers at ultra-low 0.5% protocol routing fee.</p>
           </div>
         </div>
       </div>
@@ -1885,7 +2031,14 @@
         <div class="chains-grid" id="networksGrid">
           <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#627EEA;">
-              <svg viewBox="0 0 256 417" width="22" height="22"><path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="currentColor"/><path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 256 417" width="22" height="22">
+                <path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="#627EEA"/>
+                <path d="M127.96 0L0 212.32L127.96 287.96V157.34V0Z" fill="#8B9FF0"/>
+                <path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="#627EEA"/>
+                <path d="M127.96 416.9V311.18L0 235.54L127.96 416.9Z" fill="#8B9FF0"/>
+                <path d="M127.96 287.96L255.92 212.32L127.96 157.34V287.96Z" fill="#4560C6"/>
+                <path d="M0 212.32L127.96 287.96V157.34L0 212.32Z" fill="#627EEA"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Ethereum <span class="chain-ping"></span></div>
@@ -1915,7 +2068,11 @@
 
           <div class="chain-card" data-cat="l2">
             <div class="chain-icon-wrap" style="color:#28A0F0;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#28A0F0" fill-opacity="0.2" stroke="#28A0F0" stroke-width="3"/><path d="M50 18L24 64H38L50 42L62 64H76L50 18Z" fill="#28A0F0"/><path d="M50 54L38 76H62L50 54Z" fill="#FFF"/></svg>
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#28A0F0" fill-opacity="0.15" stroke="#28A0F0" stroke-width="2"/>
+                <path d="M50 16L24 64H38L50 42L62 64H76L50 16Z" fill="#28A0F0"/>
+                <path d="M50 54L38 76H62L50 54Z" fill="#FFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Arbitrum One <span class="chain-ping"></span></div>
@@ -1925,7 +2082,10 @@
 
           <div class="chain-card" data-cat="l2">
             <div class="chain-icon-wrap" style="color:#0052FF;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#0052FF"/><path d="M50 25C63.8 25 75 36.2 75 50C75 63.8 63.8 75 50 75C36.2 75 25 63.8 25 50C25 36.2 36.2 25 50 25Z" fill="#FFF"/></svg>
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#0052FF"/>
+                <path d="M50 20C33.4 20 20 33.4 20 50s13.4 30 30 30 30-13.4 30-30c0-15.3-11.4-27.9-26.2-29.8v15c6.6 1.8 11.2 7.9 11.2 14.8 0 8.3-6.7 15-15 15s-15-6.7-15-15 6.7-15 15-15v-15z" fill="#FFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Base <span class="chain-ping"></span></div>
@@ -1935,7 +2095,10 @@
 
           <div class="chain-card" data-cat="l2">
             <div class="chain-icon-wrap" style="color:#FF0420;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#FF0420"/><circle cx="50" cy="50" r="22" fill="#FFF"/></svg>
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#FF0420"/>
+                <path d="M36 32c-7.7 0-14 6.3-14 18s6.3 18 14 18 14-6.3 14-18-6.3-18-14-18zm0 28c-3.3 0-6-4.5-6-10s2.7-10 6-10 6 4.5 6 10-2.7 10-6 10zm25-28h13c7.7 0 13 4.5 13 11s-5.3 11-13 11h-5v14H61V32zm8 14h5c3.3 0 5-1.5 5-4s-1.7-4-5-4h-5v8z" fill="#FFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Optimism <span class="chain-ping"></span></div>
@@ -1945,7 +2108,10 @@
 
           <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#8247E5;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#8247E5"/><path d="M50 26L70 38V62L50 74L30 62V38L50 26Z" fill="#FFF"/></svg>
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#7B3FE4"/>
+                <path d="M30 42c-4.4 0-8 3.6-8 8s3.6 8 8 8c2.9 0 5.4-1.5 6.8-3.8L50 64l13.2-9.8C64.6 56.5 67.1 58 70 58c4.4 0 8-3.6 8-8s-3.6-8-8-8c-2.9 0-5.4 1.5-6.8 3.8L50 36 36.8 45.8C35.4 43.5 32.9 42 30 42zm0 10c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm40 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="#FFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Polygon <span class="chain-ping"></span></div>
@@ -1955,7 +2121,10 @@
 
           <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#F3BA2F;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#F3BA2F"/><path d="M50 24L65 39L50 54L35 39L50 24Z" fill="#FFF"/></svg>
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#F3BA2F"/>
+                <path d="M50 25l8.5 8.5-8.5 8.5-8.5-8.5L50 25zm-15.5 15.5l8.5 8.5-8.5 8.5-8.5-8.5 8.5-8.5zm31 0l8.5 8.5-8.5 8.5-8.5-8.5 8.5-8.5zM50 56l8.5 8.5-8.5 8.5-8.5-8.5L50 56zm-7-7L50 42l7 7-7 7-7-7z" fill="#FFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">BNB Smart Chain <span class="chain-ping"></span></div>
@@ -1965,7 +2134,10 @@
 
           <div class="chain-card" data-cat="l1">
             <div class="chain-icon-wrap" style="color:#E84142;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#E84142"/><path d="M35 68L50 32L65 68H35Z" fill="#FFF"/></svg>
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#E84142"/>
+                <path d="M46.5 28c1.5-2.6 5.5-2.6 7 0l22.5 39c1.5 2.6-.5 6-3.5 6h-13c-1.5 0-3-.8-3.8-2.2L50 60.5l-5.7 10.3c-.8 1.4-2.3 2.2-3.8 2.2h-13c-3 0-5-3.4-3.5-6l22.5-39zm3.5 14L37 65h8l5-9 5 9h8L50 42z" fill="#FFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Avalanche C-Chain <span class="chain-ping"></span></div>
@@ -1974,13 +2146,130 @@
           </div>
 
           <div class="chain-card" data-cat="l2">
-            <div class="chain-icon-wrap" style="color:#000000; border:1px solid #fff;">
-              <svg viewBox="0 0 100 100" width="22" height="22"><circle cx="50" cy="50" r="48" fill="#000"/><path d="M30 30H70V70H30Z" fill="#00E5FF"/></svg>
+            <div class="chain-icon-wrap" style="color:#000000; border:1px solid rgba(255,255,255,0.2);">
+              <svg viewBox="0 0 100 100" width="22" height="22">
+                <circle cx="50" cy="50" r="48" fill="#000" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                <path d="M32 30h10v28h26v10H32V30z" fill="#61DFFF"/>
+              </svg>
             </div>
             <div class="chain-info">
               <div class="chain-name">Linea <span class="chain-ping"></span></div>
               <div class="chain-meta">Consensys zkRollup &bull; Chain 59144</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Institutional Treasury & Monetization Section -->
+    <section class="treasury-section" id="treasury">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Platform Monetization Engine</span>
+          <h2 class="section-title">Institutional Treasury &amp; Fee Routing</h2>
+          <p class="section-description">
+            Monetize your wallet deployment with complete self-custody. Micro-routing charges land directly in your private wallet on every transfer with zero platform intermediaries.
+          </p>
+        </div>
+
+        <div class="treasury-grid">
+          <div class="treasury-card">
+            <div class="feature-icon-box" style="background:#131B2A;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <h3>Dual Visibility Control</h3>
+            <p><strong>Seen vs. Unseen Mode:</strong> Choose between an itemized protocol routing fee on customer review sheets, or seamless consolidation into the total execution outlay.</p>
+            <div class="treasury-pill-preview">
+              <span class="treasury-mode-badge seen">Seen: Itemized Receipt</span>
+              <span class="treasury-mode-badge unseen">Unseen: Consolidated Outlay</span>
+            </div>
+          </div>
+
+          <div class="treasury-card">
+            <div class="feature-icon-box" style="background:#131B2A;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h3>Zero-Escrow Payouts</h3>
+            <p>Every accrued charge executes directly to your destination treasury wallet on-chain. No 30-day payout delays, no merchant accounts, and no platform seizure risk.</p>
+            <div class="treasury-tag-row">
+              <span class="tag-item">100% Non-Custodial</span>
+              <span class="tag-item">Atomic Settlement</span>
+            </div>
+          </div>
+
+          <div class="treasury-card">
+            <div class="feature-icon-box" style="background:#131B2A;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <h3>Dynamic Basis Points</h3>
+            <p>Calibrate your revenue tier dynamically from 5 bps (0.05%) to 50 bps (0.50%). Adjust parameters anytime in the in-app Treasury Settings panel.</p>
+            <div class="treasury-tag-row">
+              <span class="tag-item">5 bps (Low)</span>
+              <span class="tag-item">15 bps (Standard)</span>
+              <span class="tag-item">50 bps (Max)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Treasury Yield Calculator -->
+        <div class="treasury-calculator-box">
+          <div class="calc-header-row">
+            <div>
+              <h3 style="font-size:22px; font-weight:800; color:#fff; margin-bottom:4px;">Treasury Revenue &amp; Yield Calculator</h3>
+              <p style="font-size:13px; color:var(--text-muted);">Simulate platform routing earnings based on your monthly transfer volume and fee tier.</p>
+            </div>
+            <div class="calc-live-badge">
+              <span class="chain-ping"></span> Real-Time Projection
+            </div>
+          </div>
+
+          <div class="calc-sliders-grid">
+            <div class="calc-input-group">
+              <div class="calc-label-row">
+                <span>Monthly Routing Volume:</span>
+                <strong id="calcVolumeDisplay" class="tabular-nums" style="color:var(--primary); font-size:16px;">$500,000 / mo</strong>
+              </div>
+              <input type="range" id="volumeSlider" min="50000" max="5000000" step="50000" value="500000" oninput="updateTreasuryCalculator()" class="treasury-range-slider">
+              <div class="calc-slider-ticks">
+                <span>$50k</span>
+                <span>$1M</span>
+                <span>$2.5M</span>
+                <span>$5M+</span>
+              </div>
+            </div>
+
+            <div class="calc-input-group">
+              <div class="calc-label-row">
+                <span>Protocol Fee Rate:</span>
+                <strong id="calcBpsDisplay" class="tabular-nums" style="color:var(--primary); font-size:16px;">15 bps (0.15%)</strong>
+              </div>
+              <input type="range" id="bpsSlider" min="5" max="50" step="5" value="15" oninput="updateTreasuryCalculator()" class="treasury-range-slider">
+              <div class="calc-slider-ticks">
+                <span>0.05% (5 bps)</span>
+                <span>0.15% (Std)</span>
+                <span>0.25%</span>
+                <span>0.50% (50 bps)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-results-banner">
+            <div class="calc-result-col">
+              <div class="calc-result-label">Monthly Treasury Revenue</div>
+              <div class="calc-result-num tabular-nums" id="monthlyRevenueNum">$750.00 / mo</div>
+              <div class="calc-result-sub tabular-nums" id="monthlyEthNum">≈ 0.2152 ETH / mo</div>
+            </div>
+            <div class="calc-divider-v"></div>
+            <div class="calc-result-col">
+              <div class="calc-result-label">Annual Projected Revenue</div>
+              <div class="calc-result-num prominent tabular-nums" id="annualRevenueNum">$9,000.00 / yr</div>
+              <div class="calc-result-sub tabular-nums" id="annualEthNum">≈ 2.5823 ETH / yr</div>
+            </div>
+          </div>
+
+          <div class="calc-footer-note">
+            <span>Direct on-chain payout to your treasury wallet address with zero platform commission.</span>
+            <button class="calc-configure-btn" onclick="showToast('Configure in app: Settings → Protocol Treasury & Routing')">Configure in App</button>
           </div>
         </div>
       </div>
@@ -2516,6 +2805,37 @@
         }
       });
     }
+
+    // --- Treasury Yield & Protocol Revenue Calculator ---
+    function updateTreasuryCalculator() {
+      const volSlider = document.getElementById('volumeSlider');
+      const bpsSlider = document.getElementById('bpsSlider');
+      if (!volSlider || !bpsSlider) return;
+
+      const vol = parseFloat(volSlider.value) || 500000;
+      const bps = parseInt(bpsSlider.value) || 15;
+      const rate = bps / 10000;
+
+      // Update Slider Display Labels
+      const formattedVol = '$' + Number(vol).toLocaleString();
+      document.getElementById('calcVolumeDisplay').textContent = formattedVol + ' / mo';
+      document.getElementById('calcBpsDisplay').textContent = `${bps} bps (${(bps / 100).toFixed(2)}%)`;
+
+      // Monthly and Annual Revenue
+      const monthlyRev = vol * rate;
+      const annualRev = monthlyRev * 12;
+      const ethPrice = 3485.20;
+      const monthlyEth = (monthlyRev / ethPrice).toFixed(4);
+      const annualEth = (annualRev / ethPrice).toFixed(4);
+
+      document.getElementById('monthlyRevenueNum').textContent = '$' + monthlyRev.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' / mo';
+      document.getElementById('monthlyEthNum').textContent = `≈ ${monthlyEth} ETH / mo`;
+
+      document.getElementById('annualRevenueNum').textContent = '$' + annualRev.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' / yr';
+      document.getElementById('annualEthNum').textContent = `≈ ${annualEth} ETH / yr`;
+    }
+    // Initialize calculator
+    updateTreasuryCalculator();
 
     // --- 13. FAQ Accordion ---
     function toggleFaq(item) {

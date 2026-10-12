@@ -72,4 +72,20 @@ enum Wei {
         }
         return result
     }
+
+    /// Divides big-endian byte Data by a non-zero UInt64 scalar.
+    static func divide(_ data: Data, by divisor: UInt64) -> Data {
+        guard divisor > 0 else { return Data() }
+        let norm = normalize(data)
+        if norm.isEmpty { return Data() }
+        var quotient = [UInt8]()
+        var remainder: UInt64 = 0
+        for byte in norm {
+            let current = (remainder << 8) | UInt64(byte)
+            let q = current / divisor
+            remainder = current % divisor
+            quotient.append(UInt8(q & 0xff))
+        }
+        return Data(normalize(Data(quotient)))
+    }
 }

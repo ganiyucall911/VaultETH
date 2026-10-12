@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Cash App Style Iconic Vault Door (Clean Minimalist Business Doodle / Line Emblem) -->
+  <defs>
+    <!-- Matte Business Obsidian Background -->
+    <linearGradient id="vaultBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#12151A"/>
+      <stop offset="100%" stop-color="#090B0E"/>
+    </linearGradient>
+
+    <!-- Cash App Signature Mint / Platinum Accent -->
+    <linearGradient id="vaultMint" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D632"/>
+      <stop offset="100%" stop-color="#00E58F"/>
+    </linearGradient>
+
+    <linearGradient id="vaultPlatinum" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#D1D5DB"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base Chassis -->
+  <rect width="512" height="512" rx="128" fill="url(#vaultBg)"/>
+  <rect width="506" height="506" x="3" y="3" rx="125" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="4"/>
+
+  <!-- Iconic Doodle / Line-Art Safe Vault Door -->
+  <g transform="translate(256, 256)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Outer Heavy Vault Door Frame -->
+    <rect x="-140" y="-140" width="280" height="280" rx="44" 
+          fill="none" stroke="url(#vaultPlatinum)" stroke-width="20"/>
+
+    <!-- Vault Heavy Locking Bolts (Top, Bottom, Left, Right hinges) -->
+    <!-- Left Hinges -->
+    <rect x="-165" y="-90" width="25" height="40" rx="8" fill="#FFFFFF"/>
+    <rect x="-165" y="50" width="25" height="40" rx="8" fill="#FFFFFF"/>
+    <!-- Right Locking Deadbolts -->
+    <rect x="140" y="-80" width="20" height="30" rx="6" fill="url(#vaultMint)"/>
+    <rect x="140" y="50" width="20" height="30" rx="6" fill="url(#vaultMint)"/>
+
+    <!-- Circular Vault Dial Housing -->
+    <circle r="78" fill="#181C24" stroke="url(#vaultPlatinum)" stroke-width="18"/>
+
+    <!-- Inner Combination Dial Ring -->
+    <circle r="52" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="6" stroke-dasharray="8 10"/>
+
+    <!-- Central Bank Vault Wheel Spokes (4 Ergonomic Heavy Handles) -->
+    <!-- Spoke 1 (Vertical) -->
+    <line x1="0" y1="-56" x2="0" y2="56" stroke="url(#vaultMint)" stroke-width="16"/>
+    <!-- Spoke 2 (Horizontal) -->
+    <line x1="-56" y1="0" x2="56" y2="0" stroke="url(#vaultMint)" stroke-width="16"/>
+
+    <!-- Outer Spoke Turn Knobs -->
+    <circle cx="0" cy="-62" r="10" fill="url(#vaultMint)"/>
+    <circle cx="0" cy="62" r="10" fill="url(#vaultMint)"/>
+    <circle cx="-62" cy="0" r="10" fill="url(#vaultMint)"/>
+    <circle cx="62" cy="0" r="10" fill="url(#vaultMint)"/>
+
+    <!-- Central Heavy Combination Hub -->
+    <circle r="26" fill="#FFFFFF"/>
+    <circle r="12" fill="#090B0E"/>
+    
+    <!-- Micro Keyhole Slot -->
+    <rect x="-2" y="2" width="4" height="8" rx="2" fill="#FFFFFF"/>
+  </g>
+</svg>
