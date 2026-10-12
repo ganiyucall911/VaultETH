@@ -57,20 +57,28 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          # List available simulators and pick first available iPhone
-          xcrun simctl list devices available
-          SIM_NAME=$(xcrun simctl list devices available | grep -E "iPhone" | head -n 1 | sed -E 's/.*(iPhone [^()]+).*/\1/' | xargs)
-          if [ -z "$SIM_NAME" ]; then
-            SIM_NAME="iPhone 15"
+          SIM_ID=$(xcrun simctl list devices available | grep -E "iPhone" | grep -E -o '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}' | head -n 1)
+          echo "Selected simulator ID: $SIM_ID"
+          if [ -n "$SIM_ID" ]; then
+            xcrun simctl boot "$SIM_ID" || true
+            DEST="platform=iOS Simulator,id=$SIM_ID"
+          else
+            DEST="platform=iOS Simulator,name=iPhone 15"
           fi
-          echo "Selected simulator: $SIM_NAME"
-          xcrun simctl boot "$SIM_NAME" || true
+          echo "Using destination: $DEST"
 
           set -o pipefail
           xcodebuild test \
             -project VaultETH.xcodeproj \
             -scheme VaultETH \
-            -destination "platform=iOS Simulator,name=$SIM_NAME" \
+            -destination "$DEST" \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee test_run.log
+
+      - name: Print Failure Log
+        if: failure()
+        run: |
+          if [ -f test_run.log ]; then
+            tail -n 150 test_run.log
+          fi
