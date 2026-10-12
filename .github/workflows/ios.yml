@@ -33,7 +33,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+        run: |
+          if [ -d "/Applications/Xcode_15.4.app" ]; then
+            sudo xcode-select -switch /Applications/Xcode_15.4.app
+          elif [ -d "/Applications/Xcode.app" ]; then
+            sudo xcode-select -switch /Applications/Xcode.app
+          fi
+          xcodebuild -version
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -49,11 +55,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Resolve SPM Dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project VaultETH.xcodeproj \
+            -clonedSourcePackagesDirPath SourcePackages
+
       - name: Run Unit Tests
         run: |
+          SIM_NAME=$(xcrun simctl list devices available | grep -E "iPhone" | head -n 1 | sed -E 's/.*(iPhone [^()]+).*/\1/' | xargs)
+          if [ -z "$SIM_NAME" ]; then
+            SIM_NAME="iPhone 15"
+          fi
+          echo "Selected simulator: $SIM_NAME"
+
           xcodebuild test \
+            -project VaultETH.xcodeproj \
             -scheme VaultETH \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination "platform=iOS Simulator,name=$SIM_NAME" \
             -clonedSourcePackagesDirPath SourcePackages \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \

@@ -24,7 +24,9 @@ targets:
         excludes:
           - .antigravity
           - .github
+          - .build
           - android
+          - docs
           - README.md
           - REVIEW.md
           - APP_STORE_CHECKLIST.md
@@ -66,7 +68,9 @@ targets:
         excludes:
           - .antigravity
           - .github
+          - .build
           - android
+          - docs
           - README.md
           - REVIEW.md
           - APP_STORE_CHECKLIST.md
