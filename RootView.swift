@@ -1172,8 +1172,7 @@ struct ProtocolTreasurySheet: View {
                 HStack {
                     Text("Total Collected (Lifetime)")
                     Spacer()
-                    let amount = ETHAmount.format(wei: Data(vaultHex: store.feeConfig.totalCollectedWei) ?? Data())
-                    Text("\(amount) \(store.selectedNetwork.symbol)")
+                    Text("\(ETHAmount.format(wei: store.feeConfig.totalCollectedWei)) \(store.selectedNetwork.symbol)")
                         .font(.caption.monospaced())
                         .foregroundStyle(Color.vaultEmerald)
                 }
@@ -1198,16 +1197,15 @@ struct ProtocolTreasurySheet: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
                     let clean = treasuryAddress.trimmingCharacters(in: .whitespacesAndNewlines)
-                    store.updateFeeConfig(
+                    let newConfig = ProtocolFeeConfig(
                         isEnabled: isEnabled,
                         treasuryAddress: clean,
                         feeBasisPoints: feeBasisPoints,
-                        isTransparent: isTransparent
+                        isTransparent: isTransparent,
+                        totalCollectedWei: store.feeConfig.totalCollectedWei
                     )
-                    saveNotice = "Configuration saved & active!"
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        dismiss()
-                    }
+                    store.updateFeeConfig(newConfig)
+                    dismiss()
                 }
                 .disabled(isEnabled && treasuryAddress.trimmingCharacters(in: .whitespacesAndNewlines).count != 42)
             }
