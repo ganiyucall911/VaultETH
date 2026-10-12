@@ -63,9 +63,10 @@ final class KeychainVault: @unchecked Sendable {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         switch status {
         case errSecSuccess:
-            guard let data = result as? Data, let phrase = String(data: data, encoding: .utf8) else {
+            guard var data = result as? Data, let phrase = String(data: data, encoding: .utf8) else {
                 throw WalletError.keyNotFound
             }
+            data.resetBytes(in: 0..<data.count)
             return phrase
         case errSecUserCanceled, errSecAuthFailed: throw WalletError.authenticationFailed
         case errSecItemNotFound: throw WalletError.keyNotFound

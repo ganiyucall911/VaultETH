@@ -1,0 +1,60 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.swift'
+      - 'project.yml'
+      - 'PrivacyInfo.xcprivacy'
+      - 'Info.plist'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.swift'
+      - 'project.yml'
+      - 'PrivacyInfo.xcprivacy'
+      - 'Info.plist'
+      - '.github/workflows/ios.yml'
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test iOS App
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: xcodegen generate --spec project.yml
+
+      - name: Cache SPM Packages
+        uses: actions/cache@v4
+        with:
+          path: SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -scheme VaultETH \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -clonedSourcePackagesDirPath SourcePackages \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO

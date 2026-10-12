@@ -203,6 +203,32 @@ struct FeeQuote: Sendable {
     var maxFeeWei: Data { Wei.multiply(gasLimit, maxFeePerGas) }
 }
 
+// MARK: - Transaction Simulation
+
+/// Result of pre-flight on-chain simulation and risk analysis before signing or broadcast.
+struct TransactionSimulation: Codable, Hashable, Sendable {
+    enum Status: String, Codable, Sendable {
+        case success = "Simulation Succeeded"
+        case warning = "Simulation Warning"
+        case revert  = "Execution Reverts"
+    }
+
+    let status: Status
+    let isSuccess: Bool
+    let revertReason: String?
+    let gasEstimated: UInt64
+    let assetChangeDescription: String
+    let warnings: [String]
+
+    var statusColorHex: String {
+        switch status {
+        case .success: return "#10B981"
+        case .warning: return "#F59E0B"
+        case .revert:  return "#EF4444"
+        }
+    }
+}
+
 struct PreparedTransfer: Sendable {
     let from: String
     let to: String
@@ -211,7 +237,26 @@ struct PreparedTransfer: Sendable {
     let chainID: Data
     let fee: FeeQuote
     let recipientIsContract: Bool
+    var simulation: TransactionSimulation?
     var maxTotalWei: Data { Wei.add(valueWei, fee.maxFeeWei) }
+
+    init(from: String,
+         to: String,
+         valueWei: Data,
+         nonce: Data,
+         chainID: Data,
+         fee: FeeQuote,
+         recipientIsContract: Bool,
+         simulation: TransactionSimulation? = nil) {
+        self.from = from
+        self.to = to
+        self.valueWei = valueWei
+        self.nonce = nonce
+        self.chainID = chainID
+        self.fee = fee
+        self.recipientIsContract = recipientIsContract
+        self.simulation = simulation
+    }
 }
 
 enum ReceiptStatus: Sendable { case success, failed }
@@ -271,7 +316,7 @@ enum WalletError: LocalizedError, Equatable {
     case signingFailed, addressMismatch, rpcFailure(String), rpcMalformedResult
     case keyNotFound, authenticationUnavailable, authenticationFailed, keychain(Int32)
     case invalidMnemonic, duplicateWallet, walletCreationFailed
-    case ensNotFound, invalidNetwork(String)
+    case ensNotFound, invalidNetwork(String), simulationReverted(String)
 
     var errorDescription: String? {
         switch self {
@@ -294,6 +339,7 @@ enum WalletError: LocalizedError, Equatable {
         case .walletCreationFailed:    return "The wallet could not be created."
         case .ensNotFound:             return "That ENS name is not registered or has no address record."
         case .invalidNetwork(let n):   return "Invalid or unsupported network: \(n)"
+        case .simulationReverted(let r): return "Transaction simulation reverted: \(r)"
         }
     }
 }

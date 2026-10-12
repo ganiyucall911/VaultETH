@@ -13,13 +13,21 @@ struct EthereumRPC: Sendable {
     }
 
     var endpoints: [URL] {
-        network.rpcEndpoints.compactMap { URL(string: $0) }
+        network.rpcEndpoints.compactMap { URL(string: $0) }.filter { url in
+            guard let scheme = url.scheme?.lowercased() else { return false }
+            if scheme == "https" { return true }
+            let host = url.host?.lowercased() ?? ""
+            return scheme == "http" && (host == "localhost" || host == "127.0.0.1")
+        }
     }
 
-    private struct NodeError: Error { let message: String }
+    private struct NodeError: Error {
+        let message: String
+        let data: String?
+    }
 
     private func call(_ method: String, _ params: [Any]) async throws -> Any {
-        var lastError: Error = WalletError.rpcFailure("No reachable RPC endpoint for \(network.name).")
+        var lastError: Error = WalletError.rpcFailure("No reachable secure RPC endpoint for \(network.name).")
         for url in endpoints {
             do {
                 var request = URLRequest(url: url, timeoutInterval: 15)
@@ -30,13 +38,15 @@ struct EthereumRPC: Sendable {
                 ] as [String: Any])
                 let (data, response) = try await session.data(for: request)
                 guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-                    throw WalletError.rpcFailure("HTTP error from \(url.host ?? "node").")
+                    let host = url.host ?? "node"
+                    throw WalletError.rpcFailure("HTTP error from \(host).")
                 }
                 guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                     throw WalletError.rpcMalformedResult
                 }
                 if let err = object["error"] as? [String: Any] {
                     let msg = err["message"] as? String ?? "RPC error"
+                    let errData = err["data"] as? String
                     let code = err["code"] as? Int ?? 0
                     // Fall through to backup endpoint if rate-limited or transient
                     let isTransientNodeIssue = code == 429 || code == -32005 || code == -32603 ||
@@ -47,12 +57,13 @@ struct EthereumRPC: Sendable {
                     if isTransientNodeIssue {
                         throw WalletError.rpcFailure(msg)
                     }
-                    throw NodeError(message: msg)
+                    throw NodeError(message: msg, data: errData)
                 }
                 guard let result = object["result"] else { throw WalletError.rpcMalformedResult }
                 return result
             } catch let e as NodeError {
-                throw WalletError.rpcFailure(e.message)
+                let detail = e.data != nil ? "\(e.message) (\(e.data!))" : e.message
+                throw WalletError.rpcFailure(detail)
             } catch {
                 lastError = error
             }
@@ -134,5 +145,83 @@ struct EthereumRPC: Sendable {
             throw WalletError.rpcMalformedResult
         }
         return result
+    }
+
+    // MARK: - Transaction Simulation
+
+    /// Simulates transaction execution via eth_call and gas estimation before broadcast.
+    func simulateTransaction(from: String,
+                             to: String,
+                             value: Data,
+                             isContract: Bool,
+                             symbol: String) async -> TransactionSimulation {
+        var warnings: [String] = []
+
+        if isContract {
+            warnings.append("Recipient is a deployed smart contract. Confirm it accepts direct native asset transfers.")
+        }
+
+        let callParams: [String: Any] = [
+            "from": from,
+            "to": to,
+            "value": value.rpcQuantity
+        ]
+
+        do {
+            _ = try await call("eth_call", [callParams, "latest"])
+
+            // Gas estimation simulation
+            let gasLimit = (try? await quantity("eth_estimateGas", [callParams])) ?? Data(vaultHex: "5208")!
+            let gasUnits = Wei.toUInt64(gasLimit) ?? 21000
+
+            let valText = ETHAmount.format(wei: value)
+            let assetDesc = "- \(valText) \(symbol) from Sender"
+
+            let status: TransactionSimulation.Status = warnings.isEmpty ? .success : .warning
+            return TransactionSimulation(
+                status: status,
+                isSuccess: true,
+                revertReason: nil,
+                gasEstimated: gasUnits,
+                assetChangeDescription: assetDesc,
+                warnings: warnings
+            )
+        } catch {
+            let errorMsg = error.localizedDescription
+            let reason = Self.decodeRevertReason(from: errorMsg)
+            warnings.append("On-chain simulation detected that this execution will revert.")
+
+            return TransactionSimulation(
+                status: .revert,
+                isSuccess: false,
+                revertReason: reason,
+                gasEstimated: 21000,
+                assetChangeDescription: "0 \(symbol) (Reverts on-chain)",
+                warnings: warnings
+            )
+        }
+    }
+
+    /// Decodes ABI-encoded revert reason strings (e.g. standard Error(string) with selector 0x08c379a0).
+    static func decodeRevertReason(from hexOrMsg: String) -> String {
+        if let range = hexOrMsg.range(of: "08c379a0", options: .caseInsensitive) {
+            let hex = String(hexOrMsg[range.lowerBound...])
+            if let data = Data(vaultHex: hex), data.count >= 68 {
+                let lengthData = data.subdata(in: 36..<68)
+                if let strLen = Wei.toUInt64(lengthData), strLen > 0, 68 + Int(strLen) <= data.count {
+                    let strData = data.subdata(in: 68..<(68 + Int(strLen)))
+                    if let decoded = String(data: strData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines), !decoded.isEmpty {
+                        return decoded
+                    }
+                }
+            }
+        }
+        var s = hexOrMsg
+        if let r = s.range(of: "reverted:", options: .caseInsensitive) {
+            s = String(s[r.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        } else if let r = s.range(of: "revert:", options: .caseInsensitive) {
+            s = String(s[r.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return s.isEmpty ? "Execution reverted by smart contract" : s
     }
 }

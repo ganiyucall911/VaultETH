@@ -422,6 +422,11 @@ struct ReviewTransferView: View {
                 .padding(20)
                 .vaultGlass(cornerRadius: 20)
 
+                // Simulation Inspection Card
+                if let sim = transfer.simulation {
+                    simulationCard(sim)
+                }
+
                 if transfer.recipientIsContract {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Color.vaultAmber)
@@ -447,6 +452,65 @@ struct ReviewTransferView: View {
         .interactiveDismissDisabled(isSending)
     }
 
+    private func simulationCard(_ sim: TransactionSimulation) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: sim.isSuccess ? "shield.checkmark.fill" : "shield.slash.fill")
+                    .font(.title3)
+                    .foregroundStyle(Color(hex: sim.statusColorHex))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(sim.status.rawValue)
+                        .font(.caption.bold())
+                        .foregroundStyle(Color(hex: sim.statusColorHex))
+                    Text(sim.isSuccess ? "Pre-flight validation passed • Zero state conflicts" : "On-chain execution failure predicted")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Text("~" + String(sim.gasEstimated) + " gas")
+                    .font(.caption2.monospaced())
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.white.opacity(0.06), in: Capsule())
+            }
+
+            Divider()
+
+            detailRow(title: "Predicted State Diff", value: sim.assetChangeDescription, isMonospace: true)
+
+            if let reason = sim.revertReason {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(Color.red)
+                    Text("Revert Reason: \(reason)")
+                        .font(.caption)
+                        .foregroundStyle(Color.red)
+                }
+                .padding(10)
+                .background(Color.red.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+            }
+
+            if !sim.warnings.isEmpty {
+                ForEach(sim.warnings, id: \.self) { warning in
+                    HStack(alignment: .top, spacing: 6) {
+                        Image(systemName: "info.circle")
+                            .font(.caption2)
+                            .foregroundStyle(sim.isSuccess ? Color.vaultAmber : Color.red)
+                        Text(warning)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .vaultGlass(cornerRadius: 18)
+    }
+
     private func detailRow(title: String, value: String, isMonospace: Bool) -> some View {
         HStack {
             Text(title).font(.caption).foregroundStyle(.secondary)
@@ -465,13 +529,28 @@ struct ReviewTransferView: View {
     @ViewBuilder private var statusSection: some View {
         switch phase {
         case .review:
-            Button {
-                Task { await send() }
-            } label: {
-                Label("Authorize with Biometrics", systemImage: "faceid")
-                    .frame(maxWidth: .infinity)
+            if let sim = transfer.simulation, !sim.isSuccess {
+                VStack(spacing: 10) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "hand.raised.fill").foregroundStyle(Color.red)
+                        Text("Signing Blocked by Simulation Gate").font(.caption.bold()).foregroundStyle(Color.red)
+                    }
+                    Text("This transaction is predicted to revert on-chain. Broadcasting it would waste gas fees without transferring funds.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(14)
+                .vaultGlass(cornerRadius: 14)
+            } else {
+                Button {
+                    Task { await send() }
+                } label: {
+                    Label("Authorize with Biometrics", systemImage: "faceid")
+                        .frame(maxWidth: .infinity)
+                }
+                .vaultButton(.prominent)
             }
-            .vaultButton(.prominent)
 
         case .sending:
             HStack(spacing: 12) {

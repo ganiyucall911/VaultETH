@@ -61,4 +61,15 @@ enum Wei {
         }
         return Data(normalize(Data(out.reversed())))
     }
+
+    /// Converts big-endian byte Data to UInt64 (returns nil if larger than 8 bytes).
+    static func toUInt64(_ data: Data) -> UInt64? {
+        let n = normalize(data)
+        guard n.count <= 8 else { return nil }
+        var result: UInt64 = 0
+        for byte in n {
+            result = (result << 8) | UInt64(byte)
+        }
+        return result
+    }
 }

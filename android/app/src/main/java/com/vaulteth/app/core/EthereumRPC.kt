@@ -101,6 +101,13 @@ class EthereumRPC(private val network: BlockchainNetwork) {
         var lastException: Exception? = null
         for (url in network.rpcUrls) {
             try {
+                // Security Hardening: Enforce HTTPS for production RPCs
+                val isHttps = url.startsWith("https://", ignoreCase = true)
+                val isLocal = url.startsWith("http://localhost", ignoreCase = true) || url.startsWith("http://127.0.0.1", ignoreCase = true)
+                if (!isHttps && !isLocal) {
+                    continue
+                }
+
                 val requestId = idCounter.getAndIncrement()
                 val payload = JSONObject().apply {
                     put("jsonrpc", "2.0")

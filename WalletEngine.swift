@@ -167,11 +167,19 @@ final class WalletEngine: @unchecked Sendable {
             throw WalletError.addressMismatch
         }
         let key = wallet.getKeyForCoin(coin: .ethereum)
-        return try Self.sign(transfer, privateKey: key.data)
+        var keyData = key.data
+        defer {
+            keyData.resetBytes(in: 0..<keyData.count)
+        }
+        return try Self.sign(transfer, privateKey: keyData)
     }
 
     /// Pure signing step (EIP-1559, type 0x02 envelope). Exposed for deterministic unit tests.
     static func sign(_ transfer: PreparedTransfer, privateKey: Data) throws -> String {
+        var mutableKey = privateKey
+        defer {
+            mutableKey.resetBytes(in: 0..<mutableKey.count)
+        }
         let input = EthereumSigningInput.with {
             $0.chainID = Data(Wei.normalize(transfer.chainID))
             $0.nonce = Data(Wei.normalize(transfer.nonce))
@@ -180,7 +188,7 @@ final class WalletEngine: @unchecked Sendable {
             $0.maxFeePerGas = Data(Wei.normalize(transfer.fee.maxFeePerGas))
             $0.maxInclusionFeePerGas = Data(Wei.normalize(transfer.fee.maxPriorityFeePerGas))
             $0.toAddress = transfer.to
-            $0.privateKey = privateKey
+            $0.privateKey = mutableKey
             $0.transaction = EthereumTransaction.with {
                 $0.transfer = EthereumTransaction.Transfer.with { $0.amount = Data(Wei.normalize(transfer.valueWei)) }
             }

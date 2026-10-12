@@ -209,8 +209,25 @@ final class WalletStore: ObservableObject {
         let fee = try await rpc.feeQuote(from: account.address, to: recipient, value: value)
         let isContract = try await rpc.isContract(address: recipient)
 
-        let transfer = PreparedTransfer(from: account.address, to: recipient, valueWei: value, nonce: nonce,
-                                        chainID: targetChainIDData, fee: fee, recipientIsContract: isContract)
+        // Pre-flight transaction simulation
+        let simulation = await rpc.simulateTransaction(
+            from: account.address,
+            to: recipient,
+            value: value,
+            isContract: isContract,
+            symbol: selectedNetwork.symbol
+        )
+
+        let transfer = PreparedTransfer(
+            from: account.address,
+            to: recipient,
+            valueWei: value,
+            nonce: nonce,
+            chainID: targetChainIDData,
+            fee: fee,
+            recipientIsContract: isContract,
+            simulation: simulation
+        )
         guard Wei.compare(balance, transfer.maxTotalWei) != .orderedAscending else {
             throw WalletError.insufficientBalance
         }
@@ -221,6 +238,10 @@ final class WalletStore: ObservableObject {
     func send(_ transfer: PreparedTransfer, ensName: String? = nil) async throws -> String {
         guard let account = accounts.first(where: { $0.address.lowercased() == transfer.from.lowercased() }) else {
             throw WalletError.keyNotFound
+        }
+        // Safety guard: prevent sending transactions verified to revert
+        if let sim = transfer.simulation, !sim.isSuccess {
+            throw WalletError.simulationReverted(sim.revertReason ?? "Execution reverts on-chain")
         }
         let raw = try await engine.signTransfer(transfer, accountID: account.id)
         let hash = try await rpc.sendRaw(raw)

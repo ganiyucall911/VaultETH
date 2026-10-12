@@ -47,9 +47,11 @@ This document tracks all App Store submission requirements for VaultETH, disting
 - [ ] **Age Rating:**
   - Complete the questionnaire. Crypto wallets typically receive a 17+ or Unrestricted Web Access rating depending on jurisdiction.
 
-### D. Screenshots Required
-- [ ] **6.7" Display (iPhone 15 / 16 Pro Max):** 1290 x 2796 pixels (at least 3 screenshots: Home balance card, Send with QR scan/ENS, and Receive address/QR).
-- [ ] **6.5" Display (iPhone 11 Pro Max / XS Max):** 1242 x 2688 pixels.
+### D. Screenshots & Marketing Assets (✅ Prepared in Repository)
+- [x] **Marketing Promo Banner (16:9):** [`docs/assets/promo-banner.jpg`](file:///docs/assets/promo-banner.jpg) — High-res promotional graphic for App Store featured spots and web showcase.
+- [x] **Screenshot 1 (Dashboard & Portfolio):** [`docs/assets/appstore-screen-1.jpg`](file:///docs/assets/appstore-screen-1.jpg) — iPhone 16 Pro mockup showing multi-chain balances, liquid glass cards, and asset breakdown.
+- [x] **Screenshot 2 (Send Flow & Simulation):** [`docs/assets/appstore-screen-2.jpg`](file:///docs/assets/appstore-screen-2.jpg) — iPhone 16 Pro mockup showcasing transaction simulation badge, ENS resolution, and Face ID authorization.
+- [x] **Screenshot 3 (Receive & Identity):** [`docs/assets/appstore-screen-3.jpg`](file:///docs/assets/appstore-screen-3.jpg) — iPhone 16 Pro mockup showing high-contrast QR code, ENS domain pill, and multi-chain address selectors.
 
 ---
 
