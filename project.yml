@@ -57,7 +57,7 @@ targets:
       - package: WalletCore
         product: WalletCore
       - package: WalletCore
-        product: WalletCoreSwiftProtobuf
+        product: SwiftProtobuf
 
   VaultETHTests:
     type: bundle.unit-test
