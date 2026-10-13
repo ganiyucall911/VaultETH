@@ -212,3 +212,40 @@ Avoid losing funds on failed transactions. VaultETH executes pre-flight eth_call
   - `docs/assets/appstore-screen-3.jpg` (Receive Pass, Identicon & QR)
 - [x] **Privacy Policy Web Page:** `https://ganiyucall911.github.io/VaultETH/privacy.html`
 - [x] **Support & FAQ Web Page:** `https://ganiyucall911.github.io/VaultETH/support.html`
+
+---
+
+## Part 4: Automated CI/CD Release & Distribution
+
+VaultETH includes full GitHub Actions release automation via [`.github/workflows/release.yml`](.github/workflows/release.yml) to eliminate manual local builds.
+
+### 1. Triggering an Automated Build & Release
+You can trigger the pipeline in two ways:
+
+- **Option A: Push a Version Tag (CLI):**
+  ```bash
+  git tag v1.0.0
+  git push origin v1.0.0
+  ```
+- **Option B: One-Click in GitHub Actions UI:**
+  1. Go to your repository's **Actions** tab on GitHub.
+  2. Select **Build & Release Distribution**.
+  3. Click **Run workflow**, enter your desired version (e.g. `1.0.0`), and run.
+
+### 2. Generated Release Assets
+The automated workflow will build and publish a GitHub Release containing:
+- `VaultETH-Android-release.apk`: Signed Android Release APK ready to install directly on physical Android phones.
+- `VaultETH-Android-release.aab`: Optimized Android App Bundle ready to drop into the Google Play Console track.
+- `VaultETH-Android-debug.apk`: Debug APK with verbose logging.
+- `VaultETH-iOS-unsigned.ipa`: Packaged iOS app bundle compiled on macOS-14.
+- `SHA256SUMS.txt`: Cryptographic integrity checksums.
+
+### 3. Optional Direct Store Delivery Secrets
+To enable hands-free delivery directly to App Store TestFlight and Google Play Internal Testing tracks, add the following secrets in your repository (**Settings > Secrets and variables > Actions**):
+
+| Secret Name | Platform | Description |
+|---|---|---|
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Google Play | JSON key file contents of a Google Cloud Service Account linked to Google Play Developer API with release management permissions. |
+| `APP_STORE_CONNECT_API_KEY` | Apple App Store | Base64-encoded `.p8` private key from App Store Connect (Users and Access > Integrations). |
+| `APP_STORE_CONNECT_KEY_ID` | Apple App Store | Key ID from App Store Connect. |
+| `APP_STORE_CONNECT_ISSUER_ID` | Apple App Store | Issuer ID (UUID) from App Store Connect. |

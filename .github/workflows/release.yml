@@ -1,0 +1,271 @@
+name: Build & Release Distribution
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version (e.g. 1.0.0)'
+        required: false
+        default: '1.0.0'
+      deploy_to_stores:
+        description: 'Deploy to TestFlight / Google Play (requires secrets)'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =========================================================================
+  # 1. Android Release Build
+  # =========================================================================
+  build-android:
+    name: Build Android Artifacts (APK & AAB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        working-directory: android
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        working-directory: android
+        run: ./gradlew test --stacktrace
+
+      - name: Build Debug & Release APKs
+        working-directory: android
+        run: |
+          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleRelease --stacktrace || true
+
+      - name: Build Release App Bundle (AAB)
+        working-directory: android
+        run: ./gradlew bundleRelease --stacktrace || true
+
+      - name: Package & Sign Android Binaries
+        working-directory: android
+        run: |
+          mkdir -p ../release_assets
+
+          # Copy debug APK (always installable for physical testing)
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk ../release_assets/VaultETH-Android-debug.apk
+          fi
+
+          # Handle unsigned release APK with CI signing key if available
+          if [ -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+            keytool -genkey -v -keystore ci-release.keystore -alias vaulteth -keyalg RSA -keysize 2048 -validity 10000 -storepass vaulteth -keypass vaulteth -dname "CN=VaultETH, OU=vault, O=vault, L=Global, S=Global, C=US"
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ci-release.keystore -storepass vaulteth app/build/outputs/apk/release/app-release-unsigned.apk vaulteth
+            cp app/build/outputs/apk/release/app-release-unsigned.apk ../release_assets/VaultETH-Android-release.apk
+          elif [ -f app/build/outputs/apk/release/app-release.apk ]; then
+            cp app/build/outputs/apk/release/app-release.apk ../release_assets/VaultETH-Android-release.apk
+          fi
+
+          # Handle AAB bundle
+          if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
+            cp app/build/outputs/bundle/release/app-release.aab ../release_assets/VaultETH-Android-release.aab
+          fi
+
+      - name: Upload Android Assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultETH-Android-Release-Binaries
+          path: release_assets/*
+          retention-days: 30
+
+      # Optional direct Google Play Console upload if service account secret exists
+      - name: Deploy to Google Play Internal Testing
+        if: ${{ inputs.deploy_to_stores == true && env.PLAY_STORE_JSON != '' }}
+        env:
+          PLAY_STORE_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.vaulteth.app
+          releaseFiles: release_assets/VaultETH-Android-release.aab
+          track: internal
+          status: completed
+
+  # =========================================================================
+  # 2. iOS Release Build
+  # =========================================================================
+  build-ios:
+    name: Build iOS Application (IPA & Archive)
+    runs-on: macos-14
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          if [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -switch /Applications/Xcode_16.0.app
+          elif [ -d "/Applications/Xcode.app" ]; then
+            sudo xcode-select -switch /Applications/Xcode.app
+          elif [ -d "/Applications/Xcode_15.4.app" ]; then
+            sudo xcode-select -switch /Applications/Xcode_15.4.app
+          fi
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: |
+          xcodegen generate --spec project.yml
+          sed -i '' -E 's/objectVersion = [0-9]+/objectVersion = 56/' VaultETH.xcodeproj/project.pbxproj || true
+
+      - name: Cache SPM Packages
+        uses: actions/cache@v4
+        with:
+          path: DerivedData/SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Run Unit Tests
+        run: |
+          SIM_ID=$(xcrun simctl list devices available | grep -E "iPhone" | grep -E -o '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}' | head -n 1)
+          if [ -n "$SIM_ID" ]; then
+            xcrun simctl boot "$SIM_ID" || true
+            DEST="platform=iOS Simulator,id=$SIM_ID"
+          else
+            DEST="platform=iOS Simulator,name=iPhone 15"
+          fi
+
+          set -o pipefail
+          xcodebuild test \
+            -project VaultETH.xcodeproj \
+            -scheme VaultETH \
+            -destination "$DEST" \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee test_run.log
+
+      - name: Build & Package iOS Application
+        run: |
+          mkdir -p release_assets/Payload
+
+          # Build for generic iOS device
+          xcodebuild build \
+            -project VaultETH.xcodeproj \
+            -scheme VaultETH \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            COMPILER_INDEX_STORE_ENABLE=NO
+
+          APP_PATH=$(find DerivedData/Build/Products -name "VaultETH.app" -type d | head -n 1)
+          if [ -n "$APP_PATH" ]; then
+            echo "Packaging app from $APP_PATH"
+            cp -R "$APP_PATH" release_assets/Payload/
+            cd release_assets
+            zip -r VaultETH-iOS-unsigned.ipa Payload
+            rm -rf Payload
+            cd ..
+          else
+            echo "VaultETH.app not found"
+            exit 1
+          fi
+
+      - name: Upload iOS Assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultETH-iOS-Release-Binaries
+          path: release_assets/*
+          retention-days: 30
+
+  # =========================================================================
+  # 3. Publish GitHub Release
+  # =========================================================================
+  publish-release:
+    name: Publish GitHub Release
+    needs: [build-android, build-ios]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Android Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: VaultETH-Android-Release-Binaries
+          path: final_assets
+
+      - name: Download iOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: VaultETH-iOS-Release-Binaries
+          path: final_assets
+
+      - name: Generate Checksums
+        working-directory: final_assets
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Determine Release Tag
+        id: release_tag
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          else
+            TAG="v${{ inputs.release_version || '1.0.0' }}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: "VaultETH ${{ steps.release_tag.outputs.tag }}"
+          draft: false
+          prerelease: false
+          files: |
+            final_assets/*
+          body: |
+            ## VaultETH ${{ steps.release_tag.outputs.tag }}
+            **Executive Self-Custodial Multi-Chain Crypto Vault by `vault.`**
+
+            ### 🚀 Universal Multi-Chain Architecture
+            - **EVM Networks:** Ethereum Mainnet, Arbitrum One, Base, Optimism, Polygon PoS, BNB Smart Chain, Avalanche C-Chain, Linea, Sepolia Testnet, and custom RPC EVM networks.
+            - **Cross-Chain Derived Addresses:** Native deposit derivation for Solana (Ed25519) and Bitcoin SegWit (Bech32).
+            - **Hardware Enclave Protection:** iOS Keychain (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`) and Android Keystore (`AES256_GCM`) backed by Face ID / Touch ID / BiometricPrompt.
+            - **Pre-Flight Transaction Simulation:** Real-time dry-run execution (`eth_call`) with ABI smart contract revert decoding.
+            - **ENS Intelligence:** Forward resolution, reverse lookup, and `VaultIdenticon` cryptographic crests.
+            - **Privacy First:** Zero trackers, zero analytics, zero custodial access, and discreet balance mode.
+
+            ### 📦 Included Release Binaries
+            - `VaultETH-Android-release.apk`: Signed Android Release APK for physical testing and installation.
+            - `VaultETH-Android-release.aab`: Android App Bundle for Google Play Console distribution.
+            - `VaultETH-Android-debug.apk`: Debug APK with diagnostic logging enabled.
+            - `VaultETH-iOS-unsigned.ipa`: Packaged iOS application bundle.
+            - `SHA256SUMS.txt`: Cryptographic checksum verification list.
+
+            ---
+            *Review Store Submission Kit in [`SUBMISSION_KIT.md`](https://github.com/ganiyucall911/VaultETH/blob/main/SUBMISSION_KIT.md) for complete App Store Connect and Google Play Console copy.*

@@ -80,6 +80,40 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee test_run.log
 
+      - name: Build iOS Application
+        run: |
+          xcodebuild build \
+            -project VaultETH.xcodeproj \
+            -scheme VaultETH \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            COMPILER_INDEX_STORE_ENABLE=NO
+
+      - name: Package Unsigned iOS IPA
+        run: |
+          mkdir -p build_output/Payload
+          APP_PATH=$(find DerivedData/Build/Products -name "VaultETH.app" -type d | head -n 1)
+          if [ -n "$APP_PATH" ]; then
+            echo "Found app at: $APP_PATH"
+            cp -R "$APP_PATH" build_output/Payload/
+            cd build_output
+            zip -r VaultETH-unsigned.ipa Payload
+            cd ..
+          else
+            echo "VaultETH.app not found"
+            exit 1
+          fi
+
+      - name: Upload iOS App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultETH-iOS-unsigned-ipa
+          path: build_output/VaultETH-unsigned.ipa
+          retention-days: 14
+
       - name: Print Failure Log
         if: failure()
         run: |
