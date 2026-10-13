@@ -28,6 +28,8 @@ jobs:
     name: Build Android Artifacts (APK & AAB)
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      PLAY_STORE_JSON: ${{ secrets['GOOGLE_PLAY_SERVICE_ACCOUNT_JSON'] }}
 
     steps:
       - name: Checkout repository
@@ -94,11 +96,9 @@ jobs:
       # Optional direct Google Play Console upload if service account secret exists
       - name: Deploy to Google Play Internal Testing
         if: ${{ inputs.deploy_to_stores == true && env.PLAY_STORE_JSON != '' }}
-        env:
-          PLAY_STORE_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          serviceAccountJsonPlainText: ${{ secrets['GOOGLE_PLAY_SERVICE_ACCOUNT_JSON'] }}
           packageName: com.vaulteth.app
           releaseFiles: release_assets/VaultETH-Android-release.aab
           track: internal
