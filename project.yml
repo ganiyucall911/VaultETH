@@ -34,6 +34,7 @@ targets:
           - SECURITY.md
           - project.yml
           - Info.plist
+          - PrivacyInfo.xcprivacy
           - "*.md"
           - "*Tests.swift"
       - path: PrivacyInfo.xcprivacy

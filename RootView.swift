@@ -66,6 +66,8 @@ struct HomeView: View {
     @Binding var isDiscreetMode: Bool
 
     @State private var showSendSheet = false
+    @State private var sendInitialRecipient = ""
+    @State private var sendInitialAmount = ""
     @State private var showReceiveSheet = false
     @State private var showBuySheet = false
     @State private var showScanner = false
@@ -139,7 +141,9 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $showSendSheet) {
-            NavigationStack { SendView() }
+            NavigationStack {
+                SendView(initialRecipient: sendInitialRecipient, initialAmount: sendInitialAmount)
+            }
         }
         .sheet(isPresented: $showReceiveSheet) {
             NavigationStack { ReceiveView() }
@@ -156,8 +160,11 @@ struct HomeView: View {
         .sheet(isPresented: $showScanner) {
             QRScannerView { scanned in
                 let parsed = WalletEngine.parsePaymentURI(scanned)
-                UIPasteboard.general.string = parsed.recipient
-                showSendSheet = true
+                sendInitialRecipient = parsed.recipient
+                sendInitialAmount = parsed.amountETH ?? ""
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    showSendSheet = true
+                }
             }
         }
         .sheet(isPresented: $showENSManager) {
@@ -357,6 +364,8 @@ struct HomeView: View {
             }
 
             coreActionButton(title: "Send", systemImage: "arrow.up.right", color: .white, isProminent: false) {
+                sendInitialRecipient = ""
+                sendInitialAmount = ""
                 showSendSheet = true
             }
 
@@ -365,6 +374,8 @@ struct HomeView: View {
             }
 
             coreActionButton(title: "Swap", systemImage: "arrow.triangle.2.circlepath", color: .white, isProminent: false) {
+                sendInitialRecipient = ""
+                sendInitialAmount = ""
                 showSendSheet = true
             }
         }

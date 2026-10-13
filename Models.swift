@@ -261,6 +261,7 @@ struct PreparedTransfer: Sendable {
     var protocolFeeWei: Data
     var treasuryAddress: String?
     var isProtocolFeeTransparent: Bool
+    var symbol: String?
 
     var maxTotalWei: Data {
         let baseTotal = Wei.add(valueWei, fee.maxFeeWei)
@@ -277,7 +278,8 @@ struct PreparedTransfer: Sendable {
          simulation: TransactionSimulation? = nil,
          protocolFeeWei: Data = Data(),
          treasuryAddress: String? = nil,
-         isProtocolFeeTransparent: Bool = true) {
+         isProtocolFeeTransparent: Bool = true,
+         symbol: String? = "ETH") {
         self.from = from
         self.to = to
         self.valueWei = valueWei
@@ -289,6 +291,7 @@ struct PreparedTransfer: Sendable {
         self.protocolFeeWei = protocolFeeWei
         self.treasuryAddress = treasuryAddress
         self.isProtocolFeeTransparent = isProtocolFeeTransparent
+        self.symbol = symbol
     }
 }
 

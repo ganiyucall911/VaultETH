@@ -250,7 +250,8 @@ final class WalletStore: ObservableObject {
             simulation: simulation,
             protocolFeeWei: protocolFee,
             treasuryAddress: feeConfig.isEnabled ? feeConfig.treasuryAddress : nil,
-            isProtocolFeeTransparent: feeConfig.isTransparent
+            isProtocolFeeTransparent: feeConfig.isTransparent,
+            symbol: selectedNetwork.symbol
         )
         guard Wei.compare(balance, transfer.maxTotalWei) != .orderedAscending else {
             throw WalletError.insufficientBalance

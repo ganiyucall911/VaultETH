@@ -5,8 +5,8 @@ import SwiftUI
 struct SendView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var store: WalletStore
-    @State private var recipient = ""
-    @State private var amount = ""
+    @State private var recipient: String
+    @State private var amount: String
     @State private var isPreparing = false
     @State private var prepared: PreparedTransfer?
     @State private var errorMessage: String?
@@ -20,6 +20,11 @@ struct SendView: View {
     @State private var resolvedENSName: String?
     @State private var isResolvingENS = false
     @State private var ensError: String?
+
+    init(initialRecipient: String = "", initialAmount: String = "") {
+        _recipient = State(initialValue: initialRecipient)
+        _amount = State(initialValue: initialAmount)
+    }
 
     /// The address that will actually be submitted — either the ENS-resolved one or the typed one.
     private var effectiveRecipient: String { resolvedENSAddress ?? recipient }
@@ -80,6 +85,11 @@ struct SendView: View {
         }
         .onChange(of: recipient) { _, newValue in
             triggerENSResolution(for: newValue)
+        }
+        .onAppear {
+            if !recipient.isEmpty {
+                triggerENSResolution(for: recipient)
+            }
         }
         .sheet(isPresented: $showScanner) {
             QRScannerView { scanned in

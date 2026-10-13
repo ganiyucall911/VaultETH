@@ -8,15 +8,15 @@ This document tracks all App Store submission requirements for VaultETH, disting
 
 | Requirement | Status | Implementation Details |
 |---|---|---|
-| **Privacy Manifest** | ✅ Ready | [`PrivacyInfo.xcprivacy`](file:///home/runner/work/VaultETH/VaultETH/PrivacyInfo.xcprivacy) declares `NSPrivacyTracking: false`, `NSPrivacyCollectedDataTypes: []`, and `UserDefaults` API reason `CA92.1`. Explicitly included in `project.yml` resources build phase. |
+| **Privacy Manifest** | ✅ Ready | [`PrivacyInfo.xcprivacy`](PrivacyInfo.xcprivacy) declares `NSPrivacyTracking: false`, `NSPrivacyCollectedDataTypes: []`, and `UserDefaults` API reason `CA92.1`. Explicitly included in `project.yml` resources build phase. |
 | **Biometric Usage Description** | ✅ Ready | `NSFaceIDUsageDescription` configured in `project.yml`: *"VaultETH uses Face ID to protect your recovery phrase and to authorize sending ETH."* |
 | **Camera Usage Description** | ✅ Ready | `NSCameraUsageDescription` configured in `project.yml`: *"VaultETH uses your camera to scan Ethereum address and ENS payment QR codes."* |
 | **Export Compliance Flag** | ✅ Ready | `ITSAppUsesNonExemptEncryption: false` configured in `project.yml`. The app only uses standard, publicly available signing libraries (Trust Wallet Core). |
-| **App Store Icon** | ✅ Ready | Asset catalog [`Assets.xcassets/AppIcon.appiconset`](file:///home/runner/work/VaultETH/VaultETH/Assets.xcassets/AppIcon.appiconset) configured with universal 1024x1024 icon and registered in `project.yml`. |
-| **Privacy Policy** | ✅ Ready | [`PRIVACY_POLICY.md`](file:///home/runner/work/VaultETH/VaultETH/PRIVACY_POLICY.md) drafted, disclosing non-custodial architecture and third-party RPC node logging (IP address and public wallet address). Linked directly in [`SettingsView`](file:///home/runner/work/VaultETH/VaultETH/RootView.swift). |
-| **Support & FAQ Document** | ✅ Ready | [`SUPPORT.md`](file:///home/runner/work/VaultETH/VaultETH/SUPPORT.md) drafted with key recovery warnings, non-custodial FAQ, and issue tracker links. Linked directly in [`SettingsView`](file:///home/runner/work/VaultETH/VaultETH/RootView.swift). |
-| **App-Switcher Privacy** | ✅ Ready | Recovery phrase is wiped immediately upon leaving foreground ([`RecoveryPhraseView`](file:///home/runner/work/VaultETH/VaultETH/WalletsView.swift)) to prevent leakage into the iOS multitasking snapshot. |
-| **Memory Security** | ✅ Ready | Mnemonic buffers are zeroed out via `resetBytes` immediately after saving to Keychain ([`KeychainVault`](file:///home/runner/work/VaultETH/VaultETH/KeychainVault.swift)). |
+| **App Store Icon** | ✅ Ready | Asset catalog [`Assets.xcassets/AppIcon.appiconset`](Assets.xcassets/AppIcon.appiconset) configured with universal 1024x1024 icon and registered in `project.yml`. |
+| **Privacy Policy** | ✅ Ready | [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md) drafted, disclosing non-custodial architecture and third-party RPC node logging (IP address and public wallet address). Linked directly in [`SettingsView`](RootView.swift). |
+| **Support & FAQ Document** | ✅ Ready | [`SUPPORT.md`](SUPPORT.md) drafted with key recovery warnings, non-custodial FAQ, and issue tracker links. Linked directly in [`SettingsView`](RootView.swift). |
+| **App-Switcher Privacy** | ✅ Ready | Recovery phrase is wiped immediately upon leaving foreground ([`RecoveryPhraseView`](WalletsView.swift)) to prevent leakage into the iOS multitasking snapshot. |
+| **Memory Security** | ✅ Ready | Mnemonic buffers are zeroed out via `resetBytes` immediately after saving to Keychain ([`KeychainVault`](KeychainVault.swift)). |
 
 ---
 
@@ -48,10 +48,10 @@ This document tracks all App Store submission requirements for VaultETH, disting
   - Complete the questionnaire. Crypto wallets typically receive a 17+ or Unrestricted Web Access rating depending on jurisdiction.
 
 ### D. Screenshots & Marketing Assets (✅ Prepared in Repository)
-- [x] **Marketing Promo Banner (16:9):** [`docs/assets/promo-banner.jpg`](file:///docs/assets/promo-banner.jpg) — High-res promotional graphic for App Store featured spots and web showcase.
-- [x] **Screenshot 1 (Dashboard & Portfolio):** [`docs/assets/appstore-screen-1.jpg`](file:///docs/assets/appstore-screen-1.jpg) — iPhone 16 Pro mockup showing multi-chain balances, liquid glass cards, and asset breakdown.
-- [x] **Screenshot 2 (Send Flow & Simulation):** [`docs/assets/appstore-screen-2.jpg`](file:///docs/assets/appstore-screen-2.jpg) — iPhone 16 Pro mockup showcasing transaction simulation badge, ENS resolution, and Face ID authorization.
-- [x] **Screenshot 3 (Receive & Identity):** [`docs/assets/appstore-screen-3.jpg`](file:///docs/assets/appstore-screen-3.jpg) — iPhone 16 Pro mockup showing high-contrast QR code, ENS domain pill, and multi-chain address selectors.
+- [x] **Marketing Promo Banner (16:9):** [`docs/assets/promo-banner.jpg`](docs/assets/promo-banner.jpg) — High-res promotional graphic for App Store featured spots and web showcase.
+- [x] **Screenshot 1 (Dashboard & Portfolio):** [`docs/assets/appstore-screen-1.jpg`](docs/assets/appstore-screen-1.jpg) — iPhone 16 Pro mockup showing multi-chain balances, liquid glass cards, and asset breakdown.
+- [x] **Screenshot 2 (Send Flow & Simulation):** [`docs/assets/appstore-screen-2.jpg`](docs/assets/appstore-screen-2.jpg) — iPhone 16 Pro mockup showcasing transaction simulation badge, ENS resolution, and Face ID authorization.
+- [x] **Screenshot 3 (Receive & Identity):** [`docs/assets/appstore-screen-3.jpg`](docs/assets/appstore-screen-3.jpg) — iPhone 16 Pro mockup showing high-contrast QR code, ENS domain pill, and multi-chain address selectors.
 
 ---
 

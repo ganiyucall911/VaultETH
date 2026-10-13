@@ -161,7 +161,7 @@ final class WalletEngine: @unchecked Sendable {
 
     /// Loads the key (this triggers Face ID / passcode), verifies it matches the sending address, and signs.
     func signTransfer(_ transfer: PreparedTransfer, accountID: UUID) async throws -> String {
-        let phrase = try await vault.load(id: accountID, reason: "Authorize sending ETH")
+        let phrase = try await vault.load(id: accountID, reason: "Authorize sending \(transfer.symbol ?? "ETH")")
         guard let wallet = HDWallet(mnemonic: phrase, passphrase: "") else { throw WalletError.keyNotFound }
         guard wallet.getAddressForCoin(coin: .ethereum).lowercased() == transfer.from.lowercased() else {
             throw WalletError.addressMismatch
