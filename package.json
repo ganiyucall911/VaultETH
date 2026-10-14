@@ -1,0 +1,14 @@
+{
+  "name": "vaulteth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VaultETH self-custodial multi-chain wallet web showcase and documentation",
+  "scripts": {
+    "build": "echo 'Static build ready in docs/'",
+    "deploy": "wrangler deploy",
+    "pages:deploy": "wrangler pages deploy docs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.150.0"
+  }
+}
