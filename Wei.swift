@@ -17,25 +17,64 @@ enum Wei {
     }
 
     static func add(_ a: Data, _ b: Data) -> Data {
-        let x = Array(normalize(a).reversed()), y = Array(normalize(b).reversed())
-        var out = [UInt8](); var carry = 0
-        for i in 0..<max(x.count, y.count) {
-            let sum = (i < x.count ? Int(x[i]) : 0) + (i < y.count ? Int(y[i]) : 0) + carry
-            out.append(UInt8(sum & 0xff)); carry = sum >> 8
+        let x = normalize(a), y = normalize(b)
+        if x.isEmpty { return Data(y) }
+        if y.isEmpty { return Data(x) }
+
+        let width = max(x.count, y.count)
+        var left = x
+        var right = y
+        while left.count < width { left.insert(0, at: 0) }
+        while right.count < width { right.insert(0, at: 0) }
+
+        var out = [UInt8](repeating: 0, count: width + 1)
+        var carry: UInt32 = 0
+        var i = left.count - 1
+        var j = right.count - 1
+        var k = out.count - 1
+
+        while i >= 0 || j >= 0 || carry > 0 {
+            var total: UInt32 = carry
+            if i >= 0 { total += UInt32(left[i]); i -= 1 }
+            if j >= 0 { total += UInt32(right[j]); j -= 1 }
+            out[k] = UInt8(total & 0xff)
+            carry = total >> 8
+            k -= 1
         }
-        if carry > 0 { out.append(UInt8(carry)) }
-        return Data(out.reversed())
+
+        if let firstNonZero = out.firstIndex(where: { $0 != 0 }) {
+            return Data(out[firstNonZero...])
+        }
+        return Data()
     }
 
     static func multiply(_ a: Data, _ b: Data) -> Data {
-        let x = Array(normalize(a).reversed()), y = Array(normalize(b).reversed())
+        let x = normalize(a), y = normalize(b)
         if x.isEmpty || y.isEmpty { return Data() }
-        var acc = [UInt64](repeating: 0, count: x.count + y.count)
-        for i in 0..<x.count { for j in 0..<y.count { acc[i + j] += UInt64(x[i]) * UInt64(y[j]) } }
-        var out = [UInt8](); var carry: UInt64 = 0
-        for v in acc { let t = v + carry; out.append(UInt8(t & 0xff)); carry = t >> 8 }
-        while carry > 0 { out.append(UInt8(carry & 0xff)); carry >>= 8 }
-        return Data(normalize(Data(out.reversed())))
+
+        var result = [UInt32](repeating: 0, count: x.count + y.count + 1)
+        for i in stride(from: x.count - 1, through: 0, by: -1) {
+            var carry: UInt32 = 0
+            for j in stride(from: y.count - 1, through: 0, by: -1) {
+                let idx = i + j + 1
+                let total = result[idx] + UInt32(x[i]) * UInt32(y[j]) + carry
+                result[idx] = total & 0xff
+                carry = total >> 8
+            }
+            var k = i
+            while carry > 0 {
+                let total = UInt32(result[k]) + carry
+                result[k] = total & 0xff
+                carry = total >> 8
+                if k == 0 { break }
+                k -= 1
+            }
+        }
+
+        if let firstNonZero = result.firstIndex(where: { $0 != 0 }) {
+            return Data(Array(result[firstNonZero...]))
+        }
+        return Data()
     }
 
     static func from(_ value: UInt64) -> Data {
@@ -47,19 +86,29 @@ enum Wei {
     /// Unsigned subtraction (a - b). Returns nil on underflow (when a < b).
     static func subtract(_ a: Data, _ b: Data) -> Data? {
         guard compare(a, b) != .orderedAscending else { return nil }
-        let x = Array(normalize(a).reversed()), y = Array(normalize(b).reversed())
-        var out = [UInt8](); var borrow = 0
-        for i in 0..<x.count {
-            let sub = Int(x[i]) - (i < y.count ? Int(y[i]) : 0) - borrow
-            if sub < 0 {
-                out.append(UInt8(sub + 256))
+        let x = normalize(a), y = normalize(b)
+        let width = max(x.count, y.count)
+        var left = x, right = y
+        while left.count < width { left.insert(0, at: 0) }
+        while right.count < width { right.insert(0, at: 0) }
+
+        var out = [UInt8](repeating: 0, count: width)
+        var borrow = 0
+        for idx in stride(from: width - 1, through: 0, by: -1) {
+            let diff = Int(left[idx]) - Int(right[idx]) - borrow
+            if diff < 0 {
+                out[idx] = UInt8(diff + 256)
                 borrow = 1
             } else {
-                out.append(UInt8(sub))
+                out[idx] = UInt8(diff)
                 borrow = 0
             }
         }
-        return Data(normalize(Data(out.reversed())))
+
+        if let firstNonZero = out.firstIndex(where: { $0 != 0 }) {
+            return Data(Array(out[firstNonZero...]))
+        }
+        return Data()
     }
 
     /// Converts big-endian byte Data to UInt64 (returns nil if larger than 8 bytes).
