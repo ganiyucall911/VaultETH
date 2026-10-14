@@ -13,14 +13,19 @@ final class KeychainVault: @unchecked Sendable {
     }
 
     func load(id: UUID, reason: String) async throws -> String {
-        try await Task.detached(priority: .userInitiated) { try self.loadSync(id: id, reason: reason) }.value
+        let data = try await loadData(id: id, reason: reason)
+        defer { data.resetBytes(in: 0..<data.count) }
+        guard let phrase = String(data: data, encoding: .utf8) else { throw WalletError.keyNotFound }
+        return phrase
+    }
+
+    func loadData(id: UUID, reason: String) async throws -> Data {
+        try await Task.detached(priority: .userInitiated) { try self.loadDataSync(id: id, reason: reason) }.value
     }
 
     func delete(id: UUID) {
         SecItemDelete(baseQuery(id) as CFDictionary)
     }
-
-    // MARK: - Synchronous implementations (called from detached tasks)
 
     private func baseQuery(_ id: UUID) -> [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
@@ -29,7 +34,6 @@ final class KeychainVault: @unchecked Sendable {
     }
 
     private func saveSync(_ mnemonic: String, id: UUID) throws {
-        // Without a device passcode the access-control item below cannot be stored.
         var authError: NSError?
         guard LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError) else {
             throw WalletError.authenticationUnavailable
@@ -41,17 +45,16 @@ final class KeychainVault: @unchecked Sendable {
 
         SecItemDelete(baseQuery(id) as CFDictionary)
         var add = baseQuery(id)
-        var mnemonicData = Data(mnemonic.utf8)
+        let mnemonicData = Data(mnemonic.utf8)
         add[kSecValueData as String] = mnemonicData
         add[kSecAttrAccessControl as String] = access
         let status = SecItemAdd(add as CFDictionary, nil)
-        // Zero the mnemonic bytes as soon as they're handed to the Keychain.
-        // The Swift String source itself cannot be zeroed (a documented limitation).
-        mnemonicData.resetBytes(in: 0..<mnemonicData.count)
+        var scratch = mnemonicData
+        scratch.resetBytes(in: 0..<scratch.count)
         guard status == errSecSuccess else { throw WalletError.keychain(status) }
     }
 
-    private func loadSync(id: UUID, reason: String) throws -> String {
+    private func loadDataSync(id: UUID, reason: String) throws -> Data {
         let context = LAContext()
         context.localizedReason = reason
         var query = baseQuery(id)
@@ -63,11 +66,8 @@ final class KeychainVault: @unchecked Sendable {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         switch status {
         case errSecSuccess:
-            guard var data = result as? Data, let phrase = String(data: data, encoding: .utf8) else {
-                throw WalletError.keyNotFound
-            }
-            data.resetBytes(in: 0..<data.count)
-            return phrase
+            guard let data = result as? Data else { throw WalletError.keyNotFound }
+            return data
         case errSecUserCanceled, errSecAuthFailed: throw WalletError.authenticationFailed
         case errSecItemNotFound: throw WalletError.keyNotFound
         default: throw WalletError.keychain(status)
