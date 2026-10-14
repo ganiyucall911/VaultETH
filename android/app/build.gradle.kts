@@ -8,6 +8,22 @@ android {
     namespace = "com.vaulteth.app"
     compileSdk = 35
 
+    val releaseKeystore = System.getenv("ANDROID_RELEASE_KEYSTORE")
+    val releaseStorePassword = System.getenv("ANDROID_RELEASE_KEYSTORE_PASSWORD")
+    val releaseKeyAlias = System.getenv("ANDROID_RELEASE_KEY_ALIAS")
+    val releaseKeyPassword = System.getenv("ANDROID_RELEASE_KEY_PASSWORD")
+
+    signingConfigs {
+        create("release") {
+            if (!releaseKeystore.isNullOrBlank() && !releaseStorePassword.isNullOrBlank() && !releaseKeyAlias.isNullOrBlank() && !releaseKeyPassword.isNullOrBlank()) {
+                storeFile = file(releaseKeystore)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.vaulteth.app"
         minSdk = 26
@@ -24,6 +40,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -74,21 +92,17 @@ dependencies {
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    // Cryptography & JSON-RPC
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.json:json:20240303")
 
-    // QR Codes
     implementation("com.google.zxing:core:3.5.3")
 
-    // CameraX and ML Kit for QR Scanning
     implementation("androidx.camera:camera-camera2:1.4.0")
     implementation("androidx.camera:camera-lifecycle:1.4.0")
     implementation("androidx.camera:camera-view:1.4.0")
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
-    // Unit Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
 }
