@@ -143,7 +143,7 @@ final class WalletEngine: @unchecked Sendable {
     func delete(id: UUID) { vault.delete(id: id) }
 
     func signTransfer(_ transfer: PreparedTransfer, accountID: UUID) async throws -> String {
-        let mnemonicData = try await vault.loadData(id: accountID, reason: "Authorize sending \(transfer.symbol ?? "ETH")")
+        var mnemonicData = try await vault.loadData(id: accountID, reason: "Authorize sending \(transfer.symbol ?? "ETH")")
         defer { mnemonicData.resetBytes(in: 0..<mnemonicData.count) }
         guard let phrase = String(data: mnemonicData, encoding: .utf8) else { throw WalletError.keyNotFound }
         guard let wallet = HDWallet(mnemonic: phrase, passphrase: "") else { throw WalletError.keyNotFound }
