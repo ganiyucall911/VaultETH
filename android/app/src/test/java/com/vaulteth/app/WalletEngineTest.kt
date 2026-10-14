@@ -12,6 +12,14 @@ class WalletEngineTest {
         val mnemonic = WalletEngine.generateMnemonic()
         assertEquals(12, mnemonic.size)
         assertTrue(WalletEngine.isValidMnemonic(mnemonic))
+
+        val validVector = listOf(
+            "abandon", "abandon", "abandon", "abandon",
+            "abandon", "abandon", "abandon", "abandon",
+            "abandon", "abandon", "abandon", "about"
+        )
+        assertTrue(WalletEngine.isValidMnemonic(validVector))
+        assertFalse(WalletEngine.isValidMnemonic(validVector.dropLast(1) + "abandon"))
     }
 
     @Test
@@ -81,4 +89,3 @@ class WalletEngineTest {
         assertEquals("vitalik.eth", wallet.importedEnsName)
     }
 }
-

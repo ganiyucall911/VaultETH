@@ -23,6 +23,7 @@ object WalletEngine {
 
     // BIP-39 English Wordlist (essential subset + standard hashing)
     private val standardWords by lazy { Bip39EnglishWordList.words }
+    private val standardWordIndices by lazy { standardWords.withIndex().associate { it.value to it.index } }
 
     fun generateMnemonic(): List<String> {
         val entropy = ByteArray(16) // 128 bits = 12 words
@@ -32,8 +33,36 @@ object WalletEngine {
 
     fun isValidMnemonic(words: List<String>): Boolean {
         if (words.size !in listOf(12, 15, 18, 21, 24)) return false
-        val set = standardWords.toHashSet()
-        return words.all { set.contains(it.lowercase().trim()) }
+        val indices = words.map { standardWordIndices[it.lowercase().trim()] ?: return false }
+        val totalBits = indices.size * 11
+        val entropyBits = totalBits * 32 / 33
+        val checksumBits = totalBits - entropyBits
+        val entropy = ByteArray(entropyBits / 8)
+
+        for (bitIndex in 0 until entropyBits) {
+            val wordIndex = bitIndex / 11
+            val wordBit = 10 - bitIndex % 11
+            if (((indices[wordIndex] ushr wordBit) and 1) != 0) {
+                val byteIndex = bitIndex / 8
+                val bitInByte = 7 - bitIndex % 8
+                entropy[byteIndex] = (entropy[byteIndex].toInt() or (1 shl bitInByte)).toByte()
+            }
+        }
+
+        val hash = ByteArray(32)
+        SHA256Digest().apply {
+            update(entropy, 0, entropy.size)
+            doFinal(hash, 0)
+        }
+        for (checksumIndex in 0 until checksumBits) {
+            val bitIndex = entropyBits + checksumIndex
+            val wordIndex = bitIndex / 11
+            val wordBit = 10 - bitIndex % 11
+            val phraseBit = (indices[wordIndex] ushr wordBit) and 1
+            val hashBit = (hash[checksumIndex / 8].toInt() ushr (7 - checksumIndex % 8)) and 1
+            if (phraseBit != hashBit) return false
+        }
+        return true
     }
 
     fun mnemonicToSeed(words: List<String>, passphrase: String = ""): ByteArray {
