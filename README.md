@@ -39,7 +39,7 @@ Buy and swap are not integrated and cannot submit purchases or swaps. Their scre
 ## Core Architecture & Features
 
 1. **Hardware-Backed Key Protection**
-   - **iOS:** Stored in the iOS Keychain with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` and protected by Secure Enclave biometric authorization (`LocalAuthentication` Face ID / Touch ID / Passcode).
+   - **iOS:** Stored in the iOS Keychain with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` and gated by device-owner authentication (Face ID / Touch ID / passcode).
    - **Android:** Encrypted via `EncryptedSharedPreferences` backed by the Android Keystore (`AES256_GCM` and `AES256_SIV`) with `BiometricPrompt` authorization.
    - Cloud backup is strictly disabled (`allowBackup="false"`, no iCloud sync).
    - In-memory key buffers are zeroed out via `resetBytes` immediately after use.
@@ -48,7 +48,7 @@ Buy and swap are not integrated and cannot submit purchases or swaps. Their scre
    - Executes dry-run `eth_call` and gas limit estimation prior to user authorization.
    - Parses standard ABI revert reasons (`Error(string)`) so failed contract calls are caught before spending gas.
 
-3. **Multi-Chain Transaction Signing**
+3. **EVM Native-Asset Transaction Signing**
    - Dynamic dual-mode gas estimation supporting modern EIP-1559 base fees + priority tips and graceful fallback to `eth_gasPrice` for BNB Chain and legacy networks.
    - Dynamic biometric authentication prompts indicating target asset (`"Authorize sending BNB"`, `"Authorize sending POL"`).
 

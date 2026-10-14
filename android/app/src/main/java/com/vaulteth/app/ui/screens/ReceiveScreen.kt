@@ -46,9 +46,9 @@ fun ReceiveScreen(
     }
 
     val chainNotice = when (selectedChainIndex) {
-        0 -> "Compatible with Ethereum, Arbitrum, Base, Optimism, Polygon, BNB Chain, Avalanche, and all EVM networks."
-        1 -> "Direct deposits to your derived Solana address."
-        else -> "Native SegWit Bitcoin address (bc1q)."
+        0 -> "Receive on EVM networks. VaultETH sends native assets only; ERC-20/token transfers are not supported."
+        1 -> "Receive-only address. VaultETH cannot sign or broadcast Solana transactions."
+        else -> "Receive-only address. VaultETH cannot sign or broadcast Bitcoin transactions."
     }
 
     Scaffold(

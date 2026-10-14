@@ -11,7 +11,7 @@ on:
         required: false
         default: '1.0.0'
       deploy_to_stores:
-        description: 'Deploy to TestFlight / Google Play (requires secrets)'
+        description: 'Deploy Android release to Google Play Internal Testing (requires secrets)'
         required: false
         type: boolean
         default: false
@@ -149,7 +149,7 @@ jobs:
   # 2. iOS Release Build
   # =========================================================================
   build-ios:
-    name: Build iOS Application (IPA & Archive)
+    name: Build iOS Application (unsigned IPA)
     runs-on: macos-14
     timeout-minutes: 35
 
