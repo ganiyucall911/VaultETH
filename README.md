@@ -4,6 +4,7 @@
 
 [![iOS CI](https://github.com/ganiyucall911/VaultETH/actions/workflows/ios.yml/badge.svg)](https://github.com/ganiyucall911/VaultETH/actions/workflows/ios.yml)
 [![Android CI](https://github.com/ganiyucall911/VaultETH/actions/workflows/android.yml/badge.svg)](https://github.com/ganiyucall911/VaultETH/actions/workflows/android.yml)
+
 [![Pages](https://github.com/ganiyucall911/VaultETH/actions/workflows/pages/pages-build-deployment/badge.svg)](https://ganiyucall911.github.io/VaultETH/)
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-vaulteth-F38020?logo=cloudflare&logoColor=white)](https://vaulteth.ganiyusail101.workers.dev)
 
