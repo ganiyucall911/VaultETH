@@ -8,9 +8,9 @@ VaultETH is a self-custody multi-chain vault designed with zero trust principles
 
 - **Hardware-Backed Protection:** Recovery phrases (BIP-39 mnemonics) are stored exclusively in the iOS Keychain with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` and `.userPresence` access control. They are never backed up to iCloud and cannot migrate across devices.
 - **Biometric Gating:** Reading sensitive key material requires explicit biometric authentication (Face ID, Touch ID, or device passcode) on every operation.
-- **Zeroization in Memory:**
-  - In `KeychainVault.swift`, raw mnemonic byte buffers are zeroed (`resetBytes(in:)`) immediately upon ingestion and upon retrieval.
-  - In `WalletEngine.swift`, derived private key byte arrays are zeroed with `defer { keyData.resetBytes(in:) }` as soon as transaction signing completes.
+- **Zeroization in Memory (best effort):**
+  - In `KeychainVault.swift`, the byte buffer returned from the Keychain is zeroed (`resetBytes(in:)`) as soon as the recovery phrase has been read from it. When saving, a copy of the mnemonic bytes is zeroed after the Keychain write; because Swift `Data` is a value type and the original `String` is managed by the runtime, this reduces, but cannot guarantee elimination of, residual copies in process memory.
+  - In `WalletEngine.swift`, the loaded mnemonic buffer and derived private key byte arrays are zeroed with `defer { ...resetBytes(in:) }` as soon as transaction signing completes.
 - **No Disk Leakage:** Secrets are never written to `UserDefaults`, CoreData, SQLite, or application caches. Only public addresses, wallet labels, and transaction history are persisted in standard local storage.
 
 ---
