@@ -12,11 +12,16 @@ android {
     val releaseStorePassword = System.getenv("ANDROID_RELEASE_KEYSTORE_PASSWORD")
     val releaseKeyAlias = System.getenv("ANDROID_RELEASE_KEY_ALIAS")
     val releaseKeyPassword = System.getenv("ANDROID_RELEASE_KEY_PASSWORD")
+    val releaseSigningConfigured = !releaseKeystore.isNullOrBlank() &&
+        !releaseStorePassword.isNullOrBlank() &&
+        !releaseKeyAlias.isNullOrBlank() &&
+        !releaseKeyPassword.isNullOrBlank() &&
+        file(releaseKeystore).isFile
 
     signingConfigs {
-        create("release") {
-            if (!releaseKeystore.isNullOrBlank() && !releaseStorePassword.isNullOrBlank() && !releaseKeyAlias.isNullOrBlank() && !releaseKeyPassword.isNullOrBlank()) {
-                storeFile = file(releaseKeystore)
+        if (releaseSigningConfigured) {
+            create("release") {
+                storeFile = file(releaseKeystore!!)
                 storePassword = releaseStorePassword
                 keyAlias = releaseKeyAlias
                 keyPassword = releaseKeyPassword
@@ -41,7 +46,9 @@ android {
         release {
             isMinifyEnabled = false
             isDebuggable = false
-            signingConfig = signingConfigs.getByName("release")
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

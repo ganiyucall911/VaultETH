@@ -27,20 +27,12 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         run: |
-          if [ -n "$CF_TOKEN" ]; then
-            npx wrangler pages deploy docs --project-name=vaulteth --commit-dirty=true
-          else
-            echo "================================================================="
-            echo "Cloudflare Pages Deployment Ready!"
-            echo "To enable direct GitHub Actions deployment:"
-            echo "1. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repo Secrets."
-            echo "OR:"
-            echo "2. Connect this repository directly in Cloudflare Dashboard:"
-            echo "   Workers & Pages > Create application > Pages > Connect to Git"
-            echo "   - Project name: vaulteth"
-            echo "   - Build output directory: docs"
-            echo "================================================================="
+          if [ -z "$CF_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Cloudflare deployment requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
+            exit 1
           fi
+          test -s docs/index.html
+          npx wrangler pages deploy docs --project-name=vaulteth --account-id="$CLOUDFLARE_ACCOUNT_ID" --commit-dirty=true
         env:
           CF_TOKEN: ${{ secrets[format('{0}', 'CLOUDFLARE_API_TOKEN')] }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets[format('{0}', 'CLOUDFLARE_ACCOUNT_ID')] }}

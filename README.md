@@ -26,12 +26,20 @@ VaultETH is an executive, self-custodial multi-chain wallet engineered for sover
 - **Custom EVM Networks** (User-configurable RPC URL and Chain ID)
 - **Cross-Chain Derived Addresses**: Native deposit derivation for **Solana** (Ed25519) and **Bitcoin SegWit** (BIP-84 Bech32)
 
+Outgoing sends are currently supported only for native assets on the listed EVM networks. Solana and Bitcoin addresses are derived for receiving deposits only; VaultETH cannot sign or broadcast Solana or Bitcoin transactions. ERC-20/token transfers are not currently supported.
+
+## Demo Data and Unavailable Features
+
+The token list, holdings, USD prices, percentage changes, charts, and portfolio total shown in the apps are static demo data. They are not live market data and are not read from your wallet. The separate native-currency balance is queried from the selected EVM network.
+
+Buy and swap are not integrated and cannot submit purchases or swaps. Their screens are marked as coming soon. VaultETH does not charge or collect a protocol fee; sends are single native-asset transactions to the recipient, and the displayed outlay is the transfer amount plus the estimated network gas fee.
+
 ---
 
 ## Core Architecture & Features
 
 1. **Hardware-Backed Key Protection**
-   - **iOS:** Stored in the iOS Keychain with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` and protected by Secure Enclave biometric authorization (`LocalAuthentication` Face ID / Touch ID / Passcode).
+   - **iOS:** Stored in the iOS Keychain with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` and gated by device-owner authentication (Face ID / Touch ID / passcode).
    - **Android:** Encrypted via `EncryptedSharedPreferences` backed by the Android Keystore (`AES256_GCM` and `AES256_SIV`) with `BiometricPrompt` authorization.
    - Cloud backup is strictly disabled (`allowBackup="false"`, no iCloud sync).
    - In-memory key buffers are zeroed out via `resetBytes` immediately after use.
@@ -40,7 +48,7 @@ VaultETH is an executive, self-custodial multi-chain wallet engineered for sover
    - Executes dry-run `eth_call` and gas limit estimation prior to user authorization.
    - Parses standard ABI revert reasons (`Error(string)`) so failed contract calls are caught before spending gas.
 
-3. **Multi-Chain Transaction Signing**
+3. **EVM Native-Asset Transaction Signing**
    - Dynamic dual-mode gas estimation supporting modern EIP-1559 base fees + priority tips and graceful fallback to `eth_gasPrice` for BNB Chain and legacy networks.
    - Dynamic biometric authentication prompts indicating target asset (`"Authorize sending BNB"`, `"Authorize sending POL"`).
 
@@ -53,6 +61,10 @@ VaultETH is an executive, self-custodial multi-chain wallet engineered for sover
    - One-tap discreet balance masking (`•••••••• ETH`) for public environments.
    - **Zero** analytics SDKs, trackers, third-party advertising, or remote telemetry.
    - All external RPC communication strictly enforces TLS/HTTPS transport encryption.
+
+6. **Release Signing**
+   - Release signing uses repository secrets only. Configure `ANDROID_RELEASE_KEYSTORE_BASE64`, `ANDROID_RELEASE_KEYSTORE_PASSWORD`, `ANDROID_RELEASE_KEY_ALIAS`, and `ANDROID_RELEASE_KEY_PASSWORD` to produce signed Android release artifacts.
+   - Without signing secrets, the release workflow publishes explicitly named unsigned Android artifacts. Google Play deployment additionally requires `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`. The iOS workflow produces an unsigned IPA; signing and App Store distribution are not configured.
 
 ---
 

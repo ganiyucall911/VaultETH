@@ -8,6 +8,8 @@
 
 This submission kit provides verified, ready-to-copy metadata, store listing copy, review guidelines disclosures, and compliance questionnaire responses for both Apple App Store Connect and Google Play Console.
 
+**Feature disclosure:** Token prices, holdings, charts, and USD portfolio totals are static demo data, not live or wallet-derived. Buy and swap are not integrated. Outgoing sends support native assets on EVM networks only; Solana and Bitcoin addresses are receive-only. VaultETH does not charge or collect protocol fees.
+
 ---
 
 ## Part 1: Apple App Store Connect
@@ -26,17 +28,17 @@ This submission kit provides verified, ready-to-copy metadata, store listing cop
 ### 2. Description & Promotional Text
 
 #### Promotional Text (170 characters max):
-> Sovereign self-custodial wallet for Ethereum, Layer 2s, Solana & Bitcoin. Zero tracking, hardware Secure Enclave protection, and pre-flight transaction simulation.
+> Self-custodial EVM wallet with native-asset sends, secure key storage, and transaction simulation. Solana and Bitcoin addresses are receive-only.
 
 #### Description (4,000 characters max):
 ```markdown
 VaultETH is an executive, self-custodial multi-chain crypto wallet engineered for sovereign asset security and uncompromising privacy. Built natively in Swift and SwiftUI, VaultETH places complete cryptographic ownership directly into your hands.
 
 SOVEREIGN SELF-CUSTODY
-Your 12-word recovery phrase and private keys are generated on-device and sealed within the hardware-backed iOS Keychain (kSecAttrAccessibleWhenUnlockedThisDeviceOnly). Protected by Secure Enclave biometric authorization (Face ID / Touch ID / Passcode), keys never touch external servers or cloud backups.
+Your 12-word recovery phrase and private keys are generated on-device and stored in the iOS Keychain using `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` with device-owner authentication (Face ID / Touch ID / passcode). They are not sent to external servers or included in cloud backups.
 
 UNIVERSAL MULTI-CHAIN ARCHITECTURE
-Manage your portfolio seamlessly across 12+ leading blockchain ecosystems from a single master seed:
+Derive addresses from one recovery phrase across supported networks. Outgoing sends are currently limited to native assets on EVM networks:
 • Ethereum Mainnet
 • Arbitrum One
 • Base
@@ -47,7 +49,9 @@ Manage your portfolio seamlessly across 12+ leading blockchain ecosystems from a
 • Linea
 • Sepolia Testnet
 • Custom EVM Networks (User-configurable RPC and Chain ID)
-• Cross-chain derived deposit addresses for Solana and Bitcoin SegWit
+• Receive-only derived addresses for Solana and Bitcoin SegWit (outgoing sends are not supported)
+
+Token holdings, prices, charts, and USD portfolio totals shown in the app are static demo data, not wallet balances or live market information. Buy and swap features are not integrated.
 
 PRE-FLIGHT TRANSACTION SIMULATION
 Never sign blindly. VaultETH runs dry-run execution (eth_call) and gas estimation before you authorize any transfer. Revert reasons and contract failures are parsed and surfaced instantly, protecting your funds from failed transaction fees.
@@ -58,13 +62,13 @@ ENS DOMAIN RESOLUTION & CRYPTOGRAPHIC CRESTS
 • EIP-681 / EIP-831 payment URI parsing for instant QR and clipboard prefill.
 
 DISCREET PRIVACY MODE
-Mask your portfolio balances with a single tap (•••••••• ETH) when operating in public spaces or recording screen captures.
+Mask the displayed balance with a single tap (•••••••• ETH) when operating in public spaces or recording screen captures. The portfolio value is static demo data; the native EVM balance is queried from the selected network.
 
 ZERO TRACKING. ZERO DATA COLLECTION.
 • No analytics frameworks, telemetry, or user tracking SDKs.
 • No account registration, email, phone number, or KYC required.
 • Strict transport encryption (HTTPS) across all RPC communication.
-• 100% of network fees go directly to blockchain network validators—VaultETH charges zero app fees.
+• VaultETH charges no protocol fee. EVM sends require network gas, which is paid to the blockchain network.
 ```
 
 #### Keywords (100 characters max):
@@ -134,7 +138,7 @@ Thank you for your review.
 | Field | Value |
 |---|---|
 | **App Name** | `VaultETH: Multi-Chain Wallet` |
-| **Short Description** | `Secure self-custodial crypto wallet for Ethereum, Layer 2s, Solana & Bitcoin.` (79/80 chars) |
+| **Short Description** | `Self-custodial EVM wallet with receive-only Solana & Bitcoin addresses.` |
 | **Package Name** | `com.vaulteth.app` |
 | **Default Language** | English (US) – en-US |
 | **Category** | Finance |
@@ -142,13 +146,13 @@ Thank you for your review.
 
 #### Full Description (Google Play, 4,000 characters max):
 ```markdown
-VaultETH is a sovereign, self-custodial multi-chain cryptocurrency wallet designed for complete ownership, privacy, and speed. Built natively in Kotlin with Jetpack Compose, VaultETH gives you complete control over your digital assets.
+VaultETH is a self-custodial wallet for native-asset transactions on supported EVM networks, with receive-only Solana and Bitcoin addresses. Built natively in Kotlin with Jetpack Compose, VaultETH gives you control of your EVM private keys.
 
 🔒 TRUE SELF-CUSTODY & HARDWARE ENCLAVE
 Your 12-word BIP-39 recovery phrase is generated locally on your device and encrypted inside the Android Keystore using AES-256-GCM. Authenticate securely with BiometricPrompt (Fingerprint / Face Unlock). Keys never touch remote servers or unencrypted backups.
 
 🌐 UNIVERSAL MULTI-CHAIN SUPPORT
-Access and manage assets across major blockchain ecosystems from one unified seed:
+Send native assets on supported EVM networks from one recovery phrase:
 • Ethereum Mainnet
 • Arbitrum One
 • Base
@@ -159,7 +163,9 @@ Access and manage assets across major blockchain ecosystems from one unified see
 • Linea
 • Sepolia Testnet
 • Custom EVM Networks (Custom RPC URL & Chain ID)
-• Native cross-chain address derivation for Solana and Bitcoin SegWit (Bech32)
+• Receive-only derived addresses for Solana and Bitcoin SegWit (Bech32); outgoing sends are not supported
+
+Token prices, holdings, charts, and USD portfolio totals are static demo data, not wallet balances or live market information. Buy and swap are not integrated. VaultETH does not charge or collect protocol fees.
 
 ⚡ TRANSACTION SIMULATION & REVERT PROTECTION
 Avoid losing funds on failed transactions. VaultETH executes pre-flight eth_call simulations and gas checks before you sign. Detailed smart contract revert reasons are displayed in real-time.
@@ -234,18 +240,17 @@ You can trigger the pipeline in two ways:
 
 ### 2. Generated Release Assets
 The automated workflow will build and publish a GitHub Release containing:
-- `VaultETH-Android-release.apk`: Signed Android Release APK ready to install directly on physical Android phones.
-- `VaultETH-Android-release.aab`: Optimized Android App Bundle ready to drop into the Google Play Console track.
+- `VaultETH-Android-release.apk` / `VaultETH-Android-release-unsigned.apk`: Signed only when all Android signing secrets are configured; otherwise clearly marked unsigned.
+- `VaultETH-Android-release.aab` / `VaultETH-Android-release-unsigned.aab`: Signed only when all Android signing secrets are configured; otherwise clearly marked unsigned. Store deployment also requires the Google Play service-account secret.
 - `VaultETH-Android-debug.apk`: Debug APK with verbose logging.
 - `VaultETH-iOS-unsigned.ipa`: Packaged iOS app bundle compiled on macOS-14.
 - `SHA256SUMS.txt`: Cryptographic integrity checksums.
 
-### 3. Optional Direct Store Delivery Secrets
-To enable hands-free delivery directly to App Store TestFlight and Google Play Internal Testing tracks, add the following secrets in your repository (**Settings > Secrets and variables > Actions**):
+The workflow does not sign iOS builds or submit them to App Store Connect.
+
+### 3. Optional Google Play Delivery
+To enable Google Play Internal Testing delivery, add the service-account secret in your repository (**Settings > Secrets and variables > Actions**). Android release signing secrets are documented in the README. TestFlight delivery and iOS release signing are not configured.
 
 | Secret Name | Platform | Description |
 |---|---|---|
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Google Play | JSON key file contents of a Google Cloud Service Account linked to Google Play Developer API with release management permissions. |
-| `APP_STORE_CONNECT_API_KEY` | Apple App Store | Base64-encoded `.p8` private key from App Store Connect (Users and Access > Integrations). |
-| `APP_STORE_CONNECT_KEY_ID` | Apple App Store | Key ID from App Store Connect. |
-| `APP_STORE_CONNECT_ISSUER_ID` | Apple App Store | Issuer ID (UUID) from App Store Connect. |

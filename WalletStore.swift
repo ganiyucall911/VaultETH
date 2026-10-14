@@ -27,7 +27,6 @@ final class WalletStore: ObservableObject {
         }
     }
     @Published var customNetworks: [BlockchainNetwork] = []
-    @Published var feeConfig: ProtocolFeeConfig = .default
 
     private let engine = WalletEngine()
     private var rpc = EthereumRPC(network: .ethereum)
@@ -36,7 +35,6 @@ final class WalletStore: ObservableObject {
     private let historyKey  = "sentTransactions"
     private let selectedNetworkKey = "selectedNetworkID"
     private let customNetworksKey = "customNetworks"
-    private let feeConfigKey = "protocolFeeConfig"
 
     var supportedNetworks: [BlockchainNetwork] {
         BlockchainNetwork.defaultNetworks + customNetworks
@@ -62,17 +60,6 @@ final class WalletStore: ObservableObject {
            let match = (BlockchainNetwork.defaultNetworks + customNetworks).first(where: { $0.id == savedNetID }) {
             selectedNetwork = match
             rpc = EthereumRPC(network: match)
-        }
-        if let feeData = UserDefaults.standard.data(forKey: feeConfigKey),
-           let savedFee = try? JSONDecoder().decode(ProtocolFeeConfig.self, from: feeData) {
-            feeConfig = savedFee
-        }
-    }
-
-    func updateFeeConfig(_ config: ProtocolFeeConfig) {
-        feeConfig = config
-        if let data = try? JSONEncoder().encode(config) {
-            UserDefaults.standard.set(data, forKey: feeConfigKey)
         }
     }
 
@@ -231,14 +218,6 @@ final class WalletStore: ObservableObject {
             symbol: selectedNetwork.symbol
         )
 
-        // Calculate optional protocol routing fee if enabled and treasury address is configured
-        var protocolFee = Data()
-        if feeConfig.isEnabled && feeConfig.feeBasisPoints > 0 && !feeConfig.treasuryAddress.isEmpty {
-            let bpsData = Wei.from(UInt64(feeConfig.feeBasisPoints))
-            let product = Wei.multiply(value, bpsData)
-            protocolFee = Wei.divide(product, by: 10000)
-        }
-
         let transfer = PreparedTransfer(
             from: account.address,
             to: recipient,
@@ -248,9 +227,6 @@ final class WalletStore: ObservableObject {
             fee: fee,
             recipientIsContract: isContract,
             simulation: simulation,
-            protocolFeeWei: protocolFee,
-            treasuryAddress: feeConfig.isEnabled ? feeConfig.treasuryAddress : nil,
-            isProtocolFeeTransparent: feeConfig.isTransparent,
             symbol: selectedNetwork.symbol
         )
         guard Wei.compare(balance, transfer.maxTotalWei) != .orderedAscending else {
@@ -270,10 +246,6 @@ final class WalletStore: ObservableObject {
         }
         let raw = try await engine.signTransfer(transfer, accountID: account.id)
         let hash = try await rpc.sendRaw(raw)
-        if !transfer.protocolFeeWei.isEmpty {
-            feeConfig.totalCollectedWei = Wei.add(feeConfig.totalCollectedWei, transfer.protocolFeeWei)
-            updateFeeConfig(feeConfig)
-        }
         recordSent(transfer, hash: hash, ensName: ensName)
         return hash
     }

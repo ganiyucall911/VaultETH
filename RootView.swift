@@ -13,7 +13,6 @@ struct RootView: View {
 
         var id: Int { rawValue }
     }
-
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack {
@@ -70,6 +69,7 @@ struct HomeView: View {
     @State private var sendInitialAmount = ""
     @State private var showReceiveSheet = false
     @State private var showBuySheet = false
+    @State private var showSwapSheet = false
     @State private var showScanner = false
     @State private var showNetworkPicker = false
     @State private var showENSManager = false
@@ -149,7 +149,10 @@ struct HomeView: View {
             NavigationStack { ReceiveView() }
         }
         .sheet(isPresented: $showBuySheet) {
-            NavigationStack { BuyTokensSheet() }
+            NavigationStack { FeatureUnavailableSheet(feature: "Buying crypto") }
+        }
+        .sheet(isPresented: $showSwapSheet) {
+            NavigationStack { FeatureUnavailableSheet(feature: "Swapping tokens") }
         }
         .sheet(item: $selectedTokenForDetail) { token in
             NavigationStack { TokenDetailSheet(token: token) }
@@ -310,7 +313,7 @@ struct HomeView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Total Balance")
+                Text("Demo Portfolio Value")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
 
@@ -327,7 +330,7 @@ struct HomeView: View {
 
                         HStack(spacing: 3) {
                             Image(systemName: "arrow.up.right")
-                            Text("+4.82%")
+                            Text("Demo +4.82%")
                         }
                         .font(.caption.bold())
                         .foregroundStyle(Color.vaultEmerald)
@@ -373,10 +376,8 @@ struct HomeView: View {
                 showReceiveSheet = true
             }
 
-            coreActionButton(title: "Swap", systemImage: "arrow.triangle.2.circlepath", color: .white, isProminent: false) {
-                sendInitialRecipient = ""
-                sendInitialAmount = ""
-                showSendSheet = true
+            coreActionButton(title: "Swap Soon", systemImage: "arrow.triangle.2.circlepath", color: .white, isProminent: false) {
+                showSwapSheet = true
             }
         }
     }
@@ -408,15 +409,19 @@ struct HomeView: View {
     private var tokensSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Tokens")
+                Text("Demo Assets")
                     .font(.headline.weight(.bold))
 
                 Spacer()
 
-                Text("\(store.tokens.count) Assets")
+                Text("Sample data only")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            Text("Demo only — sample prices and holdings are not live market data or your wallet balance.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             // Filter pills
             ScrollView(.horizontal, showsIndicators: false) {
@@ -788,156 +793,12 @@ struct AddCustomNetworkSheet: View {
     }
 }
 
-// MARK: - Multi-Chain Receive View (The Digital Vault Pass)
-
-struct ReceiveView: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var store: WalletStore
-
-    enum ReceiveChain: String, CaseIterable, Identifiable {
-        case evm = "EVM Chains"
-        case solana = "Solana"
-        case bitcoin = "Bitcoin"
-        var id: String { rawValue }
-    }
-
-    @State private var selectedChain: ReceiveChain = .evm
-    @State private var copied = false
-
-    private var activeAddress: String {
-        guard let account = store.selectedAccount else { return "" }
-        switch selectedChain {
-        case .evm: return account.address
-        case .solana: return account.solanaAddress ?? account.address
-        case .bitcoin: return account.bitcoinAddress ?? account.address
-        }
-    }
-
-    var body: some View {
-        VStack(spacing: 20) {
-            // Chain Switcher Segmented Control
-            Picker("Chain Format", selection: $selectedChain) {
-                ForEach(ReceiveChain.allCases) { chain in
-                    Text(chain.rawValue).tag(chain)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.top, 4)
-
-            if let account = store.selectedAccount {
-                // Digital Identity Card
-                VStack(spacing: 16) {
-                    VaultIdenticon(address: account.address, size: 70, showGlow: true)
-                        .padding(.top, 4)
-
-                    VStack(spacing: 4) {
-                        Text(account.name)
-                            .font(.title3.bold())
-
-                        Text(chainDescription)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.vaultCyan)
-                    }
-
-                    // Frosted QR Card
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color.white)
-                            .frame(width: 220, height: 220)
-                            .shadow(color: Color.black.opacity(0.2), radius: 12)
-
-                        QRCodeView(text: activeAddress)
-                            .frame(width: 190, height: 190)
-                    }
-                    .padding(.vertical, 4)
-
-                    // Address Pill
-                    Button {
-                        UIPasteboard.general.string = activeAddress
-                        withAnimation { copied = true }
-                        Task {
-                            try? await Task.sleep(nanoseconds: 2_000_000_000)
-                            withAnimation { copied = false }
-                        }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Text(activeAddress)
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.primary)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-
-                            Image(systemName: copied ? "checkmark.circle.fill" : "doc.on.doc")
-                                .foregroundStyle(copied ? Color.vaultEmerald : Color.vaultCyan)
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(Color.vaultCardSurface, in: Capsule())
-                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-
-                    ShareLink("Share Vault Address", item: activeAddress)
-                        .vaultButton(.glass, cornerRadius: 14)
-                }
-                .padding(22)
-                .vaultCard(cornerRadius: 26)
-
-                // Network Guidance Notice
-                HStack(spacing: 10) {
-                    Image(systemName: "info.circle.fill")
-                        .foregroundStyle(Color.vaultCyan)
-                    Text(chainNotice)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(14)
-                .vaultGlass(cornerRadius: 16)
-            } else {
-                Text("Please create or select a wallet first.")
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-        }
-        .padding(20)
-        .background(Color.vaultBackground.ignoresSafeArea())
-        .navigationTitle("Receive Assets")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") { dismiss() }
-            }
-        }
-    }
-
-    private var chainDescription: String {
-        switch selectedChain {
-        case .evm: return "Ethereum, Arbitrum, Base, Polygon, BSC, Avalanche & EVMs"
-        case .solana: return "Solana Native & SPL Tokens"
-        case .bitcoin: return "Bitcoin Native SegWit (Bech32)"
-        }
-    }
-
-    private var chainNotice: String {
-        switch selectedChain {
-        case .evm:
-            return "This address receives native coins and tokens across all EVM blockchains (ETH, BNB, POL, AVAX, L2s)."
-        case .solana:
-            return "Send only Solana (SOL) and Solana SPL tokens to this derived address."
-        case .bitcoin:
-            return "Send only Bitcoin (BTC) to this derived SegWit address."
-        }
-    }
-}
-
 // MARK: - Settings View
 
 struct SettingsView: View {
     @EnvironmentObject private var store: WalletStore
     @State private var showNetworkPicker = false
     @State private var showENSManager = false
-    @State private var showTreasurySettings = false
     @State private var showPrivacyPolicy = false
     @State private var showSupportFAQ = false
 
@@ -1008,30 +869,6 @@ struct SettingsView: View {
                 }
             }
 
-            Section("Treasury & Platform Monetization") {
-                Button {
-                    showTreasurySettings = true
-                } label: {
-                    HStack {
-                        Image(systemName: "dollarsign.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(Color.vaultEmerald)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Protocol Treasury & Routing")
-                                .font(.headline)
-                                .foregroundStyle(.primary)
-                            Text(store.feeConfig.isEnabled ? "Active • \(store.feeConfig.feeBasisPoints) bps (\(store.feeConfig.isTransparent ? "Seen / Itemized" : "Unseen / Consolidated"))" : "Fee Collection Inactive")
-                                .font(.caption)
-                                .foregroundStyle(store.feeConfig.isEnabled ? Color.vaultEmerald : Color.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.bold())
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-
             Section("Vault Security") {
                 HStack(spacing: 12) {
                     Image(systemName: "lock.shield.fill")
@@ -1092,140 +929,11 @@ struct SettingsView: View {
                 ENSManagerView(account: account)
             }
         }
-        .sheet(isPresented: $showTreasurySettings) {
-            NavigationStack { ProtocolTreasurySheet() }
-        }
         .sheet(isPresented: $showPrivacyPolicy) {
             NavigationStack { InAppPrivacyPolicySheet() }
         }
         .sheet(isPresented: $showSupportFAQ) {
             NavigationStack { InAppSupportFAQSheet() }
-        }
-    }
-}
-
-// MARK: - Protocol Treasury & Monetization Management Sheet
-
-struct ProtocolTreasurySheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var store: WalletStore
-
-    @State private var isEnabled: Bool = false
-    @State private var treasuryAddress: String = ""
-    @State private var feeBasisPoints: Int = 15
-    @State private var isTransparent: Bool = true
-    @State private var saveNotice: String?
-
-    private let feeTiers: [Int] = [5, 10, 15, 25, 50]
-
-    var body: some View {
-        Form {
-            Section {
-                Toggle("Monetization Engine Active", isOn: $isEnabled)
-                    .tint(Color.vaultEmerald)
-
-                Text("When active, outgoing transfers accrue a micro-routing fee routed directly to your personal treasury wallet address.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } header: {
-                Text("Monetization Status")
-            }
-
-            Section {
-                TextField("0x... Treasury Payout Wallet", text: $treasuryAddress)
-                    .font(.caption.monospaced())
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-
-                if let currentAccount = store.selectedAccount {
-                    Button("Use Current Active Account") {
-                        treasuryAddress = currentAccount.address
-                    }
-                    .font(.caption)
-                    .foregroundStyle(Color.vaultCyan)
-                }
-            } header: {
-                Text("Treasury Payout Destination")
-            } footer: {
-                Text("All accrued charges on native transfers are sent directly to this address on the destination network.")
-            }
-
-            Section {
-                Picker("Fee Rate", selection: $feeBasisPoints) {
-                    ForEach(feeTiers, id: \.self) { bps in
-                        Text("\(Double(bps) / 100.0, specifier: "%.2f")% (\(bps) bps)").tag(bps)
-                    }
-                }
-                .pickerStyle(.menu)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Fee Visibility Mode")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Picker("Fee Visibility", selection: $isTransparent) {
-                        Text("Seen (Itemized)").tag(true)
-                        Text("Unseen (Consolidated)").tag(false)
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .padding(.vertical, 4)
-
-                Text(isTransparent
-                     ? "Seen Mode: Outgoing transaction review displays a transparent 'Vault Protocol Routing' line item."
-                     : "Unseen Mode: The fee is silently incorporated into the estimated execution & network outlay.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } header: {
-                Text("Fee Rate & Visibility")
-            }
-
-            Section {
-                HStack {
-                    Text("Total Collected (Lifetime)")
-                    Spacer()
-                    Text("\(ETHAmount.format(wei: store.feeConfig.totalCollectedWei)) \(store.selectedNetwork.symbol)")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(Color.vaultEmerald)
-                }
-            } header: {
-                Text("Accrued Platform Revenue")
-            }
-
-            if let notice = saveNotice {
-                Section {
-                    Text(notice)
-                        .font(.caption.bold())
-                        .foregroundStyle(Color.vaultEmerald)
-                }
-            }
-        }
-        .navigationTitle("Treasury Monetization")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Done") { dismiss() }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    let clean = treasuryAddress.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let newConfig = ProtocolFeeConfig(
-                        isEnabled: isEnabled,
-                        treasuryAddress: clean,
-                        feeBasisPoints: feeBasisPoints,
-                        isTransparent: isTransparent,
-                        totalCollectedWei: store.feeConfig.totalCollectedWei
-                    )
-                    store.updateFeeConfig(newConfig)
-                    dismiss()
-                }
-                .disabled(isEnabled && treasuryAddress.trimmingCharacters(in: .whitespacesAndNewlines).count != 42)
-            }
-        }
-        .onAppear {
-            isEnabled = store.feeConfig.isEnabled
-            treasuryAddress = store.feeConfig.treasuryAddress
-            feeBasisPoints = store.feeConfig.feeBasisPoints
-            isTransparent = store.feeConfig.isTransparent
         }
     }
 }
@@ -1388,7 +1096,7 @@ struct WelcomeView: View {
                     .font(.title3.weight(.medium))
                     .foregroundStyle(Color.vaultCyan)
 
-                Text("One phrase unlocks Ethereum, Arbitrum, Base, Polygon, BNB Chain, Avalanche, Solana, and Bitcoin.")
+                Text("Send native assets on supported EVM networks. Solana and Bitcoin addresses are receive-only.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -1451,7 +1159,6 @@ struct TokenDetailSheet: View {
     @State private var selectedTimeframe = "1D"
     @State private var showSend = false
     @State private var showReceive = false
-    @State private var showBuy = false
 
     var body: some View {
         ScrollView {
@@ -1467,7 +1174,7 @@ struct TokenDetailSheet: View {
                                 .foregroundStyle(.white)
                         )
 
-                    Text(token.name)
+                    Text("\(token.name) • Demo data")
                         .font(.headline)
                         .foregroundStyle(.secondary)
 
@@ -1522,7 +1229,7 @@ struct TokenDetailSheet: View {
 
                 // Your Holdings Card
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Your Balance")
+                    Text("Demo Balance")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
 
@@ -1550,12 +1257,11 @@ struct TokenDetailSheet: View {
                 // Quick Action Buttons
                 HStack(spacing: 12) {
                     Button {
-                        showBuy = true
                     } label: {
                         VStack(spacing: 6) {
                             Image(systemName: "plus")
                                 .font(.title3.bold())
-                            Text("Buy")
+                            Text("Buy Soon")
                                 .font(.caption.bold())
                         }
                         .frame(maxWidth: .infinity)
@@ -1564,6 +1270,7 @@ struct TokenDetailSheet: View {
                         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.vaultCyan.opacity(0.4), lineWidth: 1))
                         .foregroundStyle(Color.vaultCyan)
                     }
+                    .disabled(true)
 
                     Button {
                         showSend = true
@@ -1598,7 +1305,7 @@ struct TokenDetailSheet: View {
 
                 // Market Stats Grid
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Market Stats")
+                    Text("Demo Market Stats")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
 
@@ -1624,7 +1331,6 @@ struct TokenDetailSheet: View {
         }
         .sheet(isPresented: $showSend) { NavigationStack { SendView() } }
         .sheet(isPresented: $showReceive) { NavigationStack { ReceiveView() } }
-        .sheet(isPresented: $showBuy) { NavigationStack { BuyTokensSheet(initialToken: token) } }
     }
 
     private func statCell(title: String, value: String) -> some View {
@@ -1639,212 +1345,6 @@ struct TokenDetailSheet: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .background(Color.white.opacity(0.03), in: RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-// MARK: - Buy Tokens Sheet
-
-struct BuyTokensSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var store: WalletStore
-    var initialToken: TokenAsset? = nil
-
-    @State private var selectedTokenSymbol: String = "ETH"
-    @State private var fiatAmountText: String = "250"
-    @State private var selectedPaymentMethod: PaymentMethod = .applePay
-    @State private var isProcessing: Bool = false
-    @State private var showSuccess: Bool = false
-
-    enum PaymentMethod: String, CaseIterable, Identifiable {
-        case applePay = "Apple Pay"
-        case card = "Credit / Debit Card"
-        case bank = "Bank Transfer (SEPA / Wire)"
-        case deposit = "External Wallet Transfer"
-
-        var id: String { rawValue }
-        var icon: String {
-            switch self {
-            case .applePay: return "apple.logo"
-            case .card: return "creditcard.fill"
-            case .bank: return "building.columns.fill"
-            case .deposit: return "arrow.down.circle.fill"
-            }
-        }
-        var subtitle: String {
-            switch self {
-            case .applePay: return "Instant 1-tap checkout with Face ID"
-            case .card: return "Visa, Mastercard via Stripe & MoonPay"
-            case .bank: return "Lowest fee (0.5%) • Direct deposit"
-            case .deposit: return "Send from Coinbase, Binance, or ledger"
-            }
-        }
-    }
-
-    var selectedToken: TokenAsset {
-        store.tokens.first(where: { $0.symbol == selectedTokenSymbol }) ?? store.tokens[0]
-    }
-
-    var estimatedTokens: String {
-        guard let fiat = Double(fiatAmountText), fiat > 0, selectedToken.priceUSD > 0 else { return "0.0000" }
-        let tokens = fiat / selectedToken.priceUSD
-        return String(format: "%.4f", tokens)
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Amount Card
-                VStack(spacing: 12) {
-                    Text("You Pay (USD)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                    HStack(spacing: 4) {
-                        Text("$")
-                            .font(.system(size: 38, weight: .bold, design: .rounded))
-                            .foregroundStyle(.secondary)
-                        TextField("250", text: $fiatAmountText)
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .keyboardType(.numberPad)
-                            .frame(maxWidth: 180)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-
-                    // Quick presets
-                    HStack(spacing: 8) {
-                        ForEach(["100", "250", "500", "1000"], id: \.self) { amt in
-                            Button {
-                                fiatAmountText = amt
-                            } label: {
-                                Text("$\(amt)")
-                                    .font(.caption.bold())
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(fiatAmountText == amt ? Color.vaultCyan.opacity(0.2) : Color.white.opacity(0.06), in: Capsule())
-                                    .overlay(Capsule().strokeBorder(fiatAmountText == amt ? Color.vaultCyan : Color.clear, lineWidth: 1))
-                                    .foregroundStyle(fiatAmountText == amt ? Color.vaultCyan : .primary)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-
-                    Divider().padding(.vertical, 4)
-
-                    // Token To Receive
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("You Receive")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                            Text("≈ \(estimatedTokens) \(selectedToken.symbol)")
-                                .font(.headline.bold())
-                                .foregroundStyle(Color.vaultEmerald)
-                        }
-
-                        Spacer()
-
-                        Picker("Token", selection: $selectedTokenSymbol) {
-                            ForEach(store.tokens) { t in
-                                Text(t.symbol).tag(t.symbol)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .tint(Color.vaultCyan)
-                    }
-                }
-                .padding(20)
-                .vaultGlass(cornerRadius: 22)
-
-                // Payment Methods
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Payment Method")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                    ForEach(PaymentMethod.allCases) { method in
-                        Button {
-                            selectedPaymentMethod = method
-                        } label: {
-                            HStack(spacing: 14) {
-                                Image(systemName: method.icon)
-                                    .font(.title3)
-                                    .foregroundStyle(selectedPaymentMethod == method ? Color.vaultCyan : .secondary)
-                                    .frame(width: 28)
-
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(method.rawValue)
-                                        .font(.subheadline.bold())
-                                        .foregroundStyle(.primary)
-                                    Text(method.subtitle)
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                Spacer()
-
-                                if selectedPaymentMethod == method {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(Color.vaultCyan)
-                                }
-                            }
-                            .padding(14)
-                            .background(
-                                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .fill(selectedPaymentMethod == method ? Color.vaultCyan.opacity(0.08) : Color.white.opacity(0.03))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                            .strokeBorder(selectedPaymentMethod == method ? Color.vaultCyan.opacity(0.4) : Color.white.opacity(0.06), lineWidth: 1)
-                                    )
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(18)
-                .vaultGlass(cornerRadius: 20)
-
-                // Pay Button
-                Button {
-                    isProcessing = true
-                    Task {
-                        try? await Task.sleep(for: .seconds(1))
-                        isProcessing = false
-                        showSuccess = true
-                    }
-                } label: {
-                    HStack {
-                        if isProcessing {
-                            ProgressView().tint(.black)
-                        } else {
-                            Image(systemName: selectedPaymentMethod == .applePay ? "apple.logo" : "checkmark.shield.fill")
-                            Text("Pay $\(fiatAmountText) with \(selectedPaymentMethod.rawValue)")
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .vaultButton(.prominent)
-                .disabled(isProcessing || (Double(fiatAmountText) ?? 0) <= 0)
-            }
-            .padding(18)
-        }
-        .background(Color.vaultBackground.ignoresSafeArea())
-        .navigationTitle("Buy Crypto")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
-            }
-        }
-        .alert("Order Submitted", isPresented: $showSuccess) {
-            Button("Done") { dismiss() }
-        } message: {
-            Text("Your purchase of \(estimatedTokens) \(selectedToken.symbol) via \(selectedPaymentMethod.rawValue) has been submitted. Tokens will arrive directly into your vault upon bank clearance.")
-        }
-        .onAppear {
-            if let initTok = initialToken {
-                selectedTokenSymbol = initTok.symbol
-            }
-        }
     }
 }
 

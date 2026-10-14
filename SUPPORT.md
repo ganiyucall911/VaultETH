@@ -13,12 +13,18 @@ Non-custodial means you, and only you, own and control the cryptographic keys to
 **No.** Because VaultETH is strictly non-custodial, your recovery phrase is generated directly on your device and stored in the hardware-backed Secure Keychain and Keystore. It is never transmitted to any server. If you lose your recovery phrase and delete the app, **no one** (including the developers) can restore your wallet or recover your funds. **Always write down your phrase and store it safely.**
 
 ### 3. Does VaultETH charge any fees?
-VaultETH charges **zero** fees. 100% of the network fee displayed during transactions is paid directly to blockchain network validators for transaction processing.
+VaultETH does not charge or collect a protocol fee. You still pay the network gas fee required for an EVM transaction. The apps' token holdings, USD prices, and portfolio totals are static demo data, not live market information or balances from your wallet.
 
-### 4. What should I do if a transaction is pending for a long time?
+### 4. Which networks can I send from?
+Outgoing sends are supported for native assets on the listed EVM networks. Solana and Bitcoin addresses are receive-only; the app cannot sign or broadcast transactions on those networks. ERC-20/token transfers are not supported.
+
+### 5. Can I buy or swap crypto in VaultETH?
+No. Buy and swap are not integrated and cannot submit a purchase or exchange. Use a separate service if you want those features.
+
+### 6. What should I do if a transaction is pending for a long time?
 Blockchain network congestion can occasionally cause transactions with lower priority fees to wait for confirmation. VaultETH uses real-time EIP-1559 base fee queries plus headroom to prevent stuck transactions. You can tap **Check status** or pull to refresh in the **Activity** tab to query the latest on-chain receipt from the network.
 
-### 5. Why does VaultETH require Biometrics or Device Passcode?
+### 7. Why does VaultETH require Biometrics or Device Passcode?
 Face ID, Touch ID, or your device passcode is used by the hardware keystore to protect your recovery phrase from unauthorized access. Every time you view your phrase or sign a transaction, the operating system prompts you to authenticate.
 
 ---
