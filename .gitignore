@@ -31,3 +31,7 @@ secrets/
 
 # Antigravity temporary artifacts
 .antigravity/scratch/
+
+# Node & Cloudflare Wrangler
+node_modules/
+.wrangler/
