@@ -13,7 +13,7 @@ final class KeychainVault: @unchecked Sendable {
     }
 
     func load(id: UUID, reason: String) async throws -> String {
-        let data = try await loadData(id: id, reason: reason)
+        var data = try await loadData(id: id, reason: reason)
         defer { data.resetBytes(in: 0..<data.count) }
         guard let phrase = String(data: data, encoding: .utf8) else { throw WalletError.keyNotFound }
         return phrase
