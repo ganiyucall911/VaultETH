@@ -428,9 +428,6 @@ struct ReviewTransferView: View {
                         detailRow(title: "Estimated Gas Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " " + network.symbol, isMonospace: true)
                         
                         // Protocol fee: shown as dedicated row if transparent ("seen"), else consolidated into total outlay ("unseen")
-                        if !transfer.protocolFeeWei.isEmpty && transfer.isProtocolFeeTransparent {
-                            detailRow(title: "Vault Protocol Routing", value: ETHAmount.format(wei: transfer.protocolFeeWei) + " " + network.symbol, isMonospace: true)
-                        }
                         
                         detailRow(title: transfer.isProtocolFeeTransparent ? "Max Total Outlay" : "Total Execution Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
                     }

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VaultETH | Self-Custodial Multi-Chain Wallet for iOS & Android</title>
-  <meta name="description" content="Universal self-custodial multi-chain wallet for iOS and Android. Hardware Secure Enclave protection, real-time token tracking, Apple Pay & Google Pay on-ramping, and zero cloud tracking.">
+  <meta name="description" content="Self-custodial wallet for native-asset transfers on EVM networks. Demo token prices and holdings are static; buy and swap are not integrated.">
   <link rel="icon" type="image/svg+xml" href="assets/vault-logo.svg">
 
   <!-- Google Fonts: Outfit for executive display & JetBrains Mono for cryptographic precision -->
@@ -1296,16 +1296,15 @@
       </div>
       <div class="brand-text-col">
         <div class="brand-name">Vault<span class="highlight">ETH</span></div>
-        <div class="brand-sub">Private Asset Treasury</div>
+        <div class="brand-sub">Self-Custody Wallet</div>
       </div>
     </a>
 
     <nav class="nav-center">
       <a href="#tour">App Tour</a>
-      <a href="#purchase">Buy &amp; Add</a>
+      <a href="#purchase">Buy (Coming Soon)</a>
       <a href="#ens">ENS Domains</a>
       <a href="#networks">Networks</a>
-      <a href="#treasury">Treasury Engine</a>
       <a href="#security">Security</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -1328,10 +1327,10 @@
     </div>
   </header>
 
-  <!-- Live Multi-Chain Price Ticker Strip -->
+  <!-- Static illustrative market data -->
   <div class="ticker-bar">
     <div class="ticker-track" id="tickerTrack">
-      <div class="ticker-item"><span class="ticker-live-tag"><span class="pulse-dot"></span> LIVE FEED</span></div>
+      <div class="ticker-item"><span class="ticker-live-tag">DEMO DATA • NOT LIVE</span></div>
       <div class="ticker-item"><span class="sym">ETH</span><span class="val tabular-nums">$2,501.10</span><span class="gain">▲ +1.81%</span></div>
       <div class="ticker-item"><span class="sym">BTC</span><span class="val tabular-nums">$83,222.52</span><span class="gain">▲ +1.17%</span></div>
       <div class="ticker-item"><span class="sym">SOL</span><span class="val tabular-nums">$107.03</span><span class="gain">▲ +2.03%</span></div>
@@ -1343,7 +1342,7 @@
       <div class="ticker-item"><span class="sym">AVAX</span><span class="val tabular-nums">$10.27</span><span class="gain">▲ +1.29%</span></div>
       
       <!-- Duplicate track for infinite loop -->
-      <div class="ticker-item"><span class="ticker-live-tag"><span class="pulse-dot"></span> LIVE FEED</span></div>
+      <div class="ticker-item"><span class="ticker-live-tag">DEMO DATA • NOT LIVE</span></div>
       <div class="ticker-item"><span class="sym">ETH</span><span class="val tabular-nums">$2,501.10</span><span class="gain">▲ +1.81%</span></div>
       <div class="ticker-item"><span class="sym">BTC</span><span class="val tabular-nums">$83,222.52</span><span class="gain">▲ +1.17%</span></div>
       <div class="ticker-item"><span class="sym">SOL</span><span class="val tabular-nums">$107.03</span><span class="gain">▲ +2.03%</span></div>
@@ -1374,10 +1373,9 @@
     </div>
     <ul class="sidebar-nav-list">
       <li><a href="#tour" onclick="closeSidebar()">App Tour &amp; Simulator</a></li>
-      <li><a href="#purchase" onclick="closeSidebar()">Buy &amp; Add Tokens</a></li>
+      <li><a href="#purchase" onclick="closeSidebar()">Buy (Coming Soon)</a></li>
       <li><a href="#ens" onclick="closeSidebar()">ENS Identity Hub</a></li>
       <li><a href="#networks" onclick="closeSidebar()">Supported Networks</a></li>
-      <li><a href="#treasury" onclick="closeSidebar()">Treasury &amp; Monetization</a></li>
       <li><a href="#security" onclick="closeSidebar()">Security Architecture</a></li>
       <li><a href="#download" onclick="closeSidebar()">Downloads</a></li>
       <li><a href="privacy.html">Privacy Policy</a></li>
@@ -1409,7 +1407,7 @@
 
         <p class="hero-lead">
           Your cryptographic private keys never leave your physical hardware Secure Enclave. 
-          Manage assets across 12+ blockchains, resolve native ENS identities, and fund accounts directly with Apple Pay or Google Pay — with zero cloud tracking.
+          Send native assets on EVM networks and receive to derived addresses. Solana and Bitcoin addresses are receive-only. Buy and swap features are not integrated.
         </p>
 
         <!-- Official Store Badges -->
@@ -1464,9 +1462,9 @@
     <section class="showcase-section" id="tour">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Interactive App Simulator</span>
-          <h2 class="section-title">Experience the Real-Time Cockpit</h2>
-          <p class="section-description">Test the actual mobile wallet workflows directly in the browser simulator below. Click the phone actions, pills, and island.</p>
+          <span class="section-tag">Interactive Demo Simulator</span>
+          <h2 class="section-title">Explore a Wallet Mockup</h2>
+          <p class="section-description">This browser simulator is illustrative only. Its balances, prices, chart, and interactions are mock data; it does not connect to a wallet, submit purchases, or broadcast transactions.</p>
         </div>
 
         <div class="showcase-layout">
@@ -1497,10 +1495,10 @@
                     </div>
                     <span class="ens-tag" onclick="showAppTour('ens')">vitalik.eth</span>
                   </div>
-                  <div class="balance-title">Consolidated Balance</div>
+                  <div class="balance-title">Demo Portfolio • Not Wallet Data</div>
                   <div class="balance-main-num tabular-nums" id="portfolioBalanceNum">$31,802.27</div>
                   <div class="balance-gain-row">
-                    <span id="portfolioGainText">▲ +$467.79 (+1.49%) 24h</span>
+                    <span id="portfolioGainText">Illustrative sample change • Not live</span>
                   </div>
                 </div>
 
@@ -1509,7 +1507,7 @@
                     <div class="action-tile-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </div>
-                    <span>Buy</span>
+                    <span>Buy Soon</span>
                   </button>
                   <button class="action-tile-btn" onclick="showAppTour('send')">
                     <div class="action-tile-icon">
@@ -1527,7 +1525,7 @@
                     <div class="action-tile-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
                     </div>
-                    <span>Swap</span>
+                    <span>Swap Soon</span>
                   </button>
                 </div>
 
@@ -1675,14 +1673,14 @@
                   </div>
                 </div>
 
-                <button class="btn-screen-action" onclick="showAppTour('buy')">Buy Assets Instantly</button>
+                <button class="btn-screen-action" onclick="showAppTour('buy')">Buy (Coming Soon)</button>
               </div>
 
               <!-- VIEW 3: Buy & On-Ramp -->
               <div class="phone-view-panel" id="viewBuy">
                 <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                   <button style="background:transparent; border:none; color:var(--primary); font-size:12px; font-weight:700; cursor:pointer;" onclick="showAppTour('tokens')">&larr; Back</button>
-                  <span style="font-size:12px; font-weight:700;">Buy Crypto On-Ramp</span>
+                  <span style="font-size:12px; font-weight:700;">Demo Buy Screen • Not Integrated</span>
                 </div>
 
                 <div class="fiat-input-box">
@@ -1734,12 +1732,12 @@
                       <div class="pay-method-sub">Lowest fee (0.5%)</div>
                     </div>
                   </div>
-                  <span style="font-size:11px; color:var(--emerald); font-weight:700;">0.5% Fee</span>
+                  <span style="font-size:11px; color:var(--text-muted); font-weight:700;">Demo only</span>
                 </div>
 
                 <button class="btn-screen-action" style="margin-top:14px;" id="buyActionBtn" onclick="simulateBiometricPurchase()">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <span>Pay with Apple Pay</span>
+                  <span>Demo only • No order submitted</span>
                 </button>
               </div>
 
@@ -1859,8 +1857,8 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
               </div>
               <div class="tour-nav-content">
-                <h3>Multi-Chain Portfolio</h3>
-                <p>View consolidated balances across Ethereum, Bitcoin, Solana, Arbitrum, Base, and more with instant USD recalculation and privacy mode.</p>
+                <h3>Demo Portfolio</h3>
+                <p>Illustrative balances and prices only; this mockup is not connected to wallet balances or a live market feed.</p>
               </div>
             </div>
 
@@ -1869,8 +1867,8 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
               </div>
               <div class="tour-nav-content">
-                <h3>Token Analytics &amp; Holdings</h3>
-                <p>Interactive price curves from 1D to ALL timeframes, 24h market stats, and your personal token holdings breakdown in one place.</p>
+                <h3>Illustrative Token Data</h3>
+                <p>Sample charts, market stats, and holdings are demo content and do not represent current prices or your assets.</p>
               </div>
             </div>
 
@@ -1879,8 +1877,8 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
               </div>
               <div class="tour-nav-content">
-                <h3>Buy with Apple Pay &amp; Google Pay</h3>
-                <p>Instant fiat on-ramping with biometric checkout. Get crypto delivered straight into your hardware-secured vault.</p>
+                <h3>Buy Crypto • Coming Soon</h3>
+                <p>No payment provider is integrated. This demo cannot submit a purchase or charge a payment method.</p>
               </div>
             </div>
 
@@ -1908,91 +1906,13 @@
       </div>
     </section>
 
-    <!-- Buy & Add Tokens Section -->
+    <!-- Buy availability -->
     <section class="features-section" id="purchase">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Flexible On-Ramping</span>
-          <h2 class="section-title">Multiple Ways to Fund Your Vault</h2>
-          <p class="section-description">Deposit crypto or purchase directly with local currency using transparent, regulated payment channels.</p>
-        </div>
-
-        <div class="features-grid">
-          <!-- 1. Apple Pay Official -->
-          <div class="feature-card">
-            <div class="feature-icon-box" style="background:#000; border-color:rgba(255,255,255,0.18);">
-              <svg viewBox="0 0 165 70" width="44" height="20">
-                <path d="M23.1 36.3c0-8.9 7.2-13.8 7.5-14-4.1-6-10.6-6.8-12.8-6.9-5.5-.6-10.7 3.3-13.5 3.3-2.8 0-7.2-3.2-11.8-3.1-6.1.1-11.6 3.5-14.7 9-6.3 10.8-1.6 26.9 4.4 35.7 3 4.3 6.5 9.1 11.1 8.9 4.5-.2 6.2-2.9 11.6-2.9 5.3 0 6.9 2.9 11.6 2.8 4.8-.1 7.8-4.3 10.8-8.6 3.4-5 4.8-9.8 4.9-10.1-.1-.1-9.5-3.6-9.6-14.2zM17.8 10.3c2.4-3 4.1-7.1 3.6-11.3-3.6.1-7.9 2.4-10.4 5.4-2.2 2.6-4.2 6.8-3.7 10.8 4 .3 8.1-1.9 10.5-4.9z" fill="#FFF" transform="translate(14, 4) scale(0.65)"/>
-                <text x="58" y="44" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-weight="600" font-size="34" fill="#FFF">Pay</text>
-              </svg>
-            </div>
-            <h3>Apple Pay</h3>
-            <p>1-tap biometric Face ID checkout on iPhone, iPad, and Mac. Instant settlement straight into your hardware-isolated vault.</p>
-          </div>
-
-          <!-- 2. Google Pay Official -->
-          <div class="feature-card">
-            <div class="feature-icon-box" style="background:#161B24; border-color:rgba(255,255,255,0.18);">
-              <svg viewBox="0 0 160 60" width="48" height="20">
-                <g transform="translate(10, 8) scale(1.6)">
-                  <path d="M23.5 12.3c0-.8-.1-1.7-.2-2.4H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7v3.1h3.9c2.3-2.1 3.6-5.2 3.6-8.9z" fill="#4285F4"/>
-                  <path d="M12 24c3.2 0 6-1.1 8-3l-3.9-3.1c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.2C3.2 21.2 7.3 24 12 24z" fill="#34A853"/>
-                  <path d="M5.2 14.1c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.3H1.2C.4 7.9 0 9.9 0 12s.4 4.1 1.2 5.7l4-3.6z" fill="#FBBC05"/>
-                  <path d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4C18 1.2 15.2 0 12 0 7.3 0 3.2 2.8 1.2 6.7l4 3.1c1-2.9 3.7-5 6.8-5z" fill="#EA4335"/>
-                </g>
-                <text x="60" y="40" font-family="'Google Sans', Roboto, sans-serif" font-weight="500" font-size="32" fill="#FFF">Pay</text>
-              </svg>
-            </div>
-            <h3>Google Pay</h3>
-            <p>Frictionless checkout across Android devices with Google Wallet integration and cryptographic device confirmation.</p>
-          </div>
-
-          <!-- 3. Visa Official -->
-          <div class="feature-card">
-            <div class="feature-icon-box" style="background:#0F131D; border-color:rgba(255,255,255,0.18);">
-              <svg viewBox="0 0 140 45" width="50" height="18">
-                <path d="M53.3 2.5L34.9 42.5H23L14.1 10.9c-.8-3.3-1.6-4.3-4.2-5.7C5.9 3.1 1.6 1.2 0 0.4L.4 2.5h17.8c2.3 0 4.3 1.5 4.8 4.2l4.3 22.8 11.9-27h14.2zm27.4 26.9c.1-10.4-14.4-11-14.3-15.6 0-1.4 1.4-2.9 4.3-3.3 1.5-.2 5.5-.3 10.1 1.8l1.8-8.4c-2.5-.9-5.7-1.7-9.8-1.7-10.4 0-17.6 5.5-17.7 13.3-.2 5.8 5.2 9.1 9.2 11 4.1 2 5.5 3.3 5.5 5.1 0 2.8-3.3 4-6.4 4-4.3 0-6.7-.6-10.3-2.3l-1.9 8.7c2.4 1.1 6.8 2.1 11.4 2.1 10.8 0 17.8-5.3 17.8-14.7zm25.5 13.1h12.4l-10.8-40H97.4c-2.8 0-4.9 1.6-5.9 4l-16.9 36h13.2l2.6-7.3h16.2l2.1 7.3zm-14.1-15.4l5-13.8 2.9 13.8h-7.9z" fill="#FFF"/>
-                <path d="M9.9 5.2c-2.6-1.4-6.9-3.3-8.5-4.1l-.4 2.1c3.5 1.3 7.8 3.3 10.4 4.7 1.2.6 1.9 1.6 2.4 2.8l4.4 23.3L14.3 11c-.7-3.3-1.8-4.4-4.4-5.8z" fill="#F7B600"/>
-              </svg>
-            </div>
-            <h3>Visa Global Debit &amp; Credit</h3>
-            <p>Direct worldwide acquiring backed by Verified by Visa 3-D Secure protection with instant delivery to your private keys.</p>
-          </div>
-
-          <!-- 4. Mastercard Official -->
-          <div class="feature-card">
-            <div class="feature-icon-box" style="background:#0F131D; border-color:rgba(255,255,255,0.18);">
-              <svg viewBox="0 0 100 60" width="40" height="24">
-                <circle cx="34" cy="30" r="24" fill="#EB001B"/>
-                <circle cx="66" cy="30" r="24" fill="#F79E1B"/>
-                <path d="M50 12.3c6 4.7 9.8 11.8 9.8 17.7s-3.8 13-9.8 17.7c-6-4.7-9.8-11.8-9.8-17.7s3.8-13 9.8-17.7z" fill="#FF5F00"/>
-              </svg>
-            </div>
-            <h3>Mastercard Worldwide</h3>
-            <p>Seamless funding via Mastercard Identity Check with zero foreign transaction premiums and direct on-chain minting.</p>
-          </div>
-
-          <!-- 5. Stripe Official -->
-          <div class="feature-card">
-            <div class="feature-icon-box" style="background:#635BFF; border-color:#635BFF;">
-              <svg viewBox="0 0 100 40" width="44" height="18">
-                <path d="M28.7 17.3c0-2.8 2.3-4 6-4 3.5 0 7 1 9.6 2.7v-5.4c-3-1.2-6.6-1.8-9.6-1.8-9.3 0-15.5 4.8-15.5 13 0 12.7 17.4 10.6 17.4 16.1 0 3.3-2.9 4.4-6.9 4.4-4.3 0-8.8-1.7-12-3.8v5.7c3.5 1.6 8 2.4 12 2.4 9.6 0 16.3-4.6 16.3-13.2 0-13.7-17.5-11.3-17.5-16.1zm26.6-12.1l-9 2v5.5h5.4v5.1h-5.4v15.6c0 3.3 2.5 4.1 5.6 4.1 1.6 0 2.9-.2 3.9-.5v5.2c-1.6.6-3.8 1-6.4 1-7.6 0-12.4-4.2-12.4-12.3V17.7h-4.6v-5.1h4.6V6.3l12.9-2.8v6.7h.4z" fill="#FFF" transform="scale(0.85) translate(8, 2)"/>
-              </svg>
-            </div>
-            <h3>Stripe Financial Infrastructure</h3>
-            <p>Global compliant on-ramping powered by Stripe's bank-grade payment rail with SOC 1 &amp; SOC 2 Type II certified processing.</p>
-          </div>
-
-          <!-- 6. SEPA & Wire Transfers -->
-          <div class="feature-card">
-            <div class="feature-icon-box" style="background:#131B2A; border-color:rgba(255,255,255,0.18);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2" width="22" height="22">
-                <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/>
-              </svg>
-            </div>
-            <h3>SEPA &amp; Institutional Wires</h3>
-            <p>High-volume institutional funding via European SEPA Instant and US Fedwire transfers at ultra-low 0.5% protocol routing fee.</p>
-          </div>
+          <span class="section-tag">Coming Soon</span>
+          <h2 class="section-title">Purchases Are Not Integrated</h2>
+          <p class="section-description">VaultETH does not connect to Apple Pay, Google Pay, card, or bank on-ramps and cannot submit a purchase. To receive assets, use the app's receive address and verify the network before sending.</p>
         </div>
       </div>
     </section>
@@ -2030,7 +1950,7 @@
           </div>
 
           <div class="ens-calc-box">
-            <span>Estimated Annual Protocol Fee:</span>
+            <span>Estimated ENS Registration Cost:</span>
             <span class="ens-calc-val" id="ensQuoteText">~0.0016 ETH / yr ($5.00/yr)</span>
           </div>
         </div>
@@ -2043,7 +1963,7 @@
         <div class="section-header">
           <span class="section-tag">Cross-Chain Architecture</span>
           <h2 class="section-title">12+ Major Blockchains Supported</h2>
-          <p class="section-description">Manage EVM rollups, major layer 1 networks, Solana, and Bitcoin SegWit with a single master recovery phrase.</p>
+          <p class="section-description">Native-asset sending is available on EVM networks only. Solana and Bitcoin addresses are receive-only.</p>
         </div>
 
         <div class="chains-filter-bar">
@@ -2186,116 +2106,12 @@
       </div>
     </section>
 
-    <!-- Institutional Treasury & Monetization Section -->
-    <section class="treasury-section" id="treasury">
+    <section class="features-section">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Platform Monetization Engine</span>
-          <h2 class="section-title">Institutional Treasury &amp; Fee Routing</h2>
-          <p class="section-description">
-            Monetize your wallet deployment with complete self-custody. Micro-routing charges land directly in your private wallet on every transfer with zero platform intermediaries.
-          </p>
-        </div>
-
-        <div class="treasury-grid">
-          <div class="treasury-card">
-            <div class="feature-icon-box" style="background:#131B2A;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </div>
-            <h3>Dual Visibility Control</h3>
-            <p><strong>Seen vs. Unseen Mode:</strong> Choose between an itemized protocol routing fee on customer review sheets, or seamless consolidation into the total execution outlay.</p>
-            <div class="treasury-pill-preview">
-              <span class="treasury-mode-badge seen">Seen: Itemized Receipt</span>
-              <span class="treasury-mode-badge unseen">Unseen: Consolidated Outlay</span>
-            </div>
-          </div>
-
-          <div class="treasury-card">
-            <div class="feature-icon-box" style="background:#131B2A;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <h3>Zero-Escrow Payouts</h3>
-            <p>Every accrued charge executes directly to your destination treasury wallet on-chain. No 30-day payout delays, no merchant accounts, and no platform seizure risk.</p>
-            <div class="treasury-tag-row">
-              <span class="tag-item">100% Non-Custodial</span>
-              <span class="tag-item">Atomic Settlement</span>
-            </div>
-          </div>
-
-          <div class="treasury-card">
-            <div class="feature-icon-box" style="background:#131B2A;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            </div>
-            <h3>Dynamic Basis Points</h3>
-            <p>Calibrate your revenue tier dynamically from 5 bps (0.05%) to 50 bps (0.50%). Adjust parameters anytime in the in-app Treasury Settings panel.</p>
-            <div class="treasury-tag-row">
-              <span class="tag-item">5 bps (Low)</span>
-              <span class="tag-item">15 bps (Standard)</span>
-              <span class="tag-item">50 bps (Max)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interactive Treasury Yield Calculator -->
-        <div class="treasury-calculator-box">
-          <div class="calc-header-row">
-            <div>
-              <h3 style="font-size:22px; font-weight:800; color:#fff; margin-bottom:4px;">Treasury Revenue &amp; Yield Calculator</h3>
-              <p style="font-size:13px; color:var(--text-muted);">Simulate platform routing earnings based on your monthly transfer volume and fee tier.</p>
-            </div>
-            <div class="calc-live-badge">
-              <span class="chain-ping"></span> Real-Time Projection
-            </div>
-          </div>
-
-          <div class="calc-sliders-grid">
-            <div class="calc-input-group">
-              <div class="calc-label-row">
-                <span>Monthly Routing Volume:</span>
-                <strong id="calcVolumeDisplay" class="tabular-nums" style="color:var(--primary); font-size:16px;">$500,000 / mo</strong>
-              </div>
-              <input type="range" id="volumeSlider" min="50000" max="5000000" step="50000" value="500000" oninput="updateTreasuryCalculator()" class="treasury-range-slider">
-              <div class="calc-slider-ticks">
-                <span>$50k</span>
-                <span>$1M</span>
-                <span>$2.5M</span>
-                <span>$5M+</span>
-              </div>
-            </div>
-
-            <div class="calc-input-group">
-              <div class="calc-label-row">
-                <span>Protocol Fee Rate:</span>
-                <strong id="calcBpsDisplay" class="tabular-nums" style="color:var(--primary); font-size:16px;">15 bps (0.15%)</strong>
-              </div>
-              <input type="range" id="bpsSlider" min="5" max="50" step="5" value="15" oninput="updateTreasuryCalculator()" class="treasury-range-slider">
-              <div class="calc-slider-ticks">
-                <span>0.05% (5 bps)</span>
-                <span>0.15% (Std)</span>
-                <span>0.25%</span>
-                <span>0.50% (50 bps)</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="calc-results-banner">
-            <div class="calc-result-col">
-              <div class="calc-result-label">Monthly Treasury Revenue</div>
-              <div class="calc-result-num tabular-nums" id="monthlyRevenueNum">$750.00 / mo</div>
-              <div class="calc-result-sub tabular-nums" id="monthlyEthNum">≈ 0.2152 ETH / mo</div>
-            </div>
-            <div class="calc-divider-v"></div>
-            <div class="calc-result-col">
-              <div class="calc-result-label">Annual Projected Revenue</div>
-              <div class="calc-result-num prominent tabular-nums" id="annualRevenueNum">$9,000.00 / yr</div>
-              <div class="calc-result-sub tabular-nums" id="annualEthNum">≈ 2.5823 ETH / yr</div>
-            </div>
-          </div>
-
-          <div class="calc-footer-note">
-            <span>Direct on-chain payout to your treasury wallet address with zero platform commission.</span>
-            <button class="calc-configure-btn" onclick="showToast('Configure in app: Settings → Protocol Treasury & Routing')">Configure in App</button>
-          </div>
+          <span class="section-tag">Transaction Costs</span>
+          <h2 class="section-title">No Protocol Fee</h2>
+          <p class="section-description">VaultETH does not charge or collect a protocol fee. EVM transfers are signed as a single native-asset payment to the recipient; the sender also pays the network gas fee.</p>
         </div>
       </div>
     </section>
@@ -2446,7 +2262,7 @@
               <span class="faq-chevron">▼</span>
             </div>
             <div class="faq-answer">
-              You can purchase tokens directly within VaultETH using Apple Pay, Google Pay, credit/debit cards, or bank transfers via regulated on-ramp partners. You can also transfer crypto from any external exchange or wallet to your derived deposit addresses.
+            No. Buy and swap are not integrated. You can receive deposits to supported EVM addresses; Solana and Bitcoin addresses are receive-only.
             </div>
           </div>
 
@@ -2682,7 +2498,7 @@
       ];
 
       const generateItems = () => {
-        let html = '<div class="ticker-item"><span class="ticker-live-tag"><span class="pulse-dot"></span> LIVE FEED</span></div>';
+        let html = '<div class="ticker-item"><span class="ticker-live-tag">DEMO DATA • NOT LIVE</span></div>';
         tickerOrder.forEach(item => {
           const data = liveMarketData[item.key] || { price: 0, change: 0 };
           const formattedP = formatTokenPrice(data.price);
@@ -2710,26 +2526,17 @@
       }
 
       let totalVal = 0;
-      let total24hChgVal = 0;
-
       simPortfolioTokens.forEach(t => {
         if (currentFilterChain === 'all' || t.chain === currentFilterChain) {
           const price = liveMarketData[t.sym] ? liveMarketData[t.sym].price : 0;
-          const changePct = liveMarketData[t.sym] ? liveMarketData[t.sym].change : 0;
           const fiat = t.balance * price;
           totalVal += fiat;
-          total24hChgVal += fiat * (changePct / 100);
         }
       });
 
       balEl.textContent = formatFiat(totalVal, 2);
-
-      const netPct = totalVal > 0 ? (total24hChgVal / (totalVal - total24hChgVal || 1)) * 100 : 0;
-      const isPos = total24hChgVal >= 0;
-      const glyph = isPos ? '▲' : '▼';
-      const sign = isPos ? '+' : '';
-      gainEl.textContent = `${glyph} ${sign}${formatFiat(Math.abs(total24hChgVal), 2)} (${sign}${netPct.toFixed(2)}%) 24h`;
-      gainEl.style.color = isPos ? 'var(--emerald)' : '#FF4757';
+      gainEl.textContent = 'Illustrative sample change • Not live';
+      gainEl.style.color = 'var(--text-muted)';
     }
 
     function updateSimulatorTokenRows() {
@@ -2763,7 +2570,7 @@
         card.setAttribute('onclick', `showTokenAnalytics('${token.sym}', '${priceFormatted}', '${sign}${data.change.toFixed(2)}%', '${holdAmtFormatted}', '${fiatFormatted}')`);
       });
 
-      // If user is currently viewing the Analytics Detail screen for this token, update it in real time
+      // Update the demo analytics screen when a sample token is selected.
       if (currentAnalyticsSym && liveMarketData[currentAnalyticsSym]) {
         const tokenObj = simPortfolioTokens.find(t => t.sym === currentAnalyticsSym);
         const data = liveMarketData[currentAnalyticsSym];
@@ -2794,60 +2601,6 @@
           if (volEl && data.vol) volEl.textContent = '$' + data.vol;
         }
       }
-    }
-
-    async function fetchLiveMarketData() {
-      try {
-        const symbolsParam = encodeURIComponent(JSON.stringify(["ETHUSDT","BTCUSDT","SOLUSDT","ARBUSDT","BNBUSDT","OPUSDT","POLUSDT","AVAXUSDT"]));
-        const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${symbolsParam}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const list = await res.json();
-        
-        list.forEach(item => {
-          const s = item.symbol.replace('USDT', '');
-          if (liveMarketData[s]) {
-            liveMarketData[s].price = parseFloat(item.lastPrice) || liveMarketData[s].price;
-            liveMarketData[s].change = parseFloat(item.priceChangePercent) || liveMarketData[s].change;
-            liveMarketData[s].high = parseFloat(item.highPrice) || liveMarketData[s].high;
-            const quoteVol = parseFloat(item.quoteVolume);
-            if (quoteVol >= 1e9) liveMarketData[s].vol = (quoteVol / 1e9).toFixed(2) + 'B';
-            else if (quoteVol >= 1e6) liveMarketData[s].vol = (quoteVol / 1e6).toFixed(1) + 'M';
-          }
-        });
-      } catch (err) {
-        console.warn('Binance live feed fetch fallback, trying Coinbase spot:', err);
-        try {
-          const cbEth = await fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot');
-          const cbBtc = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
-          const cbSol = await fetch('https://api.coinbase.com/v2/prices/SOL-USD/spot');
-          if (cbEth.ok) {
-            const j = await cbEth.json();
-            if (j.data?.amount) liveMarketData.ETH.price = parseFloat(j.data.amount);
-          }
-          if (cbBtc.ok) {
-            const j = await cbBtc.json();
-            if (j.data?.amount) liveMarketData.BTC.price = parseFloat(j.data.amount);
-          }
-          if (cbSol.ok) {
-            const j = await cbSol.json();
-            if (j.data?.amount) liveMarketData.SOL.price = parseFloat(j.data.amount);
-          }
-        } catch (cbErr) {
-          console.warn('Fallback feeds failed:', cbErr);
-        }
-      }
-
-      renderTickerStrip();
-      updateSimulatorTokenRows();
-      updatePortfolioDisplay();
-
-      const sendInput = document.getElementById('sendAmountInput');
-      if (sendInput) updateSendEquiv(sendInput.value);
-
-      const activeChip = document.querySelector('.fiat-chip.active');
-      if (activeChip) setFiatAmount(currentFiat, activeChip);
-
-      updateTreasuryCalculator();
     }
 
     // --- 6. Simulator Chain Filtering ---
@@ -2929,19 +2682,16 @@
       row.classList.add('selected');
       const actionBtn = document.getElementById('buyActionBtn');
       if (method === 'apple') {
-        actionBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Pay with Apple Pay</span>';
+        actionBtn.innerHTML = '<span>Demo only • No order submitted</span>';
       } else if (method === 'card') {
-        actionBtn.innerHTML = '<span>Pay with Credit / Debit Card</span>';
+        actionBtn.innerHTML = '<span>Demo only • No order submitted</span>';
       } else {
-        actionBtn.innerHTML = '<span>Continue with Bank Wire (SEPA)</span>';
+        actionBtn.innerHTML = '<span>Demo only • No order submitted</span>';
       }
     }
 
     function simulateBiometricPurchase() {
-      showToast('Face ID Verified • Order Submitted to Vault!');
-      const island = document.getElementById('phoneIsland');
-      island.classList.add('expanded');
-      setTimeout(() => island.classList.remove('expanded'), 2500);
+      showToast('Demo only: no payment was processed or order submitted.');
     }
 
     // --- 9. Send Workflow Simulator ---
@@ -2978,7 +2728,7 @@
     }
 
     function simulateConfirmSend() {
-      showToast('Transaction Broadcasted to Ethereum Mainnet!');
+      showToast('Demo only: no transaction was broadcast.');
     }
 
     // --- 10. Phone Receive Modal ---
@@ -2995,7 +2745,7 @@
     }
 
     function triggerSimulatedSwap() {
-      showToast('DEX Aggregator: Routing ETH → USDC with zero slippage');
+      showToast('Swap is not integrated. No transaction was submitted.');
     }
 
     // --- 11. ENS Protocol Quote Calculator ---
@@ -3050,36 +2800,6 @@
         }
       });
     }
-
-    // --- Treasury Yield & Protocol Revenue Calculator ---
-    function updateTreasuryCalculator() {
-      const volSlider = document.getElementById('volumeSlider');
-      const bpsSlider = document.getElementById('bpsSlider');
-      if (!volSlider || !bpsSlider) return;
-
-      const vol = parseFloat(volSlider.value) || 500000;
-      const bps = parseInt(bpsSlider.value) || 15;
-      const rate = bps / 10000;
-
-      // Update Slider Display Labels
-      const formattedVol = '$' + Number(vol).toLocaleString();
-      document.getElementById('calcVolumeDisplay').textContent = formattedVol + ' / mo';
-      document.getElementById('calcBpsDisplay').textContent = `${bps} bps (${(bps / 100).toFixed(2)}%)`;
-
-      // Monthly and Annual Revenue
-      const monthlyRev = vol * rate;
-      const ethPrice = (liveMarketData && liveMarketData.ETH) ? liveMarketData.ETH.price : 2501.10;
-      const monthlyEth = (monthlyRev / ethPrice).toFixed(4);
-      const annualEth = (annualRev / ethPrice).toFixed(4);
-
-      document.getElementById('monthlyRevenueNum').textContent = '$' + monthlyRev.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' / mo';
-      document.getElementById('monthlyEthNum').textContent = `≈ ${monthlyEth} ETH / mo`;
-
-      document.getElementById('annualRevenueNum').textContent = '$' + annualRev.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' / yr';
-      document.getElementById('annualEthNum').textContent = `≈ ${annualEth} ETH / yr`;
-    }
-    // Initialize calculator
-    updateTreasuryCalculator();
 
     // --- 13. FAQ Accordion ---
     function toggleFaq(item) {
@@ -3150,9 +2870,6 @@
       }
     });
 
-    // Start live market data feed immediately and refresh every 20 seconds
-    fetchLiveMarketData();
-    setInterval(fetchLiveMarketData, 20000);
   </script>
 </body>
 </html>

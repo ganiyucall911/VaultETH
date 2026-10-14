@@ -308,16 +308,23 @@ fun VaultHomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Assets & Tokens",
+                        text = "Demo Assets & Tokens",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = VaultTextPrimary
                     )
                     Text(
-                        text = "${DefaultTokenAssets.size} Assets",
+                        text = "Sample data only",
                         style = MaterialTheme.typography.bodySmall,
                         color = VaultTextSecondary
                     )
                 }
+            }
+            item {
+                Text(
+                    text = "Demo only — sample prices and holdings, not live market data or your wallet balance.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = VaultTextMuted
+                )
             }
 
             items(DefaultTokenAssets) { token ->
@@ -325,8 +332,7 @@ fun VaultHomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .border(1.dp, VaultBorder, RoundedCornerShape(16.dp))
-                        .clickable { showBuyDialog = true },
+                        .border(1.dp, VaultBorder, RoundedCornerShape(16.dp)),
                     colors = CardDefaults.cardColors(containerColor = VaultSurface)
                 ) {
                     Row(
@@ -547,41 +553,17 @@ fun VaultHomeScreen(
             onDismissRequest = { showBuyDialog = false },
             title = {
                 Text(
-                    text = "Add & Purchase Tokens",
+                    text = "Buy Crypto — Coming Soon",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = VaultTextPrimary
                 )
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        text = "Choose your preferred payment method:",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = VaultTextSecondary
-                    )
-                    listOf(
-                        "Google Pay" to "Instant 1-tap checkout on Android",
-                        "Debit / Credit Card" to "Visa, Mastercard via Stripe & MoonPay",
-                        "Bank Transfer (Wire/SEPA)" to "Lowest fee (0.5%) • Direct account deposit",
-                        "External Wallet Transfer" to "Deposit from Coinbase, Binance, or cold wallet"
-                    ).forEach { (title, subtitle) ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(1.dp, VaultBorder, RoundedCornerShape(12.dp))
-                                .clickable {
-                                    Toast.makeText(context, "$title selected", Toast.LENGTH_SHORT).show()
-                                    showBuyDialog = false
-                                },
-                            colors = CardDefaults.cardColors(containerColor = VaultSurfaceVariant)
-                        ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Text(text = title, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = VaultTextPrimary)
-                                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = VaultTextMuted)
-                            }
-                        }
-                    }
-                }
+                Text(
+                    text = "Purchases are not supported in VaultETH yet. No payment provider or purchase submission is connected.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = VaultTextSecondary
+                )
             },
             confirmButton = {
                 TextButton(onClick = { showBuyDialog = false }) {

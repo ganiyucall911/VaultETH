@@ -229,26 +229,6 @@ struct TransactionSimulation: Codable, Hashable, Sendable {
     }
 }
 
-// MARK: - Protocol Revenue & Monetization
-
-/// Platform routing & monetization configuration.
-/// Allows the wallet operator to configure an optional protocol fee (seen or unseen) routed to their treasury wallet.
-struct ProtocolFeeConfig: Codable, Sendable, Equatable {
-    var isEnabled: Bool
-    var treasuryAddress: String
-    var feeBasisPoints: Int // e.g. 15 = 0.15%, 25 = 0.25%
-    var isTransparent: Bool // true: itemized "Vault Protocol Fee"; false: consolidated into network fee
-    var totalCollectedWei: Data
-
-    static let `default` = ProtocolFeeConfig(
-        isEnabled: true,
-        treasuryAddress: "0x71C836067b457008E901F04bA0A9C348882C7539",
-        feeBasisPoints: 15,
-        isTransparent: true,
-        totalCollectedWei: Data()
-    )
-}
-
 struct PreparedTransfer: Sendable {
     let from: String
     let to: String
@@ -258,14 +238,10 @@ struct PreparedTransfer: Sendable {
     let fee: FeeQuote
     let recipientIsContract: Bool
     var simulation: TransactionSimulation?
-    var protocolFeeWei: Data
-    var treasuryAddress: String?
-    var isProtocolFeeTransparent: Bool
     var symbol: String?
 
     var maxTotalWei: Data {
-        let baseTotal = Wei.add(valueWei, fee.maxFeeWei)
-        return protocolFeeWei.isEmpty ? baseTotal : Wei.add(baseTotal, protocolFeeWei)
+        Wei.add(valueWei, fee.maxFeeWei)
     }
 
     init(from: String,
@@ -276,9 +252,6 @@ struct PreparedTransfer: Sendable {
          fee: FeeQuote,
          recipientIsContract: Bool,
          simulation: TransactionSimulation? = nil,
-         protocolFeeWei: Data = Data(),
-         treasuryAddress: String? = nil,
-         isProtocolFeeTransparent: Bool = true,
          symbol: String? = "ETH") {
         self.from = from
         self.to = to
@@ -288,9 +261,6 @@ struct PreparedTransfer: Sendable {
         self.fee = fee
         self.recipientIsContract = recipientIsContract
         self.simulation = simulation
-        self.protocolFeeWei = protocolFeeWei
-        self.treasuryAddress = treasuryAddress
-        self.isProtocolFeeTransparent = isProtocolFeeTransparent
         self.symbol = symbol
     }
 }

@@ -75,4 +75,20 @@ final class WalletEngineTests: XCTestCase {
         XCTAssertTrue(raw.hasPrefix("0x"))
         XCTAssertGreaterThan(raw.count, 100)
     }
+
+    func testMaximumOutlayIncludesOnlySignedValueAndNetworkFee() throws {
+        let fee = FeeQuote(gasLimit: Data(vaultHex: "5208")!,
+                           maxFeePerGas: Data(vaultHex: "06fc23ac00")!,
+                           maxPriorityFeePerGas: Data(vaultHex: "77359400")!)
+        let value = try ETHAmount.wei(from: "1")
+        let transfer = PreparedTransfer(from: "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",
+                                        to: "0x3535353535353535353535353535353535353535",
+                                        valueWei: value,
+                                        nonce: Data([9]),
+                                        chainID: Data([1]),
+                                        fee: fee,
+                                        recipientIsContract: false)
+
+        XCTAssertEqual(transfer.maxTotalWei, Wei.add(value, fee.maxFeeWei))
+    }
 }

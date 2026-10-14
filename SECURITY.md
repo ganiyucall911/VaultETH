@@ -33,6 +33,10 @@ VaultETH is a self-custody multi-chain vault designed with zero trust principles
 
 ## 4. Release Gates & Verification
 
+Android release builds use a keystore supplied through GitHub Actions secrets. When those secrets are unavailable, the workflow labels the Android APK and AAB as unsigned; it never creates a fallback signing key. Google Play deployment requires both Android signing secrets and `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`. iOS artifacts are unsigned IPAs and are not App Store-ready.
+
+VaultETH does not charge or collect protocol fees. Outgoing transfers are native-asset EVM transactions; Solana and Bitcoin addresses are receive-only. The token prices, holdings, and portfolio valuations shown in the app are static demo data and are not live or wallet-derived. Buy and swap functionality is not integrated.
+
 | Gate | Status | Verification |
 |---|---|---|
 | **Automated CI Workflows** | ✅ Active | GitHub Actions runs unit tests on macOS-14 for iOS and Ubuntu for Android on every push/PR. |

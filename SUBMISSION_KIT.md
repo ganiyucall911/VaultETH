@@ -8,6 +8,8 @@
 
 This submission kit provides verified, ready-to-copy metadata, store listing copy, review guidelines disclosures, and compliance questionnaire responses for both Apple App Store Connect and Google Play Console.
 
+**Feature disclosure:** Token prices, holdings, charts, and USD portfolio totals are static demo data, not live or wallet-derived. Buy and swap are not integrated. Outgoing sends support native assets on EVM networks only; Solana and Bitcoin addresses are receive-only. VaultETH does not charge or collect protocol fees.
+
 ---
 
 ## Part 1: Apple App Store Connect
@@ -26,7 +28,7 @@ This submission kit provides verified, ready-to-copy metadata, store listing cop
 ### 2. Description & Promotional Text
 
 #### Promotional Text (170 characters max):
-> Sovereign self-custodial wallet for Ethereum, Layer 2s, Solana & Bitcoin. Zero tracking, hardware Secure Enclave protection, and pre-flight transaction simulation.
+> Self-custodial EVM wallet with native-asset sends, secure key storage, and transaction simulation. Solana and Bitcoin addresses are receive-only.
 
 #### Description (4,000 characters max):
 ```markdown
@@ -36,7 +38,7 @@ SOVEREIGN SELF-CUSTODY
 Your 12-word recovery phrase and private keys are generated on-device and sealed within the hardware-backed iOS Keychain (kSecAttrAccessibleWhenUnlockedThisDeviceOnly). Protected by Secure Enclave biometric authorization (Face ID / Touch ID / Passcode), keys never touch external servers or cloud backups.
 
 UNIVERSAL MULTI-CHAIN ARCHITECTURE
-Manage your portfolio seamlessly across 12+ leading blockchain ecosystems from a single master seed:
+Derive addresses from one recovery phrase across supported networks. Outgoing sends are currently limited to native assets on EVM networks:
 • Ethereum Mainnet
 • Arbitrum One
 • Base
@@ -47,7 +49,9 @@ Manage your portfolio seamlessly across 12+ leading blockchain ecosystems from a
 • Linea
 • Sepolia Testnet
 • Custom EVM Networks (User-configurable RPC and Chain ID)
-• Cross-chain derived deposit addresses for Solana and Bitcoin SegWit
+• Receive-only derived addresses for Solana and Bitcoin SegWit (outgoing sends are not supported)
+
+Token holdings, prices, charts, and USD portfolio totals shown in the app are static demo data, not wallet balances or live market information. Buy and swap features are not integrated.
 
 PRE-FLIGHT TRANSACTION SIMULATION
 Never sign blindly. VaultETH runs dry-run execution (eth_call) and gas estimation before you authorize any transfer. Revert reasons and contract failures are parsed and surfaced instantly, protecting your funds from failed transaction fees.
@@ -64,7 +68,7 @@ ZERO TRACKING. ZERO DATA COLLECTION.
 • No analytics frameworks, telemetry, or user tracking SDKs.
 • No account registration, email, phone number, or KYC required.
 • Strict transport encryption (HTTPS) across all RPC communication.
-• 100% of network fees go directly to blockchain network validators—VaultETH charges zero app fees.
+• VaultETH charges no protocol fee. EVM sends require network gas, which is paid to the blockchain network.
 ```
 
 #### Keywords (100 characters max):
