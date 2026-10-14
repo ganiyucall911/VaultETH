@@ -5,7 +5,7 @@
 [![iOS CI](https://github.com/ganiyucall911/VaultETH/actions/workflows/ios.yml/badge.svg)](https://github.com/ganiyucall911/VaultETH/actions/workflows/ios.yml)
 [![Android CI](https://github.com/ganiyucall911/VaultETH/actions/workflows/android.yml/badge.svg)](https://github.com/ganiyucall911/VaultETH/actions/workflows/android.yml)
 [![Pages](https://github.com/ganiyucall911/VaultETH/actions/workflows/pages/pages-build-deployment/badge.svg)](https://ganiyucall911.github.io/VaultETH/)
-[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-vaulteth-F38020?logo=cloudflare&logoColor=white)](https://vaulteth.pages.dev)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-vaulteth-F38020?logo=cloudflare&logoColor=white)](https://vaulteth.ganiyusail101.workers.dev)
 
 VaultETH is an executive, self-custodial multi-chain wallet engineered for sovereign asset ownership and uncompromising privacy. Built natively for **iOS (SwiftUI, iOS 17+)** and **Android (Jetpack Compose, Android 8.0+)**, VaultETH enables seamless management of multi-chain assets from a single 12-word master seed phrase.
 
