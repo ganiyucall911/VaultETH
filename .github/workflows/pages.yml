@@ -27,10 +27,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Pages must be enabled once in Settings -> Pages -> Source: GitHub Actions.
+      # The default GITHUB_TOKEN cannot create the site, so `enablement: true` is not used.
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
