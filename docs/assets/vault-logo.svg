@@ -45,9 +45,9 @@
 
     <!-- Central Bank Vault Wheel Spokes (4 Ergonomic Heavy Handles) -->
     <!-- Spoke 1 (Vertical) -->
-    <line x1="0" y1="-56" x2="0" y2="56" stroke="url(#vaultMint)" stroke-width="16"/>
+    <line x1="0" y1="-56" x2="0" y2="56" stroke="#00D632" stroke-width="16"/>
     <!-- Spoke 2 (Horizontal) -->
-    <line x1="-56" y1="0" x2="56" y2="0" stroke="url(#vaultMint)" stroke-width="16"/>
+    <line x1="-56" y1="0" x2="56" y2="0" stroke="#00D632" stroke-width="16"/>
 
     <!-- Outer Spoke Turn Knobs -->
     <circle cx="0" cy="-62" r="10" fill="url(#vaultMint)"/>
