@@ -20,6 +20,9 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   # =========================================================================
   # 1. Android Release Build
@@ -29,7 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      PLAY_STORE_JSON: ${{ secrets[format('{0}', 'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON')] }}
       DEPLOY_TO_STORES: ${{ inputs.deploy_to_stores || false }}
 
     steps:
@@ -51,10 +53,11 @@ jobs:
 
       - name: Configure Android release signing
         env:
-          KEYSTORE_BASE64: ${{ secrets[format('{0}', 'ANDROID_RELEASE_KEYSTORE_BASE64')] }}
-          KEYSTORE_PASSWORD: ${{ secrets[format('{0}', 'ANDROID_RELEASE_KEYSTORE_PASSWORD')] }}
-          KEY_ALIAS: ${{ secrets[format('{0}', 'ANDROID_RELEASE_KEY_ALIAS')] }}
-          KEY_PASSWORD: ${{ secrets[format('{0}', 'ANDROID_RELEASE_KEY_PASSWORD')] }}
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+          PLAY_STORE_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         run: |
           if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" || -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" ]]; then
             if [[ -n "$KEYSTORE_BASE64$KEYSTORE_PASSWORD$KEY_ALIAS$KEY_PASSWORD" ]]; then
@@ -138,8 +141,10 @@ jobs:
       - name: Deploy to Google Play Internal Testing
         if: ${{ inputs.deploy_to_stores == true }}
         uses: r0adkll/upload-google-play@v1
+        env:
+          PLAY_STORE_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         with:
-          serviceAccountJsonPlainText: ${{ secrets[format('{0}', 'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON')] }}
+          serviceAccountJsonPlainText: ${{ env.PLAY_STORE_JSON }}
           packageName: com.vaulteth.app
           releaseFiles: release_assets/VaultETH-Android-release.aab
           track: internal
