@@ -386,54 +386,8 @@ struct ReviewTransferView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Direction Visualizer
-                HStack(spacing: 16) {
-                    VStack(spacing: 6) {
-                        VaultIdenticon(address: transfer.from, size: 48)
-                        Text("You").font(.caption2.bold()).foregroundStyle(.secondary)
-                    }
-
-                    Image(systemName: "arrow.right")
-                        .font(.title2)
-                        .foregroundStyle(Color.vaultCyan)
-                        .frame(maxWidth: .infinity)
-
-                    VStack(spacing: 6) {
-                        VaultIdenticon(address: transfer.to, size: 48)
-                        Text(ensName ?? "Recipient").font(.caption2.bold()).foregroundStyle(.secondary)
-                    }
-                }
-                .padding(20)
-                .vaultCard(cornerRadius: 22)
-
-                // Transfer Details Card
-                VStack(spacing: 16) {
-                    VStack(spacing: 4) {
-                        Text("Sending on \(network.name)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(ETHAmount.format(wei: transfer.valueWei) + " " + network.symbol)
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
-                            .foregroundStyle(.primary)
-                    }
-
-                    Divider()
-
-                    VStack(spacing: 10) {
-                        detailRow(title: "To Address", value: transfer.to, isMonospace: true)
-                        if let ens = ensName {
-                            detailRow(title: "ENS Domain", value: ens, isMonospace: false)
-                        }
-                        detailRow(title: "Network", value: "\(network.name) (ID \(network.chainID))", isMonospace: false)
-                        detailRow(title: "Estimated Gas Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " " + network.symbol, isMonospace: true)
-                        
-                        // Protocol fee: shown as dedicated row if transparent ("seen"), else consolidated into total outlay ("unseen")
-                        
-                        detailRow(title: transfer.isProtocolFeeTransparent ? "Max Total Outlay" : "Total Execution Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
-                    }
-                }
-                .padding(20)
-                .vaultGlass(cornerRadius: 20)
+                directionCard
+                transferDetailsCard
 
                 // Simulation Inspection Card
                 if let sim = transfer.simulation {
@@ -463,6 +417,54 @@ struct ReviewTransferView: View {
             }
         }
         .interactiveDismissDisabled(isSending)
+    }
+
+    private var directionCard: some View {
+        HStack(spacing: 16) {
+            VStack(spacing: 6) {
+                VaultIdenticon(address: transfer.from, size: 48)
+                Text("You").font(.caption2.bold()).foregroundStyle(.secondary)
+            }
+
+            Image(systemName: "arrow.right")
+                .font(.title2)
+                .foregroundStyle(Color.vaultCyan)
+                .frame(maxWidth: .infinity)
+
+            VStack(spacing: 6) {
+                VaultIdenticon(address: transfer.to, size: 48)
+                Text(ensName ?? "Recipient").font(.caption2.bold()).foregroundStyle(.secondary)
+            }
+        }
+        .padding(20)
+        .vaultCard(cornerRadius: 22)
+    }
+
+    private var transferDetailsCard: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 4) {
+                Text("Sending on \(network.name)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(ETHAmount.format(wei: transfer.valueWei) + " " + network.symbol)
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+            }
+
+            Divider()
+
+            VStack(spacing: 10) {
+                detailRow(title: "To Address", value: transfer.to, isMonospace: true)
+                if let ens = ensName {
+                    detailRow(title: "ENS Domain", value: ens, isMonospace: false)
+                }
+                detailRow(title: "Network", value: "\(network.name) (ID \(network.chainID))", isMonospace: false)
+                detailRow(title: "Estimated Gas Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " " + network.symbol, isMonospace: true)
+                detailRow(title: transfer.isProtocolFeeTransparent ? "Max Total Outlay" : "Total Execution Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
+            }
+        }
+        .padding(20)
+        .vaultGlass(cornerRadius: 20)
     }
 
     private func simulationCard(_ sim: TransactionSimulation) -> some View {
