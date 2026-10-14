@@ -20,31 +20,27 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    env:
-      CF_API_TOKEN: ${{ secrets['CLOUDFLARE_API_TOKEN'] }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Deploy to Cloudflare Pages
-        if: env.CF_API_TOKEN != ''
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets['CLOUDFLARE_API_TOKEN'] }}
-          accountId: ${{ secrets['CLOUDFLARE_ACCOUNT_ID'] }}
-          command: pages deploy docs --project-name=vaulteth --commit-dirty=true
-
-      - name: Log Deployment Readiness
-        if: env.CF_API_TOKEN == ''
         run: |
-          echo "================================================================="
-          echo "Cloudflare Pages Deployment Ready!"
-          echo "To enable direct GitHub Actions deployment:"
-          echo "1. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repo Secrets."
-          echo "OR:"
-          echo "2. Connect this repository directly in Cloudflare Dashboard:"
-          echo "   Workers & Pages > Create application > Pages > Connect to Git"
-          echo "   - Project name: vaulteth"
-          echo "   - Build output directory: docs"
-          echo "================================================================="
+          if [ -n "$CF_TOKEN" ]; then
+            npx wrangler pages deploy docs --project-name=vaulteth --commit-dirty=true
+          else
+            echo "================================================================="
+            echo "Cloudflare Pages Deployment Ready!"
+            echo "To enable direct GitHub Actions deployment:"
+            echo "1. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repo Secrets."
+            echo "OR:"
+            echo "2. Connect this repository directly in Cloudflare Dashboard:"
+            echo "   Workers & Pages > Create application > Pages > Connect to Git"
+            echo "   - Project name: vaulteth"
+            echo "   - Build output directory: docs"
+            echo "================================================================="
+          fi
+        env:
+          CF_TOKEN: ${{ secrets[format('{0}', 'CLOUDFLARE_API_TOKEN')] }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets[format('{0}', 'CLOUDFLARE_ACCOUNT_ID')] }}
