@@ -386,7 +386,7 @@ struct ReviewTransferView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                directionCard
+                directionVisualizer
                 transferDetailsCard
 
                 // Simulation Inspection Card
@@ -394,15 +394,7 @@ struct ReviewTransferView: View {
                     simulationCard(sim)
                 }
 
-                if transfer.recipientIsContract {
-                    HStack(spacing: 10) {
-                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Color.vaultAmber)
-                        Text("Recipient is a verified smart contract. Ensure it accepts direct native asset transfers.").font(.caption).foregroundStyle(.secondary)
-                    }
-                    .padding(14)
-                    .vaultGlass(cornerRadius: 14)
-                }
-
+                contractWarning
                 // Action / Status
                 statusSection
             }
@@ -419,7 +411,7 @@ struct ReviewTransferView: View {
         .interactiveDismissDisabled(isSending)
     }
 
-    private var directionCard: some View {
+    private var directionVisualizer: some View {
         HStack(spacing: 16) {
             VStack(spacing: 6) {
                 VaultIdenticon(address: transfer.from, size: 48)
@@ -465,6 +457,18 @@ struct ReviewTransferView: View {
         }
         .padding(20)
         .vaultGlass(cornerRadius: 20)
+    }
+
+    @ViewBuilder
+    private var contractWarning: some View {
+        if transfer.recipientIsContract {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Color.vaultAmber)
+                Text("Recipient is a verified smart contract. Ensure it accepts direct native asset transfers.").font(.caption).foregroundStyle(.secondary)
+            }
+            .padding(14)
+            .vaultGlass(cornerRadius: 14)
+        }
     }
 
     private func simulationCard(_ sim: TransactionSimulation) -> some View {
