@@ -12,13 +12,18 @@ struct EthereumRPC: Sendable {
         self.session = session
     }
 
+    static func isSecureEndpoint(_ rawValue: String) -> Bool {
+        guard let url = URL(string: rawValue), let scheme = url.scheme?.lowercased() else { return false }
+        let host = url.host?.lowercased() ?? ""
+        if scheme == "https" { return true }
+        if scheme == "http" { return host == "localhost" || host == "127.0.0.1" || host == "::1" }
+        return false
+    }
+
     var endpoints: [URL] {
-        network.rpcEndpoints.compactMap { URL(string: $0) }.filter { url in
-            guard let scheme = url.scheme?.lowercased() else { return false }
-            if scheme == "https" { return true }
-            let host = url.host?.lowercased() ?? ""
-            return scheme == "http" && (host == "localhost" || host == "127.0.0.1")
-        }
+        network.rpcEndpoints
+            .compactMap { URL(string: $0) }
+            .filter { Self.isSecureEndpoint($0.absoluteString) }
     }
 
     private struct NodeError: Error {
@@ -48,7 +53,6 @@ struct EthereumRPC: Sendable {
                     let msg = err["message"] as? String ?? "RPC error"
                     let errData = err["data"] as? String
                     let code = err["code"] as? Int ?? 0
-                    // Fall through to backup endpoint if rate-limited or transient
                     let isTransientNodeIssue = code == 429 || code == -32005 || code == -32603 ||
                         msg.localizedCaseInsensitiveContains("rate limit") ||
                         msg.localizedCaseInsensitiveContains("too many requests") ||
@@ -90,10 +94,8 @@ struct EthereumRPC: Sendable {
         return !Wei.isZero(data)
     }
 
-    /// Fee quote supporting both EIP-1559 (Ethereum, Arbitrum, Base, Optimism, Polygon, Avalanche)
-    /// and legacy gas pricing (BNB Chain, custom EVM nodes).
     func feeQuote(from: String, to: String, value: Data) async throws -> FeeQuote {
-        let standardGasLimit = Data(vaultHex: "5208")! // 21,000 protocol floor
+        let standardGasLimit = Data(vaultHex: "5208")!
         let estimatedGas: Data
         do {
             estimatedGas = try await quantity("eth_estimateGas", [["from": from, "to": to, "value": value.rpcQuantity]])
@@ -108,19 +110,17 @@ struct EthereumRPC: Sendable {
         }
         let gasLimit = Wei.compare(estimatedGas, standardGasLimit) == .orderedAscending ? standardGasLimit : estimatedGas
 
-        // Attempt EIP-1559 base fee first
         if let block = try? await call("eth_getBlockByNumber", ["latest", false]) as? [String: Any],
            let baseHex = block["baseFeePerGas"] as? String,
            let baseFee = Data(vaultHex: baseHex) {
-            let minTip = Data(vaultHex: "3b9aca00")! // 1.0 gwei floor
-            var tip = (try? await quantity("eth_maxPriorityFeePerGas", [])) ?? Data(vaultHex: "59682f00")! // 1.5 gwei fallback
+            let minTip = Data(vaultHex: "3b9aca00")!
+            var tip = (try? await quantity("eth_maxPriorityFeePerGas", [])) ?? Data(vaultHex: "59682f00")!
             if Wei.compare(tip, minTip) == .orderedAscending { tip = minTip }
             let maxFee = Wei.add(Wei.multiply(baseFee, Wei.from(2)), tip)
             return FeeQuote(gasLimit: gasLimit, maxFeePerGas: maxFee, maxPriorityFeePerGas: tip)
         }
 
-        // Fallback for chains without EIP-1559 baseFee (e.g. BNB Chain, older EVM forks)
-        let gasPrice = (try? await quantity("eth_gasPrice", [])) ?? Data(vaultHex: "04a817c800")! // 20 gwei fallback
+        let gasPrice = (try? await quantity("eth_gasPrice", [])) ?? Data(vaultHex: "04a817c800")!
         let tip = (try? await quantity("eth_maxPriorityFeePerGas", [])) ?? gasPrice
         return FeeQuote(gasLimit: gasLimit, maxFeePerGas: gasPrice, maxPriorityFeePerGas: tip)
     }
@@ -131,7 +131,6 @@ struct EthereumRPC: Sendable {
         return hash
     }
 
-    /// nil while the transaction is still pending.
     func receipt(hash: String) async throws -> ReceiptStatus? {
         guard let object = try await call("eth_getTransactionReceipt", [hash]) as? [String: Any],
               let statusHex = object["status"] as? String,
@@ -139,7 +138,6 @@ struct EthereumRPC: Sendable {
         return !Wei.isZero(statusData) ? .success : .failed
     }
 
-    /// Read-only call for contract queries / ENS resolution
     func ethCall(to: String, data: String) async throws -> String {
         guard let result = try await call("eth_call", [["to": to, "data": data], "latest"]) as? String else {
             throw WalletError.rpcMalformedResult
@@ -147,9 +145,6 @@ struct EthereumRPC: Sendable {
         return result
     }
 
-    // MARK: - Transaction Simulation
-
-    /// Simulates transaction execution via eth_call and gas estimation before broadcast.
     func simulateTransaction(from: String,
                              to: String,
                              value: Data,
@@ -169,14 +164,10 @@ struct EthereumRPC: Sendable {
 
         do {
             _ = try await call("eth_call", [callParams, "latest"])
-
-            // Gas estimation simulation
             let gasLimit = (try? await quantity("eth_estimateGas", [callParams])) ?? Data(vaultHex: "5208")!
             let gasUnits = Wei.toUInt64(gasLimit) ?? 21000
-
             let valText = ETHAmount.format(wei: value)
             let assetDesc = "- \(valText) \(symbol) from Sender"
-
             let status: TransactionSimulation.Status = warnings.isEmpty ? .success : .warning
             return TransactionSimulation(
                 status: status,
@@ -202,10 +193,10 @@ struct EthereumRPC: Sendable {
         }
     }
 
-    /// Decodes ABI-encoded revert reason strings (e.g. standard Error(string) with selector 0x08c379a0).
     static func decodeRevertReason(from hexOrMsg: String) -> String {
-        if let range = hexOrMsg.range(of: "08c379a0", options: .caseInsensitive) {
-            let hex = String(hexOrMsg[range.lowerBound...])
+        let text = hexOrMsg.replacingOccurrences(of: "\\n", with: " ")
+        if let range = text.range(of: "08c379a0", options: .caseInsensitive) {
+            let hex = String(text[range.lowerBound...])
             if let data = Data(vaultHex: hex), data.count >= 68 {
                 let lengthData = data.subdata(in: 36..<68)
                 if let strLen = Wei.toUInt64(lengthData), strLen > 0, 68 + Int(strLen) <= data.count {
@@ -216,7 +207,8 @@ struct EthereumRPC: Sendable {
                 }
             }
         }
-        var s = hexOrMsg
+
+        var s = text
         if let r = s.range(of: "reverted:", options: .caseInsensitive) {
             s = String(s[r.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
         } else if let r = s.range(of: "revert:", options: .caseInsensitive) {

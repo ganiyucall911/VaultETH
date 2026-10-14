@@ -6,17 +6,11 @@ import WalletCore
 final class WalletEngine: @unchecked Sendable {
     private let vault = KeychainVault()
 
-    // MARK: - Address validation
-
-    // MARK: - Payment URI & Recipient Parsing
-
     struct PaymentURI: Equatable {
         let recipient: String
         let amountETH: String?
     }
 
-    /// Parses Ethereum payment URIs (EIP-681 / EIP-831), QR code contents, or bare addresses/ENS names.
-    /// Extracts the recipient and an optional ETH amount if encoded in query params (e.g. ?value=... or ?amount=...).
     static func parsePaymentURI(_ raw: String) -> PaymentURI {
         var s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         var amountETH: String?
@@ -72,9 +66,6 @@ final class WalletEngine: @unchecked Sendable {
         return (try? ETHAmount.wei(from: result)) != nil ? result : nil
     }
 
-    /// Validates a recipient and returns its canonical EIP-55 checksummed form.
-    /// All-lowercase or all-uppercase input is accepted; mixed case must carry a valid checksum.
-    /// Also supports standard `ethereum:` URIs and `0X` hex prefix.
     static func validateRecipient(_ raw: String) throws -> String {
         var s = parsePaymentURI(raw).recipient
         if s.hasPrefix("0X") {
@@ -85,8 +76,6 @@ final class WalletEngine: @unchecked Sendable {
         }
         let body = s.dropFirst(2)
         let mixedCase = body.contains(where: { $0.isUppercase }) && body.contains(where: { $0.isLowercase })
-        // Depending on the library version a bad checksum may make parsing fail or merely normalise the
-        // string, so both paths are handled: mixed case must round-trip to the identical checksummed form.
         guard let address = AnyAddress(string: s, coin: .ethereum) else {
             throw mixedCase ? WalletError.invalidChecksum : WalletError.invalidAddress
         }
@@ -94,8 +83,6 @@ final class WalletEngine: @unchecked Sendable {
         if let bytes = Data(vaultHex: s), bytes.allSatisfy({ $0 == 0 }) { throw WalletError.burnAddress }
         return address.description
     }
-
-    // MARK: - Mnemonics
 
     static func normalize(mnemonic: String) -> String {
         mnemonic.lowercased().split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
@@ -107,8 +94,6 @@ final class WalletEngine: @unchecked Sendable {
               let wallet = HDWallet(mnemonic: phrase, passphrase: "") else { return nil }
         return wallet.getAddressForCoin(coin: .ethereum)
     }
-
-    // MARK: - Wallet lifecycle
 
     func createWallet(name: String) async throws -> (account: WalletAccount, mnemonic: String) {
         guard let wallet = HDWallet(strength: 128, passphrase: "") else { throw WalletError.walletCreationFailed }
@@ -157,29 +142,23 @@ final class WalletEngine: @unchecked Sendable {
 
     func delete(id: UUID) { vault.delete(id: id) }
 
-    // MARK: - Signing
-
-    /// Loads the key (this triggers Face ID / passcode), verifies it matches the sending address, and signs.
     func signTransfer(_ transfer: PreparedTransfer, accountID: UUID) async throws -> String {
-        let phrase = try await vault.load(id: accountID, reason: "Authorize sending \(transfer.symbol ?? "ETH")")
+        let mnemonicData = try await vault.loadData(id: accountID, reason: "Authorize sending \(transfer.symbol ?? "ETH")")
+        defer { mnemonicData.resetBytes(in: 0..<mnemonicData.count) }
+        guard let phrase = String(data: mnemonicData, encoding: .utf8) else { throw WalletError.keyNotFound }
         guard let wallet = HDWallet(mnemonic: phrase, passphrase: "") else { throw WalletError.keyNotFound }
         guard wallet.getAddressForCoin(coin: .ethereum).lowercased() == transfer.from.lowercased() else {
             throw WalletError.addressMismatch
         }
         let key = wallet.getKeyForCoin(coin: .ethereum)
         var keyData = key.data
-        defer {
-            keyData.resetBytes(in: 0..<keyData.count)
-        }
+        defer { keyData.resetBytes(in: 0..<keyData.count) }
         return try Self.sign(transfer, privateKey: keyData)
     }
 
-    /// Pure signing step (EIP-1559, type 0x02 envelope). Exposed for deterministic unit tests.
     static func sign(_ transfer: PreparedTransfer, privateKey: Data) throws -> String {
         var mutableKey = privateKey
-        defer {
-            mutableKey.resetBytes(in: 0..<mutableKey.count)
-        }
+        defer { mutableKey.resetBytes(in: 0..<mutableKey.count) }
         let input = EthereumSigningInput.with {
             $0.chainID = Data(Wei.normalize(transfer.chainID))
             $0.nonce = Data(Wei.normalize(transfer.nonce))
