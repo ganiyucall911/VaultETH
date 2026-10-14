@@ -138,9 +138,29 @@
     .ticker-item .sym { color: #fff; font-weight: 700; }
     .ticker-item .val { font-family: 'JetBrains Mono', monospace; color: #fff; }
     .ticker-item .gain { color: var(--emerald); font-weight: 700; font-size: 11px; }
+    .ticker-item .loss { color: #FF4757; font-weight: 700; font-size: 11px; }
     .ticker-item .pulse-dot {
       width: 6px; height: 6px; border-radius: 50%; background: var(--emerald);
       box-shadow: 0 0 8px var(--emerald);
+      animation: pulseGlow 1.8s ease-in-out infinite;
+    }
+    .ticker-live-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(0, 214, 50, 0.12);
+      border: 1px solid rgba(0, 214, 50, 0.35);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.75); }
     }
 
     /* Header & Navbar */
@@ -678,6 +698,7 @@
     .token-name-txt { font-size: 13px; font-weight: 700; color: #fff; }
     .token-price-txt { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
     .token-change-green { color: var(--emerald); font-weight: 600; }
+    .token-change-red { color: #FF4757; font-weight: 600; }
     .token-right { text-align: right; }
     .token-holding-txt { font-size: 13px; font-weight: 700; color: #fff; }
     .token-fiat-txt { font-size: 11px; color: var(--text-dim); }
@@ -1309,27 +1330,29 @@
 
   <!-- Live Multi-Chain Price Ticker Strip -->
   <div class="ticker-bar">
-    <div class="ticker-track">
-      <div class="ticker-item"><span class="pulse-dot"></span><span class="sym">ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
-      <div class="ticker-item"><span class="sym">BTC</span><span class="val">$64,120.00</span><span class="gain">▲ +2.15%</span></div>
-      <div class="ticker-item"><span class="sym">SOL</span><span class="val">$152.40</span><span class="gain">▲ +6.38%</span></div>
-      <div class="ticker-item"><span class="sym">ARB</span><span class="val">$0.642</span><span class="gain">▲ +3.10%</span></div>
-      <div class="ticker-item"><span class="sym">BASE ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
-      <div class="ticker-item"><span class="sym">OP</span><span class="val">$1.84</span><span class="gain">▲ +5.20%</span></div>
-      <div class="ticker-item"><span class="sym">BNB</span><span class="val">$592.10</span><span class="gain">▲ +1.92%</span></div>
-      <div class="ticker-item"><span class="sym">POL</span><span class="val">$0.418</span><span class="gain">▲ +2.75%</span></div>
-      <div class="ticker-item"><span class="sym">AVAX</span><span class="val">$28.65</span><span class="gain">▲ +4.10%</span></div>
+    <div class="ticker-track" id="tickerTrack">
+      <div class="ticker-item"><span class="ticker-live-tag"><span class="pulse-dot"></span> LIVE FEED</span></div>
+      <div class="ticker-item"><span class="sym">ETH</span><span class="val tabular-nums">$2,501.10</span><span class="gain">▲ +1.81%</span></div>
+      <div class="ticker-item"><span class="sym">BTC</span><span class="val tabular-nums">$83,222.52</span><span class="gain">▲ +1.17%</span></div>
+      <div class="ticker-item"><span class="sym">SOL</span><span class="val tabular-nums">$107.03</span><span class="gain">▲ +2.03%</span></div>
+      <div class="ticker-item"><span class="sym">ARB</span><span class="val tabular-nums">$0.1907</span><span class="gain">▲ +5.59%</span></div>
+      <div class="ticker-item"><span class="sym">BASE ETH</span><span class="val tabular-nums">$2,501.10</span><span class="gain">▲ +1.81%</span></div>
+      <div class="ticker-item"><span class="sym">OP</span><span class="val tabular-nums">$0.1574</span><span class="gain">▲ +20.34%</span></div>
+      <div class="ticker-item"><span class="sym">BNB</span><span class="val tabular-nums">$742.43</span><span class="gain">▲ +1.04%</span></div>
+      <div class="ticker-item"><span class="sym">POL</span><span class="val tabular-nums">$0.1009</span><span class="gain">▲ +1.11%</span></div>
+      <div class="ticker-item"><span class="sym">AVAX</span><span class="val tabular-nums">$10.27</span><span class="gain">▲ +1.29%</span></div>
       
       <!-- Duplicate track for infinite loop -->
-      <div class="ticker-item"><span class="pulse-dot"></span><span class="sym">ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
-      <div class="ticker-item"><span class="sym">BTC</span><span class="val">$64,120.00</span><span class="gain">▲ +2.15%</span></div>
-      <div class="ticker-item"><span class="sym">SOL</span><span class="val">$152.40</span><span class="gain">▲ +6.38%</span></div>
-      <div class="ticker-item"><span class="sym">ARB</span><span class="val">$0.642</span><span class="gain">▲ +3.10%</span></div>
-      <div class="ticker-item"><span class="sym">BASE ETH</span><span class="val">$3,485.20</span><span class="gain">▲ +4.82%</span></div>
-      <div class="ticker-item"><span class="sym">OP</span><span class="val">$1.84</span><span class="gain">▲ +5.20%</span></div>
-      <div class="ticker-item"><span class="sym">BNB</span><span class="val">$592.10</span><span class="gain">▲ +1.92%</span></div>
-      <div class="ticker-item"><span class="sym">POL</span><span class="val">$0.418</span><span class="gain">▲ +2.75%</span></div>
-      <div class="ticker-item"><span class="sym">AVAX</span><span class="val">$28.65</span><span class="gain">▲ +4.10%</span></div>
+      <div class="ticker-item"><span class="ticker-live-tag"><span class="pulse-dot"></span> LIVE FEED</span></div>
+      <div class="ticker-item"><span class="sym">ETH</span><span class="val tabular-nums">$2,501.10</span><span class="gain">▲ +1.81%</span></div>
+      <div class="ticker-item"><span class="sym">BTC</span><span class="val tabular-nums">$83,222.52</span><span class="gain">▲ +1.17%</span></div>
+      <div class="ticker-item"><span class="sym">SOL</span><span class="val tabular-nums">$107.03</span><span class="gain">▲ +2.03%</span></div>
+      <div class="ticker-item"><span class="sym">ARB</span><span class="val tabular-nums">$0.1907</span><span class="gain">▲ +5.59%</span></div>
+      <div class="ticker-item"><span class="sym">BASE ETH</span><span class="val tabular-nums">$2,501.10</span><span class="gain">▲ +1.81%</span></div>
+      <div class="ticker-item"><span class="sym">OP</span><span class="val tabular-nums">$0.1574</span><span class="gain">▲ +20.34%</span></div>
+      <div class="ticker-item"><span class="sym">BNB</span><span class="val tabular-nums">$742.43</span><span class="gain">▲ +1.04%</span></div>
+      <div class="ticker-item"><span class="sym">POL</span><span class="val tabular-nums">$0.1009</span><span class="gain">▲ +1.11%</span></div>
+      <div class="ticker-item"><span class="sym">AVAX</span><span class="val tabular-nums">$10.27</span><span class="gain">▲ +1.29%</span></div>
     </div>
   </div>
 
@@ -1475,9 +1498,9 @@
                     <span class="ens-tag" onclick="showAppTour('ens')">vitalik.eth</span>
                   </div>
                   <div class="balance-title">Consolidated Balance</div>
-                  <div class="balance-main-num tabular-nums" id="portfolioBalanceNum">$34,842.10</div>
+                  <div class="balance-main-num tabular-nums" id="portfolioBalanceNum">$31,802.27</div>
                   <div class="balance-gain-row">
-                    <span id="portfolioGainText">▲ +$1,602.40 (+4.82%) 24h</span>
+                    <span id="portfolioGainText">▲ +$467.79 (+1.49%) 24h</span>
                   </div>
                 </div>
 
@@ -1520,71 +1543,71 @@
 
                 <!-- Token Rows Container -->
                 <div id="simTokensContainer">
-                  <div class="token-row-card" data-chain="ethereum" onclick="showTokenAnalytics('ETH', '$3,485.20', '+4.82%', '4.8250 ETH', '$16,816.09')">
+                  <div class="token-row-card" data-chain="ethereum" data-sym="ETH" onclick="showTokenAnalytics('ETH', '$2,501.10', '+1.81%', '4.8250 ETH', '$12,067.81')">
                     <div class="token-left">
                       <div class="token-symbol-icon" style="background:rgba(98,126,234,0.18);">
                         <svg viewBox="0 0 256 417"><path d="M127.96 0L125.17 9.48V285.17L127.96 287.96L255.92 212.32L127.96 0Z" fill="#627EEA"/><path d="M127.96 0L0 212.32L127.96 287.96V157.34V0Z" fill="#8B9FF0"/><path d="M127.96 311.18L126.39 313.1V412.3L127.96 416.9L256 235.54L127.96 311.18Z" fill="#627EEA"/><path d="M127.96 416.9V311.18L0 235.54L127.96 416.9Z" fill="#8B9FF0"/><path d="M127.96 287.96L255.92 212.32L127.96 157.34V287.96Z" fill="#4560C6"/><path d="M0 212.32L127.96 287.96V157.34L0 212.32Z" fill="#627EEA"/></svg>
                       </div>
                       <div>
                         <div class="token-name-txt">Ethereum</div>
-                        <div class="token-price-txt tabular-nums">$3,485.20 <span class="token-change-green">+4.82%</span></div>
+                        <div class="token-price-txt tabular-nums">$2,501.10 <span class="token-change-green">▲ +1.81%</span></div>
                       </div>
                     </div>
                     <div class="token-right">
                       <div class="token-holding-txt tabular-nums">4.8250 ETH</div>
-                      <div class="token-fiat-txt tabular-nums">$16,816.09</div>
+                      <div class="token-fiat-txt tabular-nums">$12,067.81</div>
                     </div>
                   </div>
 
-                  <div class="token-row-card" data-chain="bitcoin" onclick="showTokenAnalytics('BTC', '$64,120.00', '+2.15%', '0.1850 BTC', '$11,862.20')">
+                  <div class="token-row-card" data-chain="bitcoin" data-sym="BTC" onclick="showTokenAnalytics('BTC', '$83,222.52', '+1.17%', '0.1850 BTC', '$15,396.17')">
                     <div class="token-left">
                       <div class="token-symbol-icon" style="background:rgba(247,147,26,0.18);">
                         <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#F7931A"/><path d="M46.1 27.4c.6-4.3-2.6-6.6-7.1-8.1l1.5-5.8-3.5-.9-1.4 5.7c-.9-.2-1.9-.4-2.8-.7l1.4-5.7-3.5-.9-1.5 5.8c-.8-.2-1.5-.4-2.2-.5l.0-.1-4.9-1.2-1 3.8s2.6.6 2.6.6c1.4.4 1.7 1.3 1.6 2.1l-1.6 6.5c.1 0 .2.1.3.1l-.3-.1-2.3 9.1c-.2.5-.6 1.2-1.7.9 0 0-2.6-.6-2.6-.6l-1.8 4.1 4.6 1.1c.9.2 1.7.5 2.6.7l-1.5 6.1 3.5.9 1.5-5.9c1 .3 1.9.5 2.8.7l-1.5 5.9 3.5.9 1.5-6c6 .9 10.5.5 12.4-4.8 1.5-4.2-.1-6.6-3.1-8.2 2.2-.5 3.9-2 4.3-5.1zm-7.7 11.2c-1.1 4.4-8.5 2-10.9 1.4l1.9-7.8c2.4.6 10.1 1.8 9 6.4zm1.1-11.3c-1 4-7.2 2-9.2 1.5l1.8-7.1c2 .5 8.4 1.5 7.4 5.6z" fill="#FFF"/></svg>
                       </div>
                       <div>
                         <div class="token-name-txt">Bitcoin</div>
-                        <div class="token-price-txt tabular-nums">$64,120.00 <span class="token-change-green">+2.15%</span></div>
+                        <div class="token-price-txt tabular-nums">$83,222.52 <span class="token-change-green">▲ +1.17%</span></div>
                       </div>
                     </div>
                     <div class="token-right">
                       <div class="token-holding-txt tabular-nums">0.1850 BTC</div>
-                      <div class="token-fiat-txt tabular-nums">$11,862.20</div>
+                      <div class="token-fiat-txt tabular-nums">$15,396.17</div>
                     </div>
                   </div>
 
-                  <div class="token-row-card" data-chain="solana" onclick="showTokenAnalytics('SOL', '$152.40', '+6.38%', '24.50 SOL', '$3,733.80')">
+                  <div class="token-row-card" data-chain="solana" data-sym="SOL" onclick="showTokenAnalytics('SOL', '$107.03', '+2.03%', '24.50 SOL', '$2,622.24')">
                     <div class="token-left">
                       <div class="token-symbol-icon" style="background:rgba(20,241,149,0.18);">
                         <svg viewBox="0 0 397 311"><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h316.5c5.6 0 8.4 6.7 4.5 10.6l-57.9 57.9c-2.4 2.4-5.7 3.8-9.2 3.8H7.2c-5.6 0-8.4-6.7-4.5-10.6l61.9-57.9z" fill="#14F195"/><path d="M64.6 3.8C67 1.4 70.3 0 73.8 0h316.5c5.6 0 8.4 6.7 4.5 10.6L336.9 68.5c-2.4 2.4-5.7 3.8-9.2 3.8H11.2c-5.6 0-8.4-6.7-4.5-10.6L64.6 3.8z" fill="#DC1FFF"/><path d="M333.1 120.9c-2.4-2.4-5.7-3.8-9.2-3.8H7.4c-5.6 0-8.4 6.7-4.5 10.6l57.9 57.9c2.4 2.4 5.7 3.8 9.2 3.8h316.5c5.6 0 8.4-6.7 4.5-10.6l-57.9-57.9z" fill="#00FFA3"/></svg>
                       </div>
                       <div>
                         <div class="token-name-txt">Solana</div>
-                        <div class="token-price-txt tabular-nums">$152.40 <span class="token-change-green">+6.38%</span></div>
+                        <div class="token-price-txt tabular-nums">$107.03 <span class="token-change-green">▲ +2.03%</span></div>
                       </div>
                     </div>
                     <div class="token-right">
                       <div class="token-holding-txt tabular-nums">24.50 SOL</div>
-                      <div class="token-fiat-txt tabular-nums">$3,733.80</div>
+                      <div class="token-fiat-txt tabular-nums">$2,622.24</div>
                     </div>
                   </div>
 
-                  <div class="token-row-card" data-chain="arbitrum" onclick="showTokenAnalytics('ARB', '$0.642', '+3.10%', '1,500 ARB', '$963.00')">
+                  <div class="token-row-card" data-chain="arbitrum" data-sym="ARB" onclick="showTokenAnalytics('ARB', '$0.1907', '+5.59%', '1,500 ARB', '$286.05')">
                     <div class="token-left">
                       <div class="token-symbol-icon" style="background:rgba(40,160,240,0.18);">
                         <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#28A0F0" fill-opacity="0.2" stroke="#28A0F0" stroke-width="3"/><path d="M50 18L24 64H38L50 42L62 64H76L50 18Z" fill="#28A0F0"/><path d="M50 54L38 76H62L50 54Z" fill="#FFF"/></svg>
                       </div>
                       <div>
                         <div class="token-name-txt">Arbitrum</div>
-                        <div class="token-price-txt tabular-nums">$0.642 <span class="token-change-green">+3.10%</span></div>
+                        <div class="token-price-txt tabular-nums">$0.1907 <span class="token-change-green">▲ +5.59%</span></div>
                       </div>
                     </div>
                     <div class="token-right">
                       <div class="token-holding-txt tabular-nums">1,500 ARB</div>
-                      <div class="token-fiat-txt tabular-nums">$963.00</div>
+                      <div class="token-fiat-txt tabular-nums">$286.05</div>
                     </div>
                   </div>
 
-                  <div class="token-row-card" data-chain="ethereum" onclick="showTokenAnalytics('USDC', '$1.00', '0.00%', '1,430.00 USDC', '$1,430.00')">
+                  <div class="token-row-card" data-chain="ethereum" data-sym="USDC" onclick="showTokenAnalytics('USDC', '$1.00', '0.00%', '1,430.00 USDC', '$1,430.00')">
                     <div class="token-left">
                       <div class="token-symbol-icon" style="background:rgba(39,117,202,0.18);">
                         <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#2775CA"/><path d="M50 18C32.3 18 18 32.3 18 50C18 67.7 32.3 82 50 82C67.7 82 82 67.7 82 50C82 32.3 67.7 18 50 18ZM46 30H54V34.5C59 35.5 62.5 39.5 62.5 44H55C55 41.5 53 40 50 40C47 40 45 41.5 45 43.5C45 45.5 46.5 46.8 51.5 48C57.5 49.5 63 52 63 58C63 62.5 59.5 66.5 54 67.5V72H46V67.5C41 66.5 37 62.5 37 57.5H44.5C44.5 60.5 47 62 50 62C53.5 62 55.5 60.5 55.5 58C55.5 55.5 53.5 54.5 48.5 53C42.5 51.5 37 49 37 43.5C37 39 40.5 35.5 46 34.5V30Z" fill="#FFF"/></svg>
@@ -1611,8 +1634,8 @@
 
                 <div class="token-detail-card">
                   <div style="font-size:14px; color:var(--text-muted);" id="analyticsTokenTitle">Ethereum Price</div>
-                  <div style="font-size:34px; font-weight:850; letter-spacing:-1px;" class="tabular-nums" id="analyticsPriceNum">$3,485.20</div>
-                  <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:12px; background:var(--emerald-dim); color:var(--emerald); font-size:12px; font-weight:700;" id="analyticsGainBadge">▲ +4.82% ($160.20)</span>
+                  <div style="font-size:34px; font-weight:850; letter-spacing:-1px;" class="tabular-nums" id="analyticsPriceNum">$2,501.10</div>
+                  <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:12px; background:var(--emerald-dim); color:var(--emerald); font-size:12px; font-weight:700;" id="analyticsGainBadge">▲ +1.81% (+$44.35)</span>
                 </div>
 
                 <div class="chart-box">
@@ -1638,17 +1661,17 @@
                 <div class="user-holding-banner">
                   <div style="font-size:11px; text-transform:uppercase; color:var(--text-dim); letter-spacing:0.5px;">Your Holding</div>
                   <div style="font-size:19px; font-weight:800; color:#fff;" class="tabular-nums" id="analyticsHoldAmt">4.8250 ETH</div>
-                  <div style="font-size:12px; color:var(--primary);" class="tabular-nums" id="analyticsHoldFiat">$16,816.09 USD (48.3% of vault)</div>
+                  <div style="font-size:12px; color:var(--primary);" class="tabular-nums" id="analyticsHoldFiat">$12,067.81 USD (37.9% of vault)</div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
                   <div style="background:var(--bg-subtle); padding:8px 10px; border-radius:10px; border:1px solid var(--border);">
                     <div style="font-size:10px; color:var(--text-dim);">24h High</div>
-                    <div style="font-size:12px; font-weight:700;" class="tabular-nums" id="analyticsHighVal">$3,510.00</div>
+                    <div style="font-size:12px; font-weight:700;" class="tabular-nums" id="analyticsHighVal">$2,538.52</div>
                   </div>
                   <div style="background:var(--bg-subtle); padding:8px 10px; border-radius:10px; border:1px solid var(--border);">
                     <div style="font-size:10px; color:var(--text-dim);">24h Volume</div>
-                    <div style="font-size:12px; font-weight:700;" class="tabular-nums" id="analyticsVolVal">$18.4B</div>
+                    <div style="font-size:12px; font-weight:700;" class="tabular-nums" id="analyticsVolVal">$533.8M</div>
                   </div>
                 </div>
 
@@ -1665,7 +1688,7 @@
                 <div class="fiat-input-box">
                   <div style="font-size:11px; text-transform:uppercase; color:var(--text-dim);">You Pay (USD)</div>
                   <div class="fiat-input-val tabular-nums" id="fiatDisplayVal">$500.00</div>
-                  <div class="fiat-equiv tabular-nums" id="cryptoEstVal">Receive ≈ 0.1435 ETH</div>
+                  <div class="fiat-equiv tabular-nums" id="cryptoEstVal">Receive ≈ 0.1999 ETH</div>
                 </div>
 
                 <div class="fiat-quick-amounts">
@@ -1744,7 +1767,7 @@
                   <div class="send-field-label">Amount (ETH)</div>
                   <div class="send-input-frame">
                     <input type="text" id="sendAmountInput" value="0.5" oninput="updateSendEquiv(this.value)">
-                    <span style="font-size:11px; color:var(--text-dim);" class="tabular-nums" id="sendUsdEquiv">≈ $1,742.60</span>
+                    <span style="font-size:11px; color:var(--text-dim);" class="tabular-nums" id="sendUsdEquiv">≈ $1,250.55</span>
                   </div>
                 </div>
 
@@ -2598,21 +2621,242 @@
         btnEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
         showToast('Privacy mode enabled: balances concealed');
       } else {
-        balEl.textContent = '$34,842.10';
+        updatePortfolioDisplay();
         btnEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
         showToast('Privacy mode disabled: balances visible');
       }
     }
 
+    // --- Live Multi-Chain Market Data Engine ---
+    const liveMarketData = {
+      ETH: { sym: 'ETH', name: 'Ethereum', price: 2501.10, change: 1.81, high: 2538.52, vol: '533.8M' },
+      BTC: { sym: 'BTC', name: 'Bitcoin', price: 83222.52, change: 1.17, high: 84168.00, vol: '1.16B' },
+      SOL: { sym: 'SOL', name: 'Solana', price: 107.03, change: 2.03, high: 109.07, vol: '233.7M' },
+      ARB: { sym: 'ARB', name: 'Arbitrum', price: 0.1907, change: 5.59, high: 0.1952, vol: '13.0M' },
+      BNB: { sym: 'BNB', name: 'BNB', price: 742.43, change: 1.04, high: 748.00, vol: '56.7M' },
+      OP: { sym: 'OP', name: 'Optimism', price: 0.1574, change: 20.34, high: 0.1625, vol: '21.1M' },
+      POL: { sym: 'POL', name: 'Polygon', price: 0.1009, change: 1.11, high: 0.1060, vol: '11.6M' },
+      AVAX: { sym: 'AVAX', name: 'Avalanche', price: 10.27, change: 1.29, high: 10.61, vol: '28.2M' },
+      USDC: { sym: 'USDC', name: 'USD Coin', price: 1.00, change: 0.00, high: 1.00, vol: '4.2B' }
+    };
+
+    const simPortfolioTokens = [
+      { sym: 'ETH', name: 'Ethereum', chain: 'ethereum', balance: 4.8250, unit: 'ETH' },
+      { sym: 'BTC', name: 'Bitcoin', chain: 'bitcoin', balance: 0.1850, unit: 'BTC' },
+      { sym: 'SOL', name: 'Solana', chain: 'solana', balance: 24.50, unit: 'SOL' },
+      { sym: 'ARB', name: 'Arbitrum', chain: 'arbitrum', balance: 1500.00, unit: 'ARB' },
+      { sym: 'USDC', name: 'USD Coin', chain: 'ethereum', balance: 1430.00, unit: 'USDC' }
+    ];
+
+    let currentFilterChain = 'all';
+    let currentAnalyticsSym = 'ETH';
+
+    function formatFiat(num, decimals = 2) {
+      return '$' + Number(num).toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    }
+
+    function formatTokenPrice(num) {
+      if (num >= 1000) return formatFiat(num, 2);
+      if (num >= 1) return '$' + num.toFixed(2);
+      if (num >= 0.01) return '$' + num.toFixed(4);
+      return '$' + num.toFixed(6);
+    }
+
+    function renderTickerStrip() {
+      const track = document.getElementById('tickerTrack');
+      if (!track) return;
+      
+      const tickerOrder = [
+        { sym: 'ETH', key: 'ETH' },
+        { sym: 'BTC', key: 'BTC' },
+        { sym: 'SOL', key: 'SOL' },
+        { sym: 'ARB', key: 'ARB' },
+        { sym: 'BASE ETH', key: 'ETH' },
+        { sym: 'OP', key: 'OP' },
+        { sym: 'BNB', key: 'BNB' },
+        { sym: 'POL', key: 'POL' },
+        { sym: 'AVAX', key: 'AVAX' }
+      ];
+
+      const generateItems = () => {
+        let html = '<div class="ticker-item"><span class="ticker-live-tag"><span class="pulse-dot"></span> LIVE FEED</span></div>';
+        tickerOrder.forEach(item => {
+          const data = liveMarketData[item.key] || { price: 0, change: 0 };
+          const formattedP = formatTokenPrice(data.price);
+          const isPos = data.change >= 0;
+          const sign = isPos ? '+' : '';
+          const glyph = isPos ? '▲' : '▼';
+          const chgClass = isPos ? 'gain' : 'loss';
+          html += `<div class="ticker-item"><span class="sym">${item.sym}</span><span class="val tabular-nums">${formattedP}</span><span class="${chgClass}">${glyph} ${sign}${data.change.toFixed(2)}%</span></div>`;
+        });
+        return html;
+      };
+
+      // Two complete passes guarantee seamless 50% translation infinite loop
+      track.innerHTML = generateItems() + generateItems();
+    }
+
+    function updatePortfolioDisplay() {
+      const balEl = document.getElementById('portfolioBalanceNum');
+      const gainEl = document.getElementById('portfolioGainText');
+      if (!balEl || !gainEl) return;
+
+      if (isDiscreet) {
+        balEl.textContent = '••••••••';
+        return;
+      }
+
+      let totalVal = 0;
+      let total24hChgVal = 0;
+
+      simPortfolioTokens.forEach(t => {
+        if (currentFilterChain === 'all' || t.chain === currentFilterChain) {
+          const price = liveMarketData[t.sym] ? liveMarketData[t.sym].price : 0;
+          const changePct = liveMarketData[t.sym] ? liveMarketData[t.sym].change : 0;
+          const fiat = t.balance * price;
+          totalVal += fiat;
+          total24hChgVal += fiat * (changePct / 100);
+        }
+      });
+
+      balEl.textContent = formatFiat(totalVal, 2);
+
+      const netPct = totalVal > 0 ? (total24hChgVal / (totalVal - total24hChgVal || 1)) * 100 : 0;
+      const isPos = total24hChgVal >= 0;
+      const glyph = isPos ? '▲' : '▼';
+      const sign = isPos ? '+' : '';
+      gainEl.textContent = `${glyph} ${sign}${formatFiat(Math.abs(total24hChgVal), 2)} (${sign}${netPct.toFixed(2)}%) 24h`;
+      gainEl.style.color = isPos ? 'var(--emerald)' : '#FF4757';
+    }
+
+    function updateSimulatorTokenRows() {
+      const container = document.getElementById('simTokensContainer');
+      if (!container) return;
+
+      simPortfolioTokens.forEach(token => {
+        const card = container.querySelector(`.token-row-card[data-sym="${token.sym}"]`);
+        if (!card) return;
+
+        const data = liveMarketData[token.sym] || { price: 1, change: 0 };
+        const priceFormatted = formatTokenPrice(data.price);
+        const isPos = data.change >= 0;
+        const sign = isPos ? '+' : '';
+        const chgClass = isPos ? 'token-change-green' : 'token-change-red';
+        const glyph = isPos ? '▲' : '▼';
+        const fiatNum = token.balance * data.price;
+        const fiatFormatted = formatFiat(fiatNum, 2);
+        const holdAmtFormatted = `${token.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ${token.unit}`;
+
+        const priceTxtEl = card.querySelector('.token-price-txt');
+        if (priceTxtEl) {
+          priceTxtEl.innerHTML = `${priceFormatted} <span class="${chgClass}">${glyph} ${sign}${data.change.toFixed(2)}%</span>`;
+        }
+
+        const fiatTxtEl = card.querySelector('.token-fiat-txt');
+        if (fiatTxtEl) {
+          fiatTxtEl.textContent = fiatFormatted;
+        }
+
+        card.setAttribute('onclick', `showTokenAnalytics('${token.sym}', '${priceFormatted}', '${sign}${data.change.toFixed(2)}%', '${holdAmtFormatted}', '${fiatFormatted}')`);
+      });
+
+      // If user is currently viewing the Analytics Detail screen for this token, update it in real time
+      if (currentAnalyticsSym && liveMarketData[currentAnalyticsSym]) {
+        const tokenObj = simPortfolioTokens.find(t => t.sym === currentAnalyticsSym);
+        const data = liveMarketData[currentAnalyticsSym];
+        if (tokenObj && data) {
+          const fiatNum = tokenObj.balance * data.price;
+          const fiatFormatted = formatFiat(fiatNum, 2);
+          const holdAmtFormatted = `${tokenObj.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ${tokenObj.unit}`;
+          const isPos = data.change >= 0;
+          const sign = isPos ? '+' : '';
+
+          const priceNumEl = document.getElementById('analyticsPriceNum');
+          if (priceNumEl) priceNumEl.textContent = formatTokenPrice(data.price);
+
+          const badgeEl = document.getElementById('analyticsGainBadge');
+          if (badgeEl) {
+            badgeEl.textContent = `${isPos ? '▲' : '▼'} ${sign}${data.change.toFixed(2)}% (${formatFiat(Math.abs(data.price * (data.change / 100)), 2)})`;
+            badgeEl.style.background = isPos ? 'var(--emerald-dim)' : 'rgba(255, 71, 87, 0.15)';
+            badgeEl.style.color = isPos ? 'var(--emerald)' : '#FF4757';
+          }
+
+          const holdFiatEl = document.getElementById('analyticsHoldFiat');
+          if (holdFiatEl) holdFiatEl.textContent = `${fiatFormatted} USD`;
+
+          const highEl = document.getElementById('analyticsHighVal');
+          if (highEl && data.high) highEl.textContent = formatTokenPrice(data.high);
+
+          const volEl = document.getElementById('analyticsVolVal');
+          if (volEl && data.vol) volEl.textContent = '$' + data.vol;
+        }
+      }
+    }
+
+    async function fetchLiveMarketData() {
+      try {
+        const symbolsParam = encodeURIComponent(JSON.stringify(["ETHUSDT","BTCUSDT","SOLUSDT","ARBUSDT","BNBUSDT","OPUSDT","POLUSDT","AVAXUSDT"]));
+        const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${symbolsParam}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const list = await res.json();
+        
+        list.forEach(item => {
+          const s = item.symbol.replace('USDT', '');
+          if (liveMarketData[s]) {
+            liveMarketData[s].price = parseFloat(item.lastPrice) || liveMarketData[s].price;
+            liveMarketData[s].change = parseFloat(item.priceChangePercent) || liveMarketData[s].change;
+            liveMarketData[s].high = parseFloat(item.highPrice) || liveMarketData[s].high;
+            const quoteVol = parseFloat(item.quoteVolume);
+            if (quoteVol >= 1e9) liveMarketData[s].vol = (quoteVol / 1e9).toFixed(2) + 'B';
+            else if (quoteVol >= 1e6) liveMarketData[s].vol = (quoteVol / 1e6).toFixed(1) + 'M';
+          }
+        });
+      } catch (err) {
+        console.warn('Binance live feed fetch fallback, trying Coinbase spot:', err);
+        try {
+          const cbEth = await fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot');
+          const cbBtc = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+          const cbSol = await fetch('https://api.coinbase.com/v2/prices/SOL-USD/spot');
+          if (cbEth.ok) {
+            const j = await cbEth.json();
+            if (j.data?.amount) liveMarketData.ETH.price = parseFloat(j.data.amount);
+          }
+          if (cbBtc.ok) {
+            const j = await cbBtc.json();
+            if (j.data?.amount) liveMarketData.BTC.price = parseFloat(j.data.amount);
+          }
+          if (cbSol.ok) {
+            const j = await cbSol.json();
+            if (j.data?.amount) liveMarketData.SOL.price = parseFloat(j.data.amount);
+          }
+        } catch (cbErr) {
+          console.warn('Fallback feeds failed:', cbErr);
+        }
+      }
+
+      renderTickerStrip();
+      updateSimulatorTokenRows();
+      updatePortfolioDisplay();
+
+      const sendInput = document.getElementById('sendAmountInput');
+      if (sendInput) updateSendEquiv(sendInput.value);
+
+      const activeChip = document.querySelector('.fiat-chip.active');
+      if (activeChip) setFiatAmount(currentFiat, activeChip);
+
+      updateTreasuryCalculator();
+    }
+
     // --- 6. Simulator Chain Filtering ---
     function filterSimulatorTokens(chain, btn) {
+      currentFilterChain = chain;
       document.querySelectorAll('.chain-pill-bar .chain-pill').forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
 
       const cards = document.querySelectorAll('#simTokensContainer .token-row-card');
-      const balEl = document.getElementById('portfolioBalanceNum');
-      const gainEl = document.getElementById('portfolioGainText');
-
       cards.forEach(card => {
         if (chain === 'all' || card.getAttribute('data-chain') === chain) {
           card.style.display = 'flex';
@@ -2621,34 +2865,31 @@
         }
       });
 
-      if (!isDiscreet) {
-        if (chain === 'ethereum') {
-          balEl.textContent = '$18,246.09';
-          gainEl.textContent = '▲ +$842.10 (+4.82%) 24h';
-        } else if (chain === 'bitcoin') {
-          balEl.textContent = '$11,862.20';
-          gainEl.textContent = '▲ +$252.00 (+2.15%) 24h';
-        } else if (chain === 'solana') {
-          balEl.textContent = '$3,733.80';
-          gainEl.textContent = '▲ +$230.10 (+6.38%) 24h';
-        } else if (chain === 'arbitrum') {
-          balEl.textContent = '$963.00';
-          gainEl.textContent = '▲ +$29.10 (+3.10%) 24h';
-        } else {
-          balEl.textContent = '$34,842.10';
-          gainEl.textContent = '▲ +$1,602.40 (+4.82%) 24h';
-        }
-      }
+      updatePortfolioDisplay();
     }
 
     // --- 7. Token Analytics View Switcher ---
     function showTokenAnalytics(sym, price, gain, holdAmt, holdFiat) {
+      currentAnalyticsSym = sym;
       document.getElementById('analyticsTokenTitle').textContent = `${sym} Price`;
       document.getElementById('analyticsPriceNum').textContent = price;
-      document.getElementById('analyticsGainBadge').textContent = `▲ ${gain}`;
+      
+      const isPositive = !gain.includes('-');
+      const badge = document.getElementById('analyticsGainBadge');
+      badge.textContent = `${isPositive ? '▲ +' : '▼ '}${gain.replace(/^[▲▼\s\+]+/, '')}`;
+      badge.style.background = isPositive ? 'var(--emerald-dim)' : 'rgba(255, 71, 87, 0.15)';
+      badge.style.color = isPositive ? 'var(--emerald)' : '#FF4757';
+
       document.getElementById('analyticsHoldAmt').textContent = holdAmt;
       document.getElementById('analyticsHoldFiat').textContent = `${holdFiat} USD`;
       document.getElementById('analyticsChainName').textContent = `${sym} Network`;
+      
+      const data = liveMarketData[sym];
+      if (data) {
+        if (data.high) document.getElementById('analyticsHighVal').textContent = formatTokenPrice(data.high);
+        if (data.vol) document.getElementById('analyticsVolVal').textContent = '$' + data.vol;
+      }
+
       showAppTour('detail');
     }
 
@@ -2676,7 +2917,8 @@
       document.querySelectorAll('.fiat-chip').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('fiatDisplayVal').textContent = `$${amt}.00`;
-      const ethRec = (amt / 3485.20).toFixed(4);
+      const ethPrice = liveMarketData.ETH ? liveMarketData.ETH.price : 2501.10;
+      const ethRec = (amt / ethPrice).toFixed(4);
       document.getElementById('cryptoEstVal').textContent = `Receive ≈ ${ethRec} ETH`;
     }
 
@@ -2724,8 +2966,9 @@
 
     function updateSendEquiv(ethVal) {
       const parsed = parseFloat(ethVal) || 0;
-      const usd = (parsed * 3485.20).toFixed(2);
-      document.getElementById('sendUsdEquiv').textContent = `≈ $${usd}`;
+      const ethPrice = liveMarketData.ETH ? liveMarketData.ETH.price : 2501.10;
+      const usd = (parsed * ethPrice).toFixed(2);
+      document.getElementById('sendUsdEquiv').textContent = `≈ $${Number(usd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     function selectFeeTier(tier, price, card) {
@@ -2825,8 +3068,7 @@
 
       // Monthly and Annual Revenue
       const monthlyRev = vol * rate;
-      const annualRev = monthlyRev * 12;
-      const ethPrice = 3485.20;
+      const ethPrice = (liveMarketData && liveMarketData.ETH) ? liveMarketData.ETH.price : 2501.10;
       const monthlyEth = (monthlyRev / ethPrice).toFixed(4);
       const annualEth = (annualRev / ethPrice).toFixed(4);
 
@@ -2907,6 +3149,10 @@
         closePhoneReceiveModal();
       }
     });
+
+    // Start live market data feed immediately and refresh every 20 seconds
+    fetchLiveMarketData();
+    setInterval(fetchLiveMarketData, 20000);
   </script>
 </body>
 </html>

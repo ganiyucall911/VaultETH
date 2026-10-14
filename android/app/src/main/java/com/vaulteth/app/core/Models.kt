@@ -241,11 +241,11 @@ data class TokenItem(
 )
 
 val DefaultTokenAssets: List<TokenItem> = listOf(
-    TokenItem("eth", "ETH", "Ethereum", "$3,485.20", "+4.82%", true, "4.8250 ETH", "$16,816.09", 0xFF627EEA),
-    TokenItem("btc", "BTC", "Bitcoin", "$64,120.00", "+2.15%", true, "0.1850 BTC", "$11,862.20", 0xFFF7931A),
-    TokenItem("sol", "SOL", "Solana", "$152.40", "+6.38%", true, "24.50 SOL", "$3,733.80", 0xFF14F195),
+    TokenItem("eth", "ETH", "Ethereum", "$2,501.10", "+1.81%", true, "4.8250 ETH", "$12,067.81", 0xFF627EEA),
+    TokenItem("btc", "BTC", "Bitcoin", "$83,222.52", "+1.17%", true, "0.1850 BTC", "$15,396.17", 0xFFF7931A),
+    TokenItem("sol", "SOL", "Solana", "$107.03", "+2.03%", true, "24.50 SOL", "$2,622.24", 0xFF14F195),
     TokenItem("usdc", "USDC", "USD Coin", "$1.00", "0.00%", true, "1,430.00 USDC", "$1,430.00", 0xFF2775CA),
-    TokenItem("arb", "ARB", "Arbitrum", "$1.18", "+3.20%", true, "850.00 ARB", "$1,003.00", 0xFF28A0F0)
+    TokenItem("arb", "ARB", "Arbitrum", "$0.1907", "+5.59%", true, "1,500.00 ARB", "$286.05", 0xFF28A0F0)
 )
 
 data class ProtocolFeeConfig(
