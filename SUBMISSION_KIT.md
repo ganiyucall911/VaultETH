@@ -2,9 +2,9 @@
 **Developer:** vault.  
 **Bundle ID / Package Name:** `com.vaulteth.app`  
 **Version:** `1.0.0` (Build `1`)  
-**Product Site:** `https://vaulteth.ganiyusail101.workers.dev/`  
-**Privacy Policy:** `https://vaulteth.ganiyusail101.workers.dev/privacy.html`  
-**Support URL:** `https://vaulteth.ganiyusail101.workers.dev/support.html`  
+**Product Site:** `https://ganiyucall911.github.io/VaultETH/`  
+**Privacy Policy:** `https://ganiyucall911.github.io/VaultETH/privacy.html`  
+**Support URL:** `https://ganiyucall911.github.io/VaultETH/support.html`  
 
 This submission kit provides verified, ready-to-copy metadata, store listing copy, review guidelines disclosures, and compliance questionnaire responses for both Apple App Store Connect and Google Play Console.
 
@@ -75,9 +75,9 @@ ZERO TRACKING. ZERO DATA COLLECTION.
 `crypto,wallet,ethereum,eth,bitcoin,solana,arbitrum,base,optimism,polygon,defi,web3,self-custody,vault`
 
 #### Support & Marketing URLs:
-- **Support URL:** `https://vaulteth.ganiyusail101.workers.dev/support.html`
-- **Marketing URL:** `https://vaulteth.ganiyusail101.workers.dev/`
-- **Privacy Policy URL:** `https://vaulteth.ganiyusail101.workers.dev/privacy.html`
+- **Support URL:** `https://ganiyucall911.github.io/VaultETH/support.html`
+- **Marketing URL:** `https://ganiyucall911.github.io/VaultETH/`
+- **Privacy Policy URL:** `https://ganiyucall911.github.io/VaultETH/privacy.html`
 
 ---
 
@@ -216,8 +216,8 @@ Avoid losing funds on failed transactions. VaultETH executes pre-flight eth_call
   - `docs/assets/appstore-screen-1.jpg` (Portfolio & Multi-Chain Balances)
   - `docs/assets/appstore-screen-2.jpg` (Pre-Flight Simulation & Biometrics)
   - `docs/assets/appstore-screen-3.jpg` (Receive Pass, Identicon & QR)
-- [x] **Privacy Policy Web Page:** `https://vaulteth.ganiyusail101.workers.dev/privacy.html`
-- [x] **Support & FAQ Web Page:** `https://vaulteth.ganiyusail101.workers.dev/support.html`
+- [x] **Privacy Policy Web Page:** `https://ganiyucall911.github.io/VaultETH/privacy.html`
+- [x] **Support & FAQ Web Page:** `https://ganiyucall911.github.io/VaultETH/support.html`
 
 ---
 
