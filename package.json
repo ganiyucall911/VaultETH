@@ -6,12 +6,7 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
-    "build": "echo 'Static build ready in docs/'",
-    "deploy": "wrangler deploy",
-    "pages:deploy": "wrangler pages deploy docs"
-  },
-  "devDependencies": {
-    "wrangler": "^4.150.0"
+    "build": "echo 'Static build ready in docs/'"
   },
   "dependencies": {
     "ethers": "^6.17.0",

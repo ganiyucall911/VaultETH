@@ -6,7 +6,6 @@
 [![Android CI](https://github.com/ganiyucall911/VaultETH/actions/workflows/android.yml/badge.svg)](https://github.com/ganiyucall911/VaultETH/actions/workflows/android.yml)
 
 [![Pages](https://github.com/ganiyucall911/VaultETH/actions/workflows/pages/pages-build-deployment/badge.svg)](https://ganiyucall911.github.io/VaultETH/)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-vaulteth-F38020?logo=cloudflare&logoColor=white)](https://vaulteth.ganiyusail101.workers.dev)
 
 VaultETH is an executive, self-custodial multi-chain wallet engineered for sovereign asset ownership and uncompromising privacy. Built natively for **iOS (SwiftUI, iOS 17+)** and **Android (Jetpack Compose, Android 8.0+)**, VaultETH enables seamless management of multi-chain assets from a single 12-word master seed phrase.
 
@@ -135,9 +134,8 @@ cd android
 │   ├── index.html            # Web showcase & interactive mobile wallet simulator
 │   ├── privacy.html          # Standalone privacy policy page
 │   ├── support.html          # Standalone support and FAQ page
-│   ├── _headers              # Cloudflare Pages security & caching headers
+│   ├── _headers              # Security & caching headers
 │   └── assets/               # Marketing banners and App Store screenshot mockups
-├── wrangler.toml             # Cloudflare Pages deployment configuration
 ├── SUBMISSION_KIT.md         # Complete App Store Connect & Google Play metadata and questionnaires
 ├── APP_STORE_CHECKLIST.md    # Pre-flight App Store checklist and guidelines
 ├── PRIVACY_POLICY.md         # Repository privacy policy

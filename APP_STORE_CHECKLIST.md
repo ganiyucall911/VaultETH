@@ -32,9 +32,9 @@ This document tracks all App Store submission requirements for VaultETH, disting
 - [ ] **App Name:** `VaultETH`
 - [ ] **Subtitle:** *Self-Custody Multi-Chain Vault* (under 30 characters)
 - [ ] **Category:** Primary: `Finance` | Secondary: `Utilities`
-- [ ] **Privacy Policy URL:** `https://vaulteth.ganiyusail101.workers.dev/privacy.html` (Standalone product page by `vault.`)
-- [ ] **Support URL:** `https://vaulteth.ganiyusail101.workers.dev/support.html` (Standalone product page by `vault.`)
-- [ ] **Marketing URL (Optional):** `https://vaulteth.ganiyusail101.workers.dev/`
+- [ ] **Privacy Policy URL:** `https://ganiyucall911.github.io/VaultETH/privacy.html` (Standalone product page by `vault.`)
+- [ ] **Support URL:** `https://ganiyucall911.github.io/VaultETH/support.html` (Standalone product page by `vault.`)
+- [ ] **Marketing URL (Optional):** `https://ganiyucall911.github.io/VaultETH/`
 
 ### C. App Store Questionnaires
 - [ ] **App Privacy Details:**
