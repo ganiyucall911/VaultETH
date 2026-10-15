@@ -1229,9 +1229,230 @@
       text-align: center;
       padding: 36px 16px;
       background: var(--bg-surface-elevated);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-md);
       color: var(--text-muted);
+    }
+
+    /* Price Alert System Styles */
+    .alerts-nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 9px;
+      margin-left: 6px;
+    }
+    .bell-alert-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+      animation: alertPulse 1.8s infinite;
+    }
+    @keyframes alertPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.6; }
+    }
+    .price-alert-banner {
+      position: sticky;
+      top: 68px;
+      z-index: 45;
+      background: linear-gradient(90deg, rgba(20, 26, 36, 0.98), rgba(14, 18, 25, 0.98));
+      backdrop-filter: blur(16px);
+      border-bottom: 2px solid var(--primary);
+      box-shadow: 0 8px 32px rgba(0, 214, 50, 0.15);
+      animation: slideDownBanner 0.25s ease-out;
+    }
+    @keyframes slideDownBanner {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .price-alert-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 12px clamp(16px, 3vw, 36px);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .price-alert-bell-anim {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-dim);
+      border: 1px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      animation: alertWiggle 1s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes alertWiggle {
+      0%, 100% { transform: rotate(0); }
+      20% { transform: rotate(-15deg); }
+      40% { transform: rotate(15deg); }
+      60% { transform: rotate(-8deg); }
+      80% { transform: rotate(8deg); }
+    }
+    .alert-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .alert-card:hover {
+      border-color: var(--border-highlight);
+      background: var(--bg-card-hover);
+    }
+    .alert-card.triggered {
+      border-color: rgba(0, 214, 50, 0.4);
+      background: linear-gradient(135deg, rgba(0, 214, 50, 0.05), var(--bg-surface-elevated));
+    }
+    .alert-card.paused {
+      opacity: 0.65;
+    }
+    .alert-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+    .alert-status-badge.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .alert-status-badge.triggered {
+      background: rgba(0, 214, 50, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(0, 214, 50, 0.35);
+    }
+    .alert-status-badge.paused {
+      background: rgba(148, 163, 184, 0.12);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .alert-condition-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .alert-condition-pill.above {
+      background: rgba(0, 214, 50, 0.12);
+      color: var(--primary);
+      border: 1px solid rgba(0, 214, 50, 0.25);
+    }
+    .alert-condition-pill.below {
+      background: rgba(255, 71, 87, 0.12);
+      color: var(--danger);
+      border: 1px solid rgba(255, 71, 87, 0.25);
+    }
+    .condition-toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .condition-toggle-btn {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .condition-toggle-btn:hover {
+      border-color: var(--border-highlight);
+      color: #fff;
+    }
+    .condition-toggle-btn.active.above {
+      background: rgba(0, 214, 50, 0.12);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .condition-toggle-btn.active.below {
+      background: rgba(255, 71, 87, 0.12);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quick-pct-chip {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .quick-pct-chip:hover {
+      background: var(--bg-surface-elevated);
+      color: #fff;
+      border-color: var(--border-highlight);
+    }
+    .quick-pct-chip.pos {
+      color: var(--primary);
+    }
+    .quick-pct-chip.neg {
+      color: var(--danger);
+    }
+    .alert-history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .alert-history-table th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .alert-history-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .alert-oracle-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+    .alert-oracle-card:hover {
+      border-color: var(--border-highlight);
     }
   </style>
 </head>
@@ -1261,6 +1482,11 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
         Swap
       </button>
+      <button class="nav-tab-btn" id="tabAlertsBtn" onclick="switchNavTab('alerts')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Alerts
+        <span class="alerts-nav-badge" id="alertsNavBadge" style="display: none;">0</span>
+      </button>
       <button class="nav-tab-btn" id="tabActivityBtn" onclick="switchNavTab('activity')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Activity
@@ -1281,6 +1507,12 @@
 
     <!-- Topbar Right Dropdowns & Actions -->
     <div class="topbar-right">
+      <!-- Price Alerts Bell Quick Button -->
+      <button class="icon-btn" onclick="switchNavTab('alerts')" id="topAlertsBtn" title="Price Alerts & Monitoring" style="position: relative;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="bell-alert-dot" id="topAlertsDot" style="display: none;"></span>
+      </button>
+
       <!-- Google Drive Quick Connection Badge -->
       <button class="dropdown-btn" id="topDriveBtn" onclick="switchNavTab('drive')" title="Google Drive Backup Status" style="gap:6px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4.5 19.5 8 13.5h14l-3.5 6z" fill="#4285F4"/><path d="M8 13.5 15 1.5h7l-7 12z" fill="#FFBA00"/><path d="M1.5 14.5 8 3.5h7L8.5 14.5z" fill="#00AC47"/></svg>
@@ -1312,6 +1544,30 @@
       </button>
     </div>
   </header>
+
+  <!-- High Priority Price Alert Banner -->
+  <div id="priceAlertBanner" class="price-alert-banner" style="display: none;">
+    <div class="price-alert-content">
+      <div class="price-alert-bell-anim">🔔</div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-weight: 700; font-size: 14px; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <span id="alertBannerTitle">Price Alert Triggered!</span>
+          <span id="alertBannerBadge" class="alert-status-badge triggered">TARGET REACHED</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" id="alertBannerDesc">
+          ETH reached $2,800.00 (Current: $2,810.50)
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+        <button class="btn btn-primary" onclick="handleAlertBannerAction()" style="font-size: 12px; padding: 5px 12px;">
+          View / Trade
+        </button>
+        <button class="icon-btn" onclick="dismissAlertBanner()" title="Dismiss" style="width: 28px; height: 28px;">
+          ✕
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- App Main Content Area -->
   <main id="appMainContainer">
@@ -1751,6 +2007,102 @@
             </div>
           </div>
         </div>
+
+        <!-- View G: Price Alerts & Market Monitoring -->
+        <div id="viewAlerts" style="display: none;">
+          <!-- Top Overview & Actions Card -->
+          <div class="section-card">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Token Price Alerts</h2>
+                <span class="section-subtitle">Real-time alerts triggered by live market oracle prices with instant audio and visual notifications</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" onclick="fetchMarketPrices(true)" id="refreshPricesBtn" style="font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;" title="Refresh prices from oracle">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="refreshPricesIcon"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                  <span>Sync Prices</span>
+                </button>
+                <button class="btn btn-secondary" onclick="openTestAlertModal()" style="font-size: 12px; padding: 6px 12px; color: var(--warning); border-color: rgba(255,165,2,0.3);" title="Test notification banner and audio chime">
+                  ⚡ Test Alert
+                </button>
+                <button class="btn btn-primary" onclick="openCreateAlertModal()" style="font-size: 12px; padding: 6px 14px;">
+                  + Set Price Alert
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats & Live Oracle Ticker Grid -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+              <div style="padding: 14px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Active Alerts</div>
+                <div class="tabular-nums" style="font-size: 22px; font-weight: 700; color: #60a5fa; margin-top: 4px;" id="statActiveAlertsCount">0</div>
+              </div>
+              <div style="padding: 14px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Triggered (Hit)</div>
+                <div class="tabular-nums" style="font-size: 22px; font-weight: 700; color: var(--primary); margin-top: 4px;" id="statTriggeredAlertsCount">0</div>
+              </div>
+              <div style="padding: 14px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Oracle Feed</div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></span>
+                  CoinGecko Live
+                </div>
+              </div>
+              <div style="padding: 14px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Last Check</div>
+                <div class="tabular-nums mono" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;" id="statLastCheckTime">Just now</div>
+              </div>
+            </div>
+
+            <!-- Fast-Add Price Oracle Bar -->
+            <div style="margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Live Token Quotes & Quick Alert Setup</span>
+                <span style="font-size: 11px; color: var(--text-dim);">Click "+ Alert" on any token to prefill threshold</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;" id="oracleQuickCardsContainer">
+                <!-- Dynamically populated live tokens (ETH, BTC, SOL, USDC, USDT, DAI, USDe, EURC) -->
+              </div>
+            </div>
+
+            <!-- Active Alerts Section with Filter Tabs -->
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn btn-secondary active" id="alertFilterAll" onclick="setAlertsFilter('all')" style="font-size: 12px; padding: 6px 12px;">All</button>
+                  <button class="btn btn-secondary" id="alertFilterActive" onclick="setAlertsFilter('active')" style="font-size: 12px; padding: 6px 12px;">Active</button>
+                  <button class="btn btn-secondary" id="alertFilterTriggered" onclick="setAlertsFilter('triggered')" style="font-size: 12px; padding: 6px 12px;">Triggered</button>
+                  <button class="btn btn-secondary" id="alertFilterPaused" onclick="setAlertsFilter('paused')" style="font-size: 12px; padding: 6px 12px;">Paused</button>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);" id="alertsCountLabel">
+                  0 alerts configured
+                </div>
+              </div>
+
+              <!-- Price Alerts Cards List -->
+              <div id="priceAlertsListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Populated dynamically via renderPriceAlertsList() -->
+              </div>
+            </div>
+
+            <!-- Triggered History Log -->
+            <div style="margin-top: 32px; border-top: 1px solid var(--border); padding-top: 24px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <div>
+                  <h3 style="font-size: 15px; font-weight: 700;">Alert Notifications Log</h3>
+                  <div style="font-size: 12px; color: var(--text-muted);">Audit log of price threshold crosses detected by VaultETH</div>
+                </div>
+                <button class="btn btn-secondary" onclick="clearAlertHistory()" style="font-size: 11px; padding: 4px 10px;" id="clearHistoryBtn">
+                  Clear Log
+                </button>
+              </div>
+
+              <div id="alertHistoryListContainer">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Right Column: Quick Status & Account Inspector -->
@@ -1790,6 +2142,27 @@
             <div style="display: flex; justify-content: space-between;">
               <span>Key Storage</span>
               <span>Encrypted Local</span>
+            </div>
+          </div>
+
+          <!-- Price Alerts Quick Card in Sidebar -->
+          <div style="padding: 12px; background: var(--bg-surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+                <span>🔔</span> Price Alerts
+              </span>
+              <span class="alert-status-badge active tabular-nums" id="sideActiveAlertsBadge" style="font-size: 10px;">0 Active</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;" id="sideAlertsSummaryText">
+              Real-time threshold monitoring via live oracle data.
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn btn-secondary" onclick="openCreateAlertModal()" style="font-size: 11px; padding: 5px 8px; flex: 1;">
+                + Set Alert
+              </button>
+              <button class="btn btn-secondary" onclick="switchNavTab('alerts')" style="font-size: 11px; padding: 5px 8px; flex: 1;">
+                Manage
+              </button>
             </div>
           </div>
 
@@ -2215,6 +2588,158 @@
     </div>
   </div>
 
+  <!-- Modal 13: Create / Edit Price Alert Modal -->
+  <div class="modal-backdrop" id="createAlertModal">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="alertModalTitle">Create Price Alert</h3>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Set a market price trigger to notify you in real-time
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('createAlertModal')" title="Close">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding: 20px;">
+        <input type="hidden" id="editingAlertId" value="" />
+
+        <!-- 1. Select Token -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label" style="display: flex; justify-content: space-between;">
+            <span>Select Asset</span>
+            <span style="font-size: 11px; color: var(--text-dim);" id="alertModalTokenPrice">Live: $2,645.20</span>
+          </label>
+          <select id="alertTokenSelect" class="form-input" onchange="onAlertTokenSelected()" style="background: var(--bg-card); font-weight: 600;">
+            <!-- Options populated dynamically -->
+          </select>
+        </div>
+
+        <!-- 2. Condition Toggle: Above vs Below -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">Alert Trigger Condition</label>
+          <div class="condition-toggle-grid">
+            <button type="button" class="condition-toggle-btn active above" id="condBtnAbove" onclick="setAlertCondition('ABOVE')">
+              <span style="font-size: 16px;">▲</span> Rises to or above (≥)
+            </button>
+            <button type="button" class="condition-toggle-btn" id="condBtnBelow" onclick="setAlertCondition('BELOW')">
+              <span style="font-size: 16px;">▼</span> Drops to or below (≤)
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Target Price Input ($ USD) -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" style="margin-bottom: 0;">Target Price (USD)</label>
+            <span class="mono tabular-nums" style="font-size: 12px; color: var(--primary);" id="alertDistanceLabel">
+              +5.0% from current
+            </span>
+          </div>
+          <div style="position: relative;">
+            <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--text-dim);">$</span>
+            <input 
+              type="number" 
+              step="any" 
+              id="alertTargetPriceInput" 
+              class="form-input mono tabular-nums" 
+              placeholder="0.00" 
+              style="padding-left: 30px; font-size: 16px; font-weight: 700; background: var(--bg-card);"
+              oninput="onAlertTargetPriceInput()"
+            />
+          </div>
+
+          <!-- Quick Percentage Adjustment Pills -->
+          <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" class="quick-pct-chip pos" onclick="adjustAlertPricePercent(2)">+2%</button>
+            <button type="button" class="quick-pct-chip pos" onclick="adjustAlertPricePercent(5)">+5%</button>
+            <button type="button" class="quick-pct-chip pos" onclick="adjustAlertPricePercent(10)">+10%</button>
+            <button type="button" class="quick-pct-chip pos" onclick="adjustAlertPricePercent(20)">+20%</button>
+            <button type="button" class="quick-pct-chip neg" onclick="adjustAlertPricePercent(-2)">-2%</button>
+            <button type="button" class="quick-pct-chip neg" onclick="adjustAlertPricePercent(-5)">-5%</button>
+            <button type="button" class="quick-pct-chip neg" onclick="adjustAlertPricePercent(-10)">-10%</button>
+            <button type="button" class="quick-pct-chip neg" onclick="adjustAlertPricePercent(-20)">-20%</button>
+          </div>
+        </div>
+
+        <!-- 4. Optional Label / Note -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">Note or Goal (Optional)</label>
+          <input 
+            type="text" 
+            id="alertNoteInput" 
+            class="form-input" 
+            placeholder="e.g. Breakout take profit, Buy the dip target" 
+            maxlength="60"
+            style="background: var(--bg-card);"
+          />
+        </div>
+
+        <!-- 5. Notification Channels -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px;">
+          <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #fff;">Notification Settings</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; cursor: pointer;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span>🔔</span> In-App Visual Banner & Toast
+              </span>
+              <input type="checkbox" id="alertInAppNotify" checked disabled />
+            </label>
+            <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; cursor: pointer;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span>🔊</span> Play Audio Chime
+              </span>
+              <input type="checkbox" id="alertSoundNotify" checked />
+            </label>
+            <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; cursor: pointer;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span>🖥️</span> Browser Desktop Notification
+              </span>
+              <input type="checkbox" id="alertBrowserNotify" onchange="handleBrowserNotifyToggle(this)" />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('createAlertModal')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveAlertBtn" onclick="savePriceAlert()">Save Alert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 14: Test Alert Simulator Modal -->
+  <div class="modal-backdrop" id="testAlertModal">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Test Price Alert Notification</h3>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Simulate a market trigger to verify sound, banner, and notifications
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('testAlertModal')" title="Close">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+          Choose an alert below to simulate a live market price threshold crossing. This immediately executes the alert trigger handler, plays the audio chime, displays the banner, and records to history.
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">Select Alert to Test</label>
+          <select id="testAlertSelect" class="form-input" style="background: var(--bg-card); font-weight: 600;">
+            <!-- Options populated dynamically -->
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('testAlertModal')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="executeTestAlertSimulation()" style="color: #000; background: var(--primary);">
+          Trigger Simulation Now
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Global Toast Notification -->
   <div class="toast-container">
     <div class="toast-pill" id="globalToast">
@@ -2313,6 +2838,9 @@
     window.addEventListener('DOMContentLoaded', async () => {
       loadStateFromStorage();
       await fetchMarketPrices();
+      if (typeof checkPriceAlerts === 'function') checkPriceAlerts(false);
+      if (typeof updateAlertsBadges === 'function') updateAlertsBadges();
+      if (typeof startPriceAlertsPolling === 'function') startPriceAlertsPolling();
 
       if (!walletState.accounts || walletState.accounts.length === 0) {
         document.getElementById('onboardingScreen').style.display = 'block';
@@ -2334,6 +2862,12 @@
         }
       } catch (e) {
         console.error('Error loading state', e);
+      }
+      if (!walletState.priceAlerts || !Array.isArray(walletState.priceAlerts) || walletState.priceAlerts.length === 0) {
+        walletState.priceAlerts = typeof getDefaultPriceAlerts === 'function' ? getDefaultPriceAlerts() : [];
+      }
+      if (!walletState.alertHistory || !Array.isArray(walletState.alertHistory)) {
+        walletState.alertHistory = [];
       }
     }
 
@@ -2537,14 +3071,29 @@
     }
 
     // --- 5. Market Prices & On-Chain RPC Queries ---
-    async function fetchMarketPrices() {
+    async function fetchMarketPrices(isManual = false) {
+      const icon = document.getElementById('refreshPricesIcon');
+      if (isManual && icon) icon.style.animation = 'spin 0.8s linear infinite';
+
       try {
         const res = await fetch('/api/prices');
         if (res.ok) {
           marketPrices = await res.json();
+          if (typeof checkPriceAlerts === 'function') checkPriceAlerts(true);
+          updateBalanceDisplays();
+          renderAssetList();
+          if (typeof updateSwapBalances === 'function') updateSwapBalances();
+          if (typeof renderPriceAlertsView === 'function') renderPriceAlertsView();
+
+          const checkEl = document.getElementById('statLastCheckTime');
+          if (checkEl) checkEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+          if (isManual) showToast('Market prices refreshed from oracle');
         }
       } catch (err) {
         console.warn('Failed to fetch prices', err);
+      } finally {
+        if (icon) icon.style.animation = '';
       }
     }
 
@@ -2627,6 +3176,8 @@
       renderAssetList();
       renderActivityList();
       renderContactsList();
+      if (typeof updateAlertsBadges === 'function') updateAlertsBadges();
+      if (typeof renderPriceAlertsView === 'function') renderPriceAlertsView();
     }
 
     // Default verified stablecoins held in active portfolio
@@ -2895,6 +3446,7 @@
       document.getElementById('viewContacts').style.display = 'none';
       document.getElementById('viewSecurity').style.display = 'none';
       if (document.getElementById('viewDriveBackup')) document.getElementById('viewDriveBackup').style.display = 'none';
+      if (document.getElementById('viewAlerts')) document.getElementById('viewAlerts').style.display = 'none';
 
       if (tab === 'wallet') {
         document.getElementById('tabWalletBtn').classList.add('active');
@@ -2903,6 +3455,10 @@
         document.getElementById('tabSwapBtn').classList.add('active');
         document.getElementById('viewSwap').style.display = 'block';
         calculateSwapOutput();
+      } else if (tab === 'alerts') {
+        if (document.getElementById('tabAlertsBtn')) document.getElementById('tabAlertsBtn').classList.add('active');
+        if (document.getElementById('viewAlerts')) document.getElementById('viewAlerts').style.display = 'block';
+        if (typeof renderPriceAlertsView === 'function') renderPriceAlertsView();
       } else if (tab === 'activity') {
         document.getElementById('tabActivityBtn').classList.add('active');
         document.getElementById('viewActivity').style.display = 'block';
@@ -5470,6 +6026,895 @@
         btn.textContent = 'Permanently Delete';
         deleteTargetDriveFile = null;
       }
+    }
+
+    // =========================================================================
+    // --- 17. Price Alert System: Live Market Oracle Thresholds & Notifications ---
+    // =========================================================================
+
+    const TRACKABLE_TOKENS = [
+      { symbol: 'ETH', name: 'Ethereum', color: '#627EEA' },
+      { symbol: 'BTC', name: 'Bitcoin', color: '#F7931A' },
+      { symbol: 'SOL', name: 'Solana', color: '#14F195' },
+      { symbol: 'USDC', name: 'USD Coin', color: '#2775CA' },
+      { symbol: 'USDT', name: 'Tether USD', color: '#26A17B' },
+      { symbol: 'DAI', name: 'Dai Stablecoin', color: '#F5AC37' },
+      { symbol: 'USDe', name: 'Ethena USDe', color: '#A855F7' },
+      { symbol: 'PYUSD', name: 'PayPal USD', color: '#0079C1' },
+      { symbol: 'EURC', name: 'Euro Coin', color: '#1E40AF' },
+      { symbol: 'POL', name: 'Polygon', color: '#8247E5' },
+      { symbol: 'ARB', name: 'Arbitrum', color: '#28A0F0' },
+      { symbol: 'OP', name: 'Optimism', color: '#FF0420' },
+      { symbol: 'LINK', name: 'Chainlink', color: '#375BD2' },
+      { symbol: 'UNI', name: 'Uniswap', color: '#FF007A' },
+      { symbol: 'AAVE', name: 'Aave', color: '#B6509E' }
+    ];
+
+    let activeAlertsFilter = 'all';
+    let currentAlertCondition = 'ABOVE';
+    let currentBannerAlert = null;
+    let priceAlertsPollInterval = null;
+
+    function getDefaultPriceAlerts() {
+      return [
+        {
+          id: 'alert_eth_target',
+          symbol: 'ETH',
+          name: 'Ethereum',
+          targetPrice: 2800.00,
+          condition: 'ABOVE',
+          createdPrice: 2645.20,
+          createdAt: Date.now() - 3600000,
+          status: 'active',
+          note: 'Key resistance breakout target',
+          soundEnabled: true,
+          browserNotify: false,
+          color: '#627EEA'
+        },
+        {
+          id: 'alert_btc_dip',
+          symbol: 'BTC',
+          name: 'Bitcoin',
+          targetPrice: 65000.00,
+          condition: 'BELOW',
+          createdPrice: 67840.00,
+          createdAt: Date.now() - 7200000,
+          status: 'active',
+          note: 'Support retest & accumulation dip',
+          soundEnabled: true,
+          browserNotify: false,
+          color: '#F7931A'
+        },
+        {
+          id: 'alert_sol_surge',
+          symbol: 'SOL',
+          name: 'Solana',
+          targetPrice: 175.00,
+          condition: 'ABOVE',
+          createdPrice: 154.60,
+          createdAt: Date.now() - 10800000,
+          status: 'active',
+          note: 'DeFi momentum surge target',
+          soundEnabled: true,
+          browserNotify: false,
+          color: '#14F195'
+        }
+      ];
+    }
+
+    function setAlertsFilter(filter) {
+      activeAlertsFilter = filter;
+      ['all', 'active', 'triggered', 'paused'].forEach(f => {
+        const btn = document.getElementById(`alertFilter${f.charAt(0).toUpperCase() + f.slice(1)}`);
+        if (btn) {
+          if (f === filter) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      renderPriceAlertsList();
+    }
+
+    function renderPriceAlertsView() {
+      if (!walletState.priceAlerts) walletState.priceAlerts = getDefaultPriceAlerts();
+      if (!walletState.alertHistory) walletState.alertHistory = [];
+
+      const activeCount = walletState.priceAlerts.filter(a => a.status === 'active').length;
+      const triggeredCount = walletState.priceAlerts.filter(a => a.status === 'triggered').length;
+
+      const statActiveEl = document.getElementById('statActiveAlertsCount');
+      if (statActiveEl) statActiveEl.textContent = activeCount;
+
+      const statTrigEl = document.getElementById('statTriggeredAlertsCount');
+      if (statTrigEl) statTrigEl.textContent = triggeredCount;
+
+      renderOracleQuickCards();
+      renderPriceAlertsList();
+      renderAlertHistoryList();
+      updateAlertsBadges();
+    }
+
+    function renderOracleQuickCards() {
+      const container = document.getElementById('oracleQuickCardsContainer');
+      if (!container) return;
+
+      const displayTokens = TRACKABLE_TOKENS.slice(0, 8); // Top 8 assets for quick viewing
+      container.innerHTML = displayTokens.map(t => {
+        const price = getTokenPriceUsd(t.symbol);
+        const priceFmt = price >= 1000 ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${price.toFixed(2)}`;
+        
+        let changeText = '+0.00%';
+        let changeClass = 'color: var(--primary);';
+        const key = getCoinGeckoKey(t.symbol);
+        if (marketPrices[key] && marketPrices[key].usd_24h_change !== undefined) {
+          const chg = marketPrices[key].usd_24h_change;
+          changeText = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+          changeClass = chg >= 0 ? 'color: var(--primary);' : 'color: var(--danger);';
+        }
+
+        return `
+          <div class="alert-oracle-card">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="token-avatar-badge" style="background: ${t.color}20; color: ${t.color}; border-color: ${t.color}40; width: 32px; height: 32px; font-size: 11px;">
+                ${escapeHtml(t.symbol.slice(0, 3))}
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px; color: #fff;">${t.symbol}</div>
+                <div class="tabular-nums" style="font-size: 11px; ${changeClass}">${changeText}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div class="tabular-nums mono" style="font-size: 13px; font-weight: 600; color: #fff;">${priceFmt}</div>
+              <button 
+                type="button" 
+                onclick="openCreateAlertModal('${t.symbol}', 'ABOVE')" 
+                style="background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-muted); font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; cursor: pointer; margin-top: 4px; transition: var(--transition);"
+                onmouseover="this.style.color='#fff'; this.style.borderColor='var(--border-highlight)';"
+                onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)';"
+              >
+                + Alert
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getCoinGeckoKey(symbol) {
+      const map = {
+        'ETH': 'ethereum',
+        'BTC': 'bitcoin',
+        'SOL': 'solana',
+        'POL': 'matic-network',
+        'MATIC': 'matic-network',
+        'ARB': 'arbitrum',
+        'OP': 'optimism',
+        'LINK': 'chainlink',
+        'UNI': 'uniswap',
+        'USDC': 'usd-coin',
+        'USDT': 'tether',
+        'DAI': 'dai',
+        'USDE': 'ethena-usde',
+        'PYUSD': 'paypal-usd',
+        'EURC': 'euro-coin',
+        'FRAX': 'frax'
+      };
+      return map[symbol.toUpperCase()] || '';
+    }
+
+    function renderPriceAlertsList() {
+      const container = document.getElementById('priceAlertsListContainer');
+      const countLabel = document.getElementById('alertsCountLabel');
+      if (!container) return;
+
+      const alerts = walletState.priceAlerts || [];
+      let filtered = alerts;
+      if (activeAlertsFilter !== 'all') {
+        filtered = alerts.filter(a => a.status === activeAlertsFilter);
+      }
+
+      if (countLabel) {
+        countLabel.textContent = `${filtered.length} alert${filtered.length === 1 ? '' : 's'} displayed`;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 48px 20px; background: var(--bg-surface-elevated); border: 1px dashed var(--border); border-radius: var(--radius-md); color: var(--text-muted);">
+            <div style="font-size: 32px; margin-bottom: 8px;">🔔</div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;">No ${activeAlertsFilter === 'all' ? '' : activeAlertsFilter} alerts found</div>
+            <div style="font-size: 13px; margin-bottom: 16px;">Set an alert to receive immediate notifications when tokens hit your price target.</div>
+            <button class="btn btn-primary" onclick="openCreateAlertModal()" style="font-size: 12px; padding: 6px 14px;">
+              + Create First Alert
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(a => {
+        const currentPrice = getTokenPriceUsd(a.symbol);
+        const currentFmt = currentPrice >= 1000 ? `$${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${currentPrice.toFixed(2)}`;
+        const targetFmt = a.targetPrice >= 1000 ? `$${a.targetPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${a.targetPrice.toFixed(2)}`;
+
+        const isAbove = a.condition === 'ABOVE';
+        const condSymbol = isAbove ? '▲' : '▼';
+        const condClass = isAbove ? 'above' : 'below';
+        const condText = isAbove ? `Rises to or above ≥ ${targetFmt}` : `Drops to or below ≤ ${targetFmt}`;
+
+        // Calculate distance
+        const diff = a.targetPrice - currentPrice;
+        const pctDiff = ((diff / currentPrice) * 100);
+        let distanceText = '';
+        let isHit = false;
+
+        if (isAbove) {
+          if (currentPrice >= a.targetPrice) {
+            isHit = true;
+            distanceText = `Target reached (+${Math.abs(pctDiff).toFixed(2)}% over)`;
+          } else {
+            distanceText = `${pctDiff >= 0 ? '+' : ''}${pctDiff.toFixed(2)}% to target ($${Math.abs(diff).toFixed(2)} away)`;
+          }
+        } else {
+          if (currentPrice <= a.targetPrice) {
+            isHit = true;
+            distanceText = `Target reached (-${Math.abs(pctDiff).toFixed(2)}% under)`;
+          } else {
+            distanceText = `${pctDiff.toFixed(2)}% to target ($${Math.abs(diff).toFixed(2)} away)`;
+          }
+        }
+
+        const color = a.color || '#3B82F6';
+        const cardClass = `alert-card ${a.status === 'triggered' ? 'triggered' : ''} ${a.status === 'paused' ? 'paused' : ''}`;
+
+        return `
+          <div class="${cardClass}" id="alert-card-${a.id}">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+              <!-- Left: Asset Info -->
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="token-avatar-badge" style="background: ${color}20; color: ${color}; border-color: ${color}40; width: 40px; height: 40px; font-size: 13px;">
+                  ${escapeHtml(a.symbol.slice(0, 3))}
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 700; font-size: 15px; color: #fff;">${escapeHtml(a.name || a.symbol)}</span>
+                    <span style="font-size: 12px; color: var(--text-dim); font-weight: 600;">${a.symbol}</span>
+                    <span class="alert-status-badge ${a.status}">${a.status.toUpperCase()}</span>
+                  </div>
+                  <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                    Current: <span class="mono tabular-nums" style="font-weight: 700; color: #fff;">${currentFmt}</span>
+                    <span style="color: var(--border-highlight); margin: 0 6px;">·</span>
+                    <span class="mono tabular-nums" style="color: ${isHit ? 'var(--primary)' : 'var(--text-muted)'}; font-size: 11px;">${distanceText}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Condition & Target Display -->
+              <div style="text-align: right;">
+                <div class="alert-condition-pill ${condClass}">
+                  <span>${condSymbol}</span>
+                  <span>${condText}</span>
+                </div>
+                ${a.note ? `
+                  <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px; font-style: italic;">
+                    "${escapeHtml(a.note)}"
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Bottom Actions Row -->
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 4px; font-size: 11px; color: var(--text-dim);">
+              <div>
+                ${a.status === 'triggered' && a.triggeredAt ? `
+                  <span style="color: var(--primary);">✓ Triggered at ${new Date(a.triggeredAt).toLocaleTimeString()} (${a.triggeredPrice ? `$${a.triggeredPrice.toFixed(2)}` : ''})</span>
+                ` : `
+                  <span>Created ${new Date(a.createdAt).toLocaleDateString()} · Audio: ${a.soundEnabled ? 'ON 🔊' : 'OFF'}</span>
+                `}
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 6px;">
+                ${a.status === 'triggered' ? `
+                  <button class="btn btn-secondary" onclick="resetPriceAlert('${a.id}')" style="font-size: 11px; padding: 4px 8px; color: var(--primary); border-color: rgba(0,214,50,0.3);">
+                    ↺ Re-Arm Alert
+                  </button>
+                ` : `
+                  <button class="btn btn-secondary" onclick="togglePausePriceAlert('${a.id}')" style="font-size: 11px; padding: 4px 8px;">
+                    ${a.status === 'paused' ? '▶ Resume' : '⏸ Pause'}
+                  </button>
+                `}
+                <button class="btn btn-secondary" onclick="simulateAlertTrigger('${a.id}')" style="font-size: 11px; padding: 4px 8px; color: var(--warning);" title="Test this alert notification">
+                  ⚡ Test
+                </button>
+                <button class="btn btn-secondary" onclick="quickTradeAlert('${a.symbol}')" style="font-size: 11px; padding: 4px 8px;" title="Swap this token">
+                  Swap
+                </button>
+                <button class="btn btn-secondary" onclick="openEditAlertModal('${a.id}')" style="font-size: 11px; padding: 4px 8px;">
+                  Edit
+                </button>
+                <button class="btn btn-secondary" onclick="deletePriceAlert('${a.id}')" style="font-size: 11px; padding: 4px 8px; color: var(--danger);" title="Delete Alert">
+                  ✕
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAlertHistoryList() {
+      const container = document.getElementById('alertHistoryListContainer');
+      if (!container) return;
+
+      const history = walletState.alertHistory || [];
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px; color: var(--text-dim); font-size: 12px;">
+            No alert notifications logged yet. Active alerts will record here as price targets are crossed.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="overflow-x: auto;">
+          <table class="alert-history-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Asset</th>
+                <th>Condition</th>
+                <th>Target Threshold</th>
+                <th>Triggered Price</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${history.slice(0, 15).map(h => {
+                const targetFmt = h.targetPrice >= 1000 ? `$${h.targetPrice.toLocaleString()}` : `$${h.targetPrice.toFixed(2)}`;
+                const trigFmt = h.triggeredPrice >= 1000 ? `$${h.triggeredPrice.toLocaleString()}` : `$${h.triggeredPrice.toFixed(2)}`;
+                const dateStr = new Date(h.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                return `
+                  <tr>
+                    <td class="mono" style="color: var(--text-muted); font-size: 11px;">${dateStr}</td>
+                    <td>
+                      <span style="font-weight: 700; color: #fff;">${escapeHtml(h.symbol)}</span>
+                      <span style="color: var(--text-dim); font-size: 11px; margin-left: 4px;">${escapeHtml(h.name || '')}</span>
+                    </td>
+                    <td>
+                      <span class="alert-condition-pill ${h.condition === 'ABOVE' ? 'above' : 'below'}" style="font-size: 10px;">
+                        ${h.condition === 'ABOVE' ? '▲ Rose to ≥' : '▼ Dropped to ≤'}
+                      </span>
+                    </td>
+                    <td class="mono tabular-nums" style="font-weight: 600;">${targetFmt}</td>
+                    <td class="mono tabular-nums" style="color: var(--primary); font-weight: 700;">${trigFmt}</td>
+                    <td style="text-align: right;">
+                      <button class="btn btn-secondary" onclick="quickTradeAlert('${h.symbol}')" style="font-size: 10px; padding: 3px 8px;">
+                        Trade
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function updateAlertsBadges() {
+      const alerts = walletState.priceAlerts || [];
+      const activeCount = alerts.filter(a => a.status === 'active').length;
+      const triggeredCount = alerts.filter(a => a.status === 'triggered').length;
+
+      // Nav badge
+      const navBadge = document.getElementById('alertsNavBadge');
+      if (navBadge) {
+        if (triggeredCount > 0) {
+          navBadge.textContent = triggeredCount;
+          navBadge.style.display = 'inline-flex';
+          navBadge.style.background = 'var(--primary)';
+          navBadge.style.color = '#000';
+        } else if (activeCount > 0) {
+          navBadge.textContent = activeCount;
+          navBadge.style.display = 'inline-flex';
+          navBadge.style.background = 'rgba(59, 130, 246, 0.2)';
+          navBadge.style.color = '#60a5fa';
+        } else {
+          navBadge.style.display = 'none';
+        }
+      }
+
+      // Topbar bell dot
+      const bellDot = document.getElementById('topAlertsDot');
+      if (bellDot) {
+        bellDot.style.display = triggeredCount > 0 ? 'block' : 'none';
+      }
+
+      // Sidebar widget
+      const sideBadge = document.getElementById('sideActiveAlertsBadge');
+      if (sideBadge) {
+        sideBadge.textContent = `${activeCount} Active`;
+        if (triggeredCount > 0) {
+          sideBadge.textContent = `${triggeredCount} Hit / ${activeCount} Active`;
+          sideBadge.className = 'alert-status-badge triggered tabular-nums';
+        } else {
+          sideBadge.className = 'alert-status-badge active tabular-nums';
+        }
+      }
+    }
+
+    function openCreateAlertModal(preselectedSymbol = 'ETH', defaultCondition = 'ABOVE') {
+      const select = document.getElementById('alertTokenSelect');
+      if (!select) return;
+
+      document.getElementById('alertModalTitle').textContent = 'Create Price Alert';
+      document.getElementById('editingAlertId').value = '';
+      document.getElementById('alertNoteInput').value = '';
+
+      // Populate Token Select options
+      const network = getActiveNetwork();
+      const allTokens = [...TRACKABLE_TOKENS];
+
+      // Add user custom tokens
+      for (const ct of (walletState.customTokens || [])) {
+        if (!allTokens.some(t => t.symbol.toUpperCase() === ct.symbol.toUpperCase())) {
+          allTokens.push({ symbol: ct.symbol, name: ct.name || ct.symbol, color: ct.color || '#3B82F6' });
+        }
+      }
+
+      select.innerHTML = allTokens.map(t => `
+        <option value="${t.symbol}">${t.symbol} - ${t.name}</option>
+      `).join('');
+
+      // Find match
+      const found = allTokens.find(t => t.symbol.toUpperCase() === preselectedSymbol.toUpperCase());
+      select.value = found ? found.symbol : allTokens[0].symbol;
+
+      setAlertCondition(defaultCondition);
+      onAlertTokenSelected();
+
+      openModal('createAlertModal');
+    }
+
+    function openEditAlertModal(alertId) {
+      const alert = (walletState.priceAlerts || []).find(a => a.id === alertId);
+      if (!alert) return;
+
+      openCreateAlertModal(alert.symbol, alert.condition);
+
+      document.getElementById('alertModalTitle').textContent = 'Edit Price Alert';
+      document.getElementById('editingAlertId').value = alert.id;
+      document.getElementById('alertTokenSelect').value = alert.symbol;
+      document.getElementById('alertTargetPriceInput').value = alert.targetPrice;
+      document.getElementById('alertNoteInput').value = alert.note || '';
+      document.getElementById('alertSoundNotify').checked = Boolean(alert.soundEnabled);
+      document.getElementById('alertBrowserNotify').checked = Boolean(alert.browserNotify);
+
+      setAlertCondition(alert.condition);
+      onAlertTargetPriceInput();
+    }
+
+    function onAlertTokenSelected() {
+      const select = document.getElementById('alertTokenSelect');
+      const symbol = select ? select.value : 'ETH';
+      const curPrice = getTokenPriceUsd(symbol);
+
+      const priceLabel = document.getElementById('alertModalTokenPrice');
+      if (priceLabel) {
+        priceLabel.textContent = curPrice >= 1000 
+          ? `Live: $${curPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+          : `Live: $${curPrice.toFixed(2)}`;
+      }
+
+      const input = document.getElementById('alertTargetPriceInput');
+      // If no target price yet or zero, set a reasonable default (+5% or -5%)
+      if (input && (!input.value || parseFloat(input.value) <= 0)) {
+        const factor = currentAlertCondition === 'ABOVE' ? 1.05 : 0.95;
+        const defTarget = curPrice * factor;
+        input.value = curPrice >= 1000 ? defTarget.toFixed(2) : defTarget.toFixed(4);
+      }
+      onAlertTargetPriceInput();
+    }
+
+    function setAlertCondition(condition) {
+      currentAlertCondition = condition;
+      const btnAbove = document.getElementById('condBtnAbove');
+      const btnBelow = document.getElementById('condBtnBelow');
+
+      if (btnAbove && btnBelow) {
+        if (condition === 'ABOVE') {
+          btnAbove.className = 'condition-toggle-btn active above';
+          btnBelow.className = 'condition-toggle-btn';
+        } else {
+          btnAbove.className = 'condition-toggle-btn';
+          btnBelow.className = 'condition-toggle-btn active below';
+        }
+      }
+      onAlertTargetPriceInput();
+    }
+
+    function onAlertTargetPriceInput() {
+      const select = document.getElementById('alertTokenSelect');
+      const symbol = select ? select.value : 'ETH';
+      const curPrice = getTokenPriceUsd(symbol);
+      const targetVal = parseFloat(document.getElementById('alertTargetPriceInput').value) || 0;
+
+      const distLabel = document.getElementById('alertDistanceLabel');
+      if (!distLabel) return;
+
+      if (targetVal <= 0 || curPrice <= 0) {
+        distLabel.textContent = 'Enter target threshold';
+        return;
+      }
+
+      const diff = targetVal - curPrice;
+      const pct = ((diff / curPrice) * 100);
+
+      if (currentAlertCondition === 'ABOVE') {
+        if (targetVal <= curPrice) {
+          distLabel.style.color = 'var(--warning)';
+          distLabel.textContent = `⚠️ Target is ≤ current price ($${curPrice.toFixed(2)})`;
+        } else {
+          distLabel.style.color = 'var(--primary)';
+          distLabel.textContent = `+${pct.toFixed(2)}% above current ($${diff.toFixed(2)} away)`;
+        }
+      } else {
+        if (targetVal >= curPrice) {
+          distLabel.style.color = 'var(--warning)';
+          distLabel.textContent = `⚠️ Target is ≥ current price ($${curPrice.toFixed(2)})`;
+        } else {
+          distLabel.style.color = 'var(--danger)';
+          distLabel.textContent = `${pct.toFixed(2)}% below current ($${Math.abs(diff).toFixed(2)} away)`;
+        }
+      }
+    }
+
+    function adjustAlertPricePercent(pct) {
+      const select = document.getElementById('alertTokenSelect');
+      const symbol = select ? select.value : 'ETH';
+      const curPrice = getTokenPriceUsd(symbol);
+
+      if (pct > 0) setAlertCondition('ABOVE');
+      else setAlertCondition('BELOW');
+
+      const target = curPrice * (1 + pct / 100);
+      const input = document.getElementById('alertTargetPriceInput');
+      if (input) {
+        input.value = curPrice >= 1000 ? target.toFixed(2) : target.toFixed(4);
+      }
+      onAlertTargetPriceInput();
+    }
+
+    function handleBrowserNotifyToggle(checkbox) {
+      if (checkbox.checked && typeof Notification !== 'undefined') {
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission().then(permission => {
+            if (permission !== 'granted') {
+              checkbox.checked = false;
+              showToast('Browser notification permission was not granted.');
+            } else {
+              showToast('Browser notifications enabled for price alerts!');
+            }
+          });
+        }
+      }
+    }
+
+    function savePriceAlert() {
+      const editingId = document.getElementById('editingAlertId').value.trim();
+      const symbol = document.getElementById('alertTokenSelect').value.trim();
+      const targetPrice = parseFloat(document.getElementById('alertTargetPriceInput').value);
+      const note = document.getElementById('alertNoteInput').value.trim();
+      const soundEnabled = document.getElementById('alertSoundNotify').checked;
+      const browserNotify = document.getElementById('alertBrowserNotify').checked;
+
+      if (!symbol) {
+        showToast('Please select a token');
+        return;
+      }
+      if (!targetPrice || targetPrice <= 0 || isNaN(targetPrice)) {
+        showToast('Please enter a valid target price');
+        return;
+      }
+
+      const tokenDef = TRACKABLE_TOKENS.find(t => t.symbol.toUpperCase() === symbol.toUpperCase()) || {
+        symbol: symbol,
+        name: symbol,
+        color: '#3B82F6'
+      };
+
+      const curPrice = getTokenPriceUsd(symbol);
+
+      if (!walletState.priceAlerts) walletState.priceAlerts = [];
+
+      if (editingId) {
+        // Edit existing
+        const idx = walletState.priceAlerts.findIndex(a => a.id === editingId);
+        if (idx >= 0) {
+          walletState.priceAlerts[idx] = {
+            ...walletState.priceAlerts[idx],
+            symbol: tokenDef.symbol,
+            name: tokenDef.name,
+            targetPrice: targetPrice,
+            condition: currentAlertCondition,
+            note: note,
+            soundEnabled: soundEnabled,
+            browserNotify: browserNotify,
+            color: tokenDef.color,
+            status: 'active'
+          };
+          showToast(`Updated price alert for ${symbol} at $${targetPrice}`);
+        }
+      } else {
+        // Create new
+        const newAlert = {
+          id: 'alert_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          symbol: tokenDef.symbol,
+          name: tokenDef.name,
+          targetPrice: targetPrice,
+          condition: currentAlertCondition,
+          createdPrice: curPrice,
+          createdAt: Date.now(),
+          status: 'active',
+          note: note,
+          soundEnabled: soundEnabled,
+          browserNotify: browserNotify,
+          color: tokenDef.color
+        };
+        walletState.priceAlerts.unshift(newAlert);
+        showToast(`Created price alert for ${symbol} at $${targetPrice}`);
+      }
+
+      saveState();
+      closeModal('createAlertModal');
+      renderPriceAlertsView();
+      checkPriceAlerts(true);
+    }
+
+    function deletePriceAlert(id) {
+      if (!walletState.priceAlerts) return;
+      walletState.priceAlerts = walletState.priceAlerts.filter(a => a.id !== id);
+      saveState();
+      renderPriceAlertsView();
+      showToast('Price alert deleted');
+    }
+
+    function togglePausePriceAlert(id) {
+      const alert = (walletState.priceAlerts || []).find(a => a.id === id);
+      if (!alert) return;
+      alert.status = alert.status === 'paused' ? 'active' : 'paused';
+      saveState();
+      renderPriceAlertsView();
+      showToast(`Alert for ${alert.symbol} ${alert.status === 'paused' ? 'paused' : 'resumed'}`);
+    }
+
+    function resetPriceAlert(id) {
+      const alert = (walletState.priceAlerts || []).find(a => a.id === id);
+      if (!alert) return;
+      alert.status = 'active';
+      alert.createdPrice = getTokenPriceUsd(alert.symbol);
+      delete alert.triggeredAt;
+      delete alert.triggeredPrice;
+      saveState();
+      renderPriceAlertsView();
+      showToast(`Alert for ${alert.symbol} re-armed & active!`);
+    }
+
+    function checkPriceAlerts(notify = true) {
+      if (!walletState.priceAlerts || !Array.isArray(walletState.priceAlerts)) return;
+
+      for (const alert of walletState.priceAlerts) {
+        if (alert.status !== 'active') continue;
+
+        const currentPrice = getTokenPriceUsd(alert.symbol);
+        if (!currentPrice || currentPrice <= 0) continue;
+
+        let isTriggered = false;
+        if (alert.condition === 'ABOVE' && currentPrice >= alert.targetPrice) {
+          isTriggered = true;
+        } else if (alert.condition === 'BELOW' && currentPrice <= alert.targetPrice) {
+          isTriggered = true;
+        }
+
+        if (isTriggered) {
+          triggerAlert(alert, currentPrice, notify);
+        }
+      }
+      updateAlertsBadges();
+    }
+
+    function triggerAlert(alert, currentPrice, notify = true) {
+      alert.status = 'triggered';
+      alert.triggeredAt = Date.now();
+      alert.triggeredPrice = currentPrice;
+
+      if (!walletState.alertHistory) walletState.alertHistory = [];
+      walletState.alertHistory.unshift({
+        id: 'hist_' + Date.now(),
+        alertId: alert.id,
+        symbol: alert.symbol,
+        name: alert.name,
+        targetPrice: alert.targetPrice,
+        condition: alert.condition,
+        triggeredPrice: currentPrice,
+        timestamp: Date.now()
+      });
+
+      saveState();
+
+      if (notify) {
+        if (alert.soundEnabled) playAlertChime();
+        showPriceAlertBanner(alert, currentPrice);
+
+        if (alert.browserNotify && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          try {
+            new Notification(`🚨 VaultETH: ${alert.symbol} Price Alert Triggered!`, {
+              body: `${alert.symbol} reached $${currentPrice.toLocaleString()} (${alert.condition === 'ABOVE' ? '≥' : '≤'} $${alert.targetPrice.toLocaleString()})`,
+              icon: 'assets/vault-logo.svg'
+            });
+          } catch (e) {
+            console.warn('Browser notification failed', e);
+          }
+        }
+      }
+
+      renderPriceAlertsView();
+    }
+
+    function playAlertChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Pleasant ascending major triad chime
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc1.frequency.exponentialRampToValueAtTime(880.00, ctx.currentTime + 0.15); // A5
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(880.00, ctx.currentTime + 0.15);
+        osc2.frequency.exponentialRampToValueAtTime(1174.66, ctx.currentTime + 0.35); // D6
+
+        gain.gain.setValueAtTime(0.22, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.65);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(ctx.currentTime);
+        osc2.start(ctx.currentTime + 0.15);
+        osc1.stop(ctx.currentTime + 0.65);
+        osc2.stop(ctx.currentTime + 0.65);
+      } catch (e) {
+        console.warn('Web Audio chime unavailable', e);
+      }
+    }
+
+    function showPriceAlertBanner(alert, currentPrice) {
+      currentBannerAlert = alert;
+      const banner = document.getElementById('priceAlertBanner');
+      if (!banner) return;
+
+      const titleEl = document.getElementById('alertBannerTitle');
+      const badgeEl = document.getElementById('alertBannerBadge');
+      const descEl = document.getElementById('alertBannerDesc');
+
+      const targetFmt = alert.targetPrice >= 1000 ? `$${alert.targetPrice.toLocaleString()}` : `$${alert.targetPrice.toFixed(2)}`;
+      const currentFmt = currentPrice >= 1000 ? `$${currentPrice.toLocaleString()}` : `$${currentPrice.toFixed(2)}`;
+
+      if (titleEl) titleEl.textContent = `Target Reached: ${alert.symbol} Price Alert!`;
+      if (badgeEl) {
+        badgeEl.textContent = `${alert.condition === 'ABOVE' ? '▲ ROSE TO' : '▼ DROPPED TO'} ${targetFmt}`;
+      }
+      if (descEl) {
+        descEl.textContent = `${alert.name} (${alert.symbol}) is trading at ${currentFmt} USD. ${alert.note ? '"' + alert.note + '"' : 'Threshold reached.'}`;
+      }
+
+      banner.style.display = 'block';
+    }
+
+    function dismissAlertBanner() {
+      const banner = document.getElementById('priceAlertBanner');
+      if (banner) banner.style.display = 'none';
+      currentBannerAlert = null;
+    }
+
+    function handleAlertBannerAction() {
+      if (currentBannerAlert) {
+        quickTradeAlert(currentBannerAlert.symbol);
+      } else {
+        switchNavTab('alerts');
+      }
+      dismissAlertBanner();
+    }
+
+    function openTestAlertModal() {
+      const select = document.getElementById('testAlertSelect');
+      if (!select) return;
+
+      const alerts = walletState.priceAlerts || [];
+      if (alerts.length === 0) {
+        showToast('Create an alert first to test.');
+        openCreateAlertModal();
+        return;
+      }
+
+      select.innerHTML = alerts.map(a => `
+        <option value="${a.id}">${a.symbol} (${a.condition === 'ABOVE' ? '≥' : '≤'} $${a.targetPrice}) - ${a.status.toUpperCase()}</option>
+      `).join('');
+
+      openModal('testAlertModal');
+    }
+
+    function executeTestAlertSimulation() {
+      const select = document.getElementById('testAlertSelect');
+      const alertId = select ? select.value : null;
+      closeModal('testAlertModal');
+      simulateAlertTrigger(alertId);
+    }
+
+    function simulateQuickAlertTrigger() {
+      const alerts = walletState.priceAlerts || [];
+      const target = alerts.find(a => a.status === 'active') || alerts[0];
+      if (target) {
+        simulateAlertTrigger(target.id);
+      } else {
+        openCreateAlertModal();
+      }
+    }
+
+    function simulateAlertTrigger(alertId) {
+      const alert = (walletState.priceAlerts || []).find(a => a.id === alertId);
+      if (!alert) {
+        showToast('Alert not found.');
+        return;
+      }
+
+      const simulatedPrice = alert.condition === 'ABOVE' 
+        ? alert.targetPrice * 1.012 
+        : alert.targetPrice * 0.988;
+
+      triggerAlert(alert, simulatedPrice, true);
+      showToast(`🔔 Test triggered: ${alert.symbol} crossed $${alert.targetPrice.toLocaleString()}!`);
+    }
+
+    function clearAlertHistory() {
+      walletState.alertHistory = [];
+      saveState();
+      renderAlertHistoryList();
+      showToast('Alert history cleared');
+    }
+
+    function quickTradeAlert(symbol) {
+      switchNavTab('swap');
+      const payEl = document.getElementById('swapPayTokenSymbol');
+      const recEl = document.getElementById('swapReceiveTokenSymbol');
+      if (payEl && recEl) {
+        if (payEl.textContent !== symbol) {
+          recEl.textContent = payEl.textContent;
+          payEl.textContent = symbol;
+        }
+      }
+      calculateSwapOutput();
+      showToast(`Opened swap router with ${symbol}`);
+    }
+
+    function startPriceAlertsPolling() {
+      if (priceAlertsPollInterval) clearInterval(priceAlertsPollInterval);
+      priceAlertsPollInterval = setInterval(async () => {
+        try {
+          await fetchMarketPrices(false);
+        } catch (e) {
+          // ignore background errors
+        }
+      }, 15000); // Poll oracle every 15 seconds
     }
 
     window.addEventListener('keydown', (e) => {
