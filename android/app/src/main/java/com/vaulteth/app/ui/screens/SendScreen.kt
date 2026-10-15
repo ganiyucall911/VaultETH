@@ -128,7 +128,7 @@ fun SendScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = VaultCyan,
+                        focusedBorderColor = VaultMint,
                         unfocusedBorderColor = VaultBorder,
                         focusedContainerColor = VaultSurface,
                         unfocusedContainerColor = VaultSurface
@@ -154,10 +154,10 @@ fun SendScreen(
                                     }
                                 }
                             }) {
-                                Icon(imageVector = Icons.Default.ContentPaste, contentDescription = "Paste", tint = VaultCyan)
+                                Icon(imageVector = Icons.Default.ContentPaste, contentDescription = "Paste", tint = VaultMint)
                             }
                             IconButton(onClick = onOpenScanner) {
-                                Icon(imageVector = Icons.Default.QrCodeScanner, contentDescription = "Scan", tint = VaultCyan)
+                                Icon(imageVector = Icons.Default.QrCodeScanner, contentDescription = "Scan", tint = VaultMint)
                             }
                         }
                     }
@@ -178,7 +178,7 @@ fun SendScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = VaultCyan,
+                        focusedBorderColor = VaultMint,
                         unfocusedBorderColor = VaultBorder,
                         focusedContainerColor = VaultSurface,
                         unfocusedContainerColor = VaultSurface
@@ -223,7 +223,7 @@ fun SendScreen(
                             Text(
                                 text = if (pct == 100) "Max" else "$pct%",
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                color = VaultCyan
+                                color = VaultMint
                             )
                         }
                     }
@@ -241,7 +241,7 @@ fun SendScreen(
                     .height(54.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = VaultCyan,
+                    containerColor = VaultMint,
                     disabledContainerColor = VaultBorder
                 )
             ) {
@@ -301,7 +301,7 @@ fun SendScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Recipient", color = VaultTextMuted)
-                                Text("${recipient.take(6)}...${recipient.takeLast(4)}", color = VaultCyan)
+                                Text("${recipient.take(6)}...${recipient.takeLast(4)}", color = VaultMint)
                             }
                         }
                     }
@@ -322,7 +322,7 @@ fun SendScreen(
                             }
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = VaultCyan)
+                    colors = ButtonDefaults.buttonColors(containerColor = VaultMint)
                 ) {
                     Text("Sign & Broadcast", color = Color.Black, fontWeight = FontWeight.Bold)
                 }

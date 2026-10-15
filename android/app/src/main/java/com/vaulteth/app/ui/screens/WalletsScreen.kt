@@ -72,7 +72,7 @@ fun WalletsScreen(
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Create Vault",
-                            tint = VaultCyan
+                            tint = VaultMint
                         )
                     }
                 }
@@ -94,7 +94,7 @@ fun WalletsScreen(
                     Button(
                         onClick = onCreateWallet,
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = VaultCyan),
+                        colors = ButtonDefaults.buttonColors(containerColor = VaultMint),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.Black)
@@ -120,7 +120,7 @@ fun WalletsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .border(1.dp, if (isSelected) VaultCyan else VaultBorder, RoundedCornerShape(16.dp))
+                        .border(1.dp, if (isSelected) VaultMint else VaultBorder, RoundedCornerShape(16.dp))
                         .clickable { onSelectWallet(w) },
                     colors = CardDefaults.cardColors(containerColor = if (isSelected) VaultSurfaceVariant else VaultSurface)
                 ) {
@@ -146,9 +146,9 @@ fun WalletsScreen(
                                         Text(
                                             text = "ACTIVE",
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = VaultCyan,
+                                            color = VaultMint,
                                             modifier = Modifier
-                                                .background(VaultCyan.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                                                .background(VaultMint.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                                         )
                                     }
@@ -165,22 +165,22 @@ fun WalletsScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(VaultCyan.copy(alpha = 0.15f))
-                                            .border(0.5.dp, VaultCyan.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                            .background(VaultMint.copy(alpha = 0.15f))
+                                            .border(0.5.dp, VaultMint.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
                                             .clickable { ensWalletToManage = w }
                                             .padding(horizontal = 6.dp, vertical = 2.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.AlternateEmail,
                                             contentDescription = "ENS Identity",
-                                            tint = VaultCyan,
+                                            tint = VaultMint,
                                             modifier = Modifier.size(12.dp)
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(
                                             text = ens,
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                            color = VaultCyan
+                                            color = VaultMint
                                         )
                                     }
                                 }
@@ -194,7 +194,7 @@ fun WalletsScreen(
                                 Icon(
                                     imageVector = Icons.Default.AlternateEmail,
                                     contentDescription = "ENS Domain",
-                                    tint = if (w.importedEnsName != null) VaultCyan else VaultTextSecondary,
+                                    tint = if (w.importedEnsName != null) VaultMint else VaultTextSecondary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -284,7 +284,7 @@ fun WalletsScreen(
                             Toast.makeText(context, "Please enter 12 or 24 words", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = VaultCyan)
+                    colors = ButtonDefaults.buttonColors(containerColor = VaultMint)
                 ) {
                     Text("Import", color = Color.Black, fontWeight = FontWeight.Bold)
                 }
@@ -352,7 +352,7 @@ fun WalletsScreen(
             confirmButton = {
                 Button(
                     onClick = { mnemonicToView = null },
-                    colors = ButtonDefaults.buttonColors(containerColor = VaultCyan)
+                    colors = ButtonDefaults.buttonColors(containerColor = VaultMint)
                 ) {
                     Text("I've Saved It", color = Color.Black, fontWeight = FontWeight.Bold)
                 }
@@ -401,7 +401,7 @@ fun ENSManagementDialog(
                     Icon(
                         imageVector = Icons.Default.AlternateEmail,
                         contentDescription = null,
-                        tint = VaultCyan,
+                        tint = VaultMint,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -430,8 +430,8 @@ fun ENSManagementDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
-                            .background(VaultCyan.copy(alpha = 0.12f))
-                            .border(1.dp, VaultCyan.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                            .background(VaultMint.copy(alpha = 0.12f))
+                            .border(1.dp, VaultMint.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
                             .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -441,7 +441,7 @@ fun ENSManagementDialog(
                             Text(
                                 text = "@${wallet.importedEnsName}",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = VaultCyan
+                                color = VaultMint
                             )
                         }
                         TextButton(
@@ -460,7 +460,7 @@ fun ENSManagementDialog(
                 TabRow(
                     selectedTabIndex = selectedTab,
                     containerColor = VaultSurfaceVariant,
-                    contentColor = VaultCyan,
+                    contentColor = VaultMint,
                     modifier = Modifier.clip(RoundedCornerShape(10.dp))
                 ) {
                     Tab(
@@ -488,7 +488,7 @@ fun ENSManagementDialog(
                             onValueChange = { buySearchName = it },
                             label = { Text("Desired name (e.g. satoshi)") },
                             trailingIcon = {
-                                Text(".eth", color = VaultCyan, modifier = Modifier.padding(end = 12.dp), fontWeight = FontWeight.Bold)
+                                Text(".eth", color = VaultMint, modifier = Modifier.padding(end = 12.dp), fontWeight = FontWeight.Bold)
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
@@ -545,7 +545,7 @@ fun ENSManagementDialog(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = VaultCyan),
+                            colors = ButtonDefaults.buttonColors(containerColor = VaultMint),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Icon(imageVector = Icons.Default.Language, contentDescription = null, tint = Color.Black)
@@ -646,7 +646,7 @@ fun ENSManagementDialog(
                             },
                             enabled = !isVerifying,
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = VaultCyan),
+                            colors = ButtonDefaults.buttonColors(containerColor = VaultMint),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             if (isVerifying) {

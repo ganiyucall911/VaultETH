@@ -2,6 +2,7 @@ package com.vaulteth.app.ui.screens
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -24,8 +26,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vaulteth.app.core.AlertCondition
+import com.vaulteth.app.core.AlertStatus
 import com.vaulteth.app.core.BlockchainNetwork
+import com.vaulteth.app.core.DefaultPriceAlerts
 import com.vaulteth.app.core.DefaultTokenAssets
+import com.vaulteth.app.core.PriceAlertItem
 import com.vaulteth.app.core.SentTransaction
 import com.vaulteth.app.core.TokenItem
 import com.vaulteth.app.core.VaultWallet
@@ -52,6 +58,9 @@ fun VaultHomeScreen(
     var isDiscreetMode by remember { mutableStateOf(false) }
     var showNetworkDialog by remember { mutableStateOf(false) }
     var showBuyDialog by remember { mutableStateOf(false) }
+    var showAlertsDialog by remember { mutableStateOf(false) }
+    var alertsList by remember { mutableStateOf(DefaultPriceAlerts) }
+    var activeBannerAlert by remember { mutableStateOf<PriceAlertItem?>(DefaultPriceAlerts.firstOrNull { it.isEnabled }) }
 
     Scaffold(
         containerColor = VaultBackground,
@@ -93,6 +102,10 @@ fun VaultHomeScreen(
                     }
                 },
                 actions = {
+                    PulsingAlertBell(
+                        alertCount = alertsList.count { it.isEnabled },
+                        onClick = { showAlertsDialog = true }
+                    )
                     IconButton(onClick = { isDiscreetMode = !isDiscreetMode }) {
                         Icon(
                             imageVector = if (isDiscreetMode) Icons.Default.VisibilityOff else Icons.Default.Visibility,
@@ -104,7 +117,7 @@ fun VaultHomeScreen(
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Refresh",
-                            tint = VaultCyan
+                            tint = VaultMint
                         )
                     }
                 }
@@ -118,6 +131,17 @@ fun VaultHomeScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Price Alert Notification Banner (Obsidian Mint Design)
+            if (activeBannerAlert != null) {
+                item {
+                    PriceAlertBanner(
+                        alert = activeBannerAlert!!,
+                        onDismiss = { activeBannerAlert = null },
+                        onViewAlerts = { showAlertsDialog = true }
+                    )
+                }
+            }
+
             // Main Hero Vault Card
             item {
                 Card(
@@ -162,9 +186,9 @@ fun VaultHomeScreen(
                                                 Text(
                                                     text = "@${wallet.importedEnsName}",
                                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                    color = VaultCyan,
+                                                    color = VaultMint,
                                                     modifier = Modifier
-                                                        .background(VaultCyan.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                                                        .background(VaultMint.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
                                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                                 )
                                             }
@@ -199,7 +223,7 @@ fun VaultHomeScreen(
                             if (isLoadingBalance) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(28.dp),
-                                    color = VaultCyan,
+                                    color = VaultMint,
                                     strokeWidth = 2.dp
                                 )
                             } else {
@@ -220,10 +244,10 @@ fun VaultHomeScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(20.dp))
-                                    .background(if (wallet.importedEnsName != null) VaultCyan.copy(alpha = 0.12f) else VaultSurfaceVariant)
+                                    .background(if (wallet.importedEnsName != null) VaultMint.copy(alpha = 0.12f) else VaultSurfaceVariant)
                                     .border(
                                         1.dp,
-                                        if (wallet.importedEnsName != null) VaultCyan.copy(alpha = 0.35f) else VaultBorder,
+                                        if (wallet.importedEnsName != null) VaultMint.copy(alpha = 0.35f) else VaultBorder,
                                         RoundedCornerShape(20.dp)
                                     )
                                     .clickable { onNavigateToWallets() }
@@ -232,14 +256,14 @@ fun VaultHomeScreen(
                                 Icon(
                                     imageVector = Icons.Default.AlternateEmail,
                                     contentDescription = "ENS",
-                                    tint = if (wallet.importedEnsName != null) VaultCyan else VaultTextMuted,
+                                    tint = if (wallet.importedEnsName != null) VaultMint else VaultTextMuted,
                                     modifier = Modifier.size(13.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = if (wallet.importedEnsName != null) "@${wallet.importedEnsName}" else "Buy / Link ENS",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = if (wallet.importedEnsName != null) VaultCyan else VaultTextSecondary
+                                    color = if (wallet.importedEnsName != null) VaultMint else VaultTextSecondary
                                 )
                             }
 
@@ -253,7 +277,7 @@ fun VaultHomeScreen(
                                 QuickActionButton(
                                     icon = Icons.Default.Add,
                                     label = "Buy",
-                                    color = VaultCyan,
+                                    color = VaultMint,
                                     onClick = { showBuyDialog = true }
                                 )
                                 QuickActionButton(
@@ -291,7 +315,7 @@ fun VaultHomeScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = onNavigateToWallets,
-                                colors = ButtonDefaults.buttonColors(containerColor = VaultCyan)
+                                colors = ButtonDefaults.buttonColors(containerColor = VaultMint)
                             ) {
                                 Text("Open Vault Manager", color = Color.Black, fontWeight = FontWeight.Bold)
                             }
@@ -363,18 +387,36 @@ fun VaultHomeScreen(
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                     color = VaultTextPrimary
                                 )
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
                                     Text(
                                         text = token.priceFormatted,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = VaultTextSecondary
                                     )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = token.changeFormatted,
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = if (token.isPositive) VaultEmerald else Color(0xFFFF5252)
-                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                if (token.isPositive) VaultMint.copy(alpha = 0.12f)
+                                                else VaultDanger.copy(alpha = 0.12f)
+                                            )
+                                            .border(
+                                                1.dp,
+                                                if (token.isPositive) VaultMint.copy(alpha = 0.35f)
+                                                else VaultDanger.copy(alpha = 0.35f),
+                                                RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    ) {
+                                        Text(
+                                            text = token.changeFormatted,
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = if (token.isPositive) VaultMint else VaultDanger
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -387,7 +429,7 @@ fun VaultHomeScreen(
                             )
                             Text(
                                 text = if (isDiscreetMode) "••••" else token.fiatFormatted,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
                                 color = VaultTextMuted
                             )
                         }
@@ -498,7 +540,7 @@ fun VaultHomeScreen(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(if (isSelected) VaultSurfaceVariant else VaultSurface)
-                                .border(1.dp, if (isSelected) VaultCyan else VaultBorder, RoundedCornerShape(12.dp))
+                                .border(1.dp, if (isSelected) VaultMint else VaultBorder, RoundedCornerShape(12.dp))
                                 .clickable {
                                     onSelectNetwork(net)
                                     showNetworkDialog = false
@@ -532,7 +574,7 @@ fun VaultHomeScreen(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Selected",
-                                    tint = VaultCyan
+                                    tint = VaultMint
                                 )
                             }
                         }
@@ -541,7 +583,7 @@ fun VaultHomeScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showNetworkDialog = false }) {
-                    Text("Close", color = VaultCyan)
+                    Text("Close", color = VaultMint)
                 }
             },
             containerColor = VaultBackground
@@ -567,11 +609,250 @@ fun VaultHomeScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showBuyDialog = false }) {
-                    Text("Close", color = VaultCyan)
+                    Text("Close", color = VaultMint)
                 }
             },
             containerColor = VaultBackground
         )
+    }
+
+    if (showAlertsDialog) {
+        AlertDialog(
+            onDismissRequest = { showAlertsDialog = false },
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Price Alerts",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = VaultTextPrimary
+                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(VaultMint.copy(alpha = 0.15f))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = "${alertsList.count { it.isEnabled }} Active",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = VaultMint
+                        )
+                    }
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    alertsList.forEachIndexed { index, alert ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, VaultBorder, RoundedCornerShape(12.dp)),
+                            colors = CardDefaults.cardColors(containerColor = VaultSurface)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = alert.symbol,
+                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = VaultTextPrimary
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "${alert.condition.label} ${alert.targetPriceFormatted}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = VaultMint
+                                        )
+                                    }
+                                    Text(
+                                        text = "Current: ${alert.currentPriceFormatted}${alert.note?.let { " • $it" } ?: ""}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = VaultTextSecondary
+                                    )
+                                }
+                                Switch(
+                                    checked = alert.isEnabled,
+                                    onCheckedChange = { isChecked ->
+                                        alertsList = alertsList.toMutableList().also { list ->
+                                            list[index] = alert.copy(
+                                                isEnabled = isChecked,
+                                                status = if (isChecked) AlertStatus.ACTIVE else AlertStatus.MUTED
+                                            )
+                                        }
+                                        if (!isChecked && activeBannerAlert?.id == alert.id) {
+                                            activeBannerAlert = null
+                                        }
+                                    },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color.Black,
+                                        checkedTrackColor = VaultMint,
+                                        uncheckedThumbColor = VaultTextMuted,
+                                        uncheckedTrackColor = VaultSurfaceVariant
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAlertsDialog = false }) {
+                    Text("Done", color = VaultMint, fontWeight = FontWeight.Bold)
+                }
+            },
+            containerColor = VaultBackground
+        )
+    }
+}
+
+@Composable
+fun PulsingAlertBell(
+    alertCount: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.45f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    )
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 0.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseAlpha"
+    )
+
+    IconButton(onClick = onClick, modifier = modifier) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Price Alerts",
+                tint = if (alertCount > 0) VaultMint else VaultTextSecondary,
+                modifier = Modifier.size(22.dp)
+            )
+            if (alertCount > 0) {
+                // Pulsing outer halo
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .align(Alignment.TopEnd)
+                        .scale(pulseScale)
+                        .clip(CircleShape)
+                        .background(VaultMint.copy(alpha = pulseAlpha))
+                )
+                // Solid center indicator dot
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape)
+                        .background(VaultMint)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PriceAlertBanner(
+    alert: PriceAlertItem,
+    onDismiss: () -> Unit,
+    onViewAlerts: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .border(1.dp, VaultMint.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+            .clickable { onViewAlerts() },
+        colors = CardDefaults.cardColors(containerColor = VaultSurfaceElevated)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(VaultMint.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.NotificationsActive,
+                        contentDescription = "Alert",
+                        tint = VaultMint,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "PRICE ALERT",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = VaultMint
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "${alert.symbol} ${alert.condition.label} ${alert.targetPriceFormatted}",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                            color = VaultTextPrimary
+                        )
+                    }
+                    Text(
+                        text = "Current: ${alert.currentPriceFormatted}${alert.note?.let { " • $it" } ?: ""}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = VaultTextSecondary
+                    )
+                }
+            }
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.size(28.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Dismiss",
+                    tint = VaultTextMuted,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
     }
 }
 

@@ -92,7 +92,7 @@ fun SettingsScreen(
                             Text("Primary RPC", color = VaultTextSecondary)
                             Text(
                                 text = selectedNetwork.rpcUrls.firstOrNull()?.replace("https://", "")?.take(24) ?: "Default",
-                                color = VaultCyan,
+                                color = VaultMint,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -127,7 +127,7 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text("Cloud Backup", color = VaultTextSecondary)
-                            Text("Disabled (Zero Cloud Leak)", fontWeight = FontWeight.SemiBold, color = VaultCyan)
+                            Text("Disabled (Zero Cloud Leak)", fontWeight = FontWeight.SemiBold, color = VaultMint)
                         }
                     }
                 }
@@ -161,10 +161,10 @@ fun SettingsScreen(
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://app.ens.domains"))
                                     context.startActivity(intent)
                                 },
-                                border = androidx.compose.foundation.BorderStroke(1.dp, VaultCyan.copy(alpha = 0.5f)),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, VaultMint.copy(alpha = 0.5f)),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text("ENS App", color = VaultCyan, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                                Text("ENS App", color = VaultMint, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
                             }
                         }
                         HorizontalDivider(color = VaultBorder)
@@ -245,7 +245,7 @@ fun SettingsScreen(
                 title = { Text("Privacy Policy", color = VaultTextPrimary, fontWeight = FontWeight.Bold) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Developer: vault.", color = VaultCyan, style = MaterialTheme.typography.bodySmall)
+                        Text("Developer: vault.", color = VaultMint, style = MaterialTheme.typography.bodySmall)
                         Text(
                             "• Zero Personal Data: VaultETH collects no personal information, analytics, or identifiers.\n\n" +
                             "• Hardware Keystore: All keys and recovery phrases are stored exclusively in the Android Keystore with AES-256 GCM encryption.\n\n" +
@@ -258,7 +258,7 @@ fun SettingsScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { showPrivacyDialog = false }) {
-                        Text("Done", color = VaultCyan, fontWeight = FontWeight.Bold)
+                        Text("Done", color = VaultMint, fontWeight = FontWeight.Bold)
                     }
                 },
                 containerColor = VaultSurface
@@ -271,7 +271,7 @@ fun SettingsScreen(
                 title = { Text("Support & FAQ", color = VaultTextPrimary, fontWeight = FontWeight.Bold) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Developer: vault.", color = VaultCyan, style = MaterialTheme.typography.bodySmall)
+                        Text("Developer: vault.", color = VaultMint, style = MaterialTheme.typography.bodySmall)
                         Text(
                             "1. What is non-custodial?\nYou alone hold the keys to your funds. No central entity or developer can access your wallet.\n\n" +
                             "2. Can my wallet be recovered if I lose my phrase?\nNo. Because your keys are generated locally in the Android Keystore, no one can recover a lost phrase. Always keep offline backups.\n\n" +
@@ -283,7 +283,7 @@ fun SettingsScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { showSupportDialog = false }) {
-                        Text("Done", color = VaultCyan, fontWeight = FontWeight.Bold)
+                        Text("Done", color = VaultMint, fontWeight = FontWeight.Bold)
                     }
                 },
                 containerColor = VaultSurface

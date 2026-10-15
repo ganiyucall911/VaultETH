@@ -258,13 +258,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Android Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: VaultETH-Android-Release-Binaries
           path: final_assets
 
       - name: Download iOS Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: VaultETH-iOS-Release-Binaries
           path: final_assets

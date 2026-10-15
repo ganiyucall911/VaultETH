@@ -176,7 +176,7 @@ struct SendView: View {
                     } label: {
                         Image(systemName: "qrcode.viewfinder")
                             .font(.title3)
-                            .foregroundStyle(Color.vaultCyan)
+                            .foregroundStyle(Color.vaultMint)
                     }
 
                     Button {
@@ -204,7 +204,7 @@ struct SendView: View {
                     VaultIdenticon(address: effectiveRecipient, size: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         if let ens = resolvedENSName {
-                            Text(ens).font(.caption.bold()).foregroundStyle(Color.vaultCyan)
+                            Text(ens).font(.caption.bold()).foregroundStyle(Color.vaultMint)
                         }
                         Text(effectiveRecipient).font(.caption2.monospaced()).foregroundStyle(.secondary)
                     }
@@ -420,7 +420,7 @@ struct ReviewTransferView: View {
 
             Image(systemName: "arrow.right")
                 .font(.title2)
-                .foregroundStyle(Color.vaultCyan)
+                .foregroundStyle(Color.vaultMint)
                 .frame(maxWidth: .infinity)
 
             VStack(spacing: 6) {
@@ -452,7 +452,7 @@ struct ReviewTransferView: View {
                 }
                 detailRow(title: "Network", value: "\(network.name) (ID \(network.chainID))", isMonospace: false)
                 detailRow(title: "Estimated Gas Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " " + network.symbol, isMonospace: true)
-                detailRow(title: transfer.isProtocolFeeTransparent ? "Max Total Outlay" : "Total Execution Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
+                detailRow(title: "Max Total Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
             }
         }
         .padding(20)
@@ -591,7 +591,7 @@ struct ReviewTransferView: View {
                         Text("Failed On-Chain").font(.headline).foregroundStyle(.red)
                     case .none:
                         ProgressView().controlSize(.small)
-                        Text("Broadcasted • Awaiting Block Receipt…").font(.headline).foregroundStyle(Color.vaultCyan)
+                        Text("Broadcasted • Awaiting Block Receipt…").font(.headline).foregroundStyle(Color.vaultMint)
                     }
                 }
 
@@ -600,7 +600,7 @@ struct ReviewTransferView: View {
                 if let url = URL(string: "\(network.blockExplorerURL)/tx/\(hash)") {
                     Link("View on \(network.name) Explorer ↗", destination: url)
                         .font(.caption.bold())
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color.vaultMint)
                 }
 
                 Button("Done", action: onClose)

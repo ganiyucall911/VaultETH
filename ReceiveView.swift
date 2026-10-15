@@ -45,7 +45,7 @@ struct ReceiveView: View {
 
                         Text(chainDescription)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.vaultCyan)
+                            .foregroundStyle(Color.vaultMint)
                     }
 
                     ZStack {
@@ -75,7 +75,7 @@ struct ReceiveView: View {
                                 .truncationMode(.middle)
 
                             Image(systemName: copied ? "checkmark.circle.fill" : "doc.on.doc")
-                                .foregroundStyle(copied ? Color.vaultEmerald : Color.vaultCyan)
+                                .foregroundStyle(copied ? Color.vaultEmerald : Color.vaultMint)
                         }
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
@@ -92,7 +92,7 @@ struct ReceiveView: View {
 
                 HStack(spacing: 10) {
                     Image(systemName: "info.circle.fill")
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color.vaultMint)
                     Text(chainNotice)
                         .font(.caption)
                         .foregroundStyle(.secondary)
