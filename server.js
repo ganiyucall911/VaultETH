@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const https = require('https');
 const http = require('http');
 const QRCode = require('qrcode');
@@ -55,7 +56,12 @@ const defaultPrices = {
   chainlink: { usd: 11.55, eur: 10.62, gbp: 8.89, usd_24h_change: 1.22 },
   uniswap: { usd: 7.92, eur: 7.28, gbp: 6.10, usd_24h_change: 2.85 },
   tether: { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.01 },
-  'usd-coin': { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.00 }
+  'usd-coin': { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.00 },
+  dai: { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.00 },
+  'paypal-usd': { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.00 },
+  'ethena-usde': { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.02 },
+  'euro-coin': { usd: 1.08, eur: 1.00, gbp: 0.84, usd_24h_change: -0.15 },
+  frax: { usd: 1.00, eur: 0.92, gbp: 0.77, usd_24h_change: 0.00 }
 };
 
 app.get('/api/prices', async (req, res) => {
@@ -65,7 +71,7 @@ app.get('/api/prices', async (req, res) => {
   }
 
   try {
-    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,solana,matic-network,arbitrum,optimism,chainlink,uniswap,tether,usd-coin&vs_currencies=usd,eur,gbp&include_24hr_change=true';
+    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,solana,matic-network,arbitrum,optimism,chainlink,uniswap,tether,usd-coin,dai,paypal-usd,ethena-usde,euro-coin,frax&vs_currencies=usd,eur,gbp&include_24hr_change=true';
     const response = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(4000) });
     if (response.ok) {
       const data = await response.json();
@@ -236,6 +242,128 @@ app.post('/api/faucet', (req, res) => {
       ? '1.5 ETH added to Sandbox balance' 
       : 'For Sepolia/testnets, use official faucets (https://cloud.google.com/application/web3/faucet/ethereum/sepolia) or test on Sandbox network.'
   });
+});
+
+// Firebase Applet Config endpoint
+app.get('/api/firebase-config', (req, res) => {
+  try {
+    const configPath = path.join(__dirname, 'firebase-applet-config.json');
+    if (fs.existsSync(configPath)) {
+      const data = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      return res.json(data);
+    }
+    res.status(404).json({ error: 'firebase-applet-config.json not found' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// List repo files available for backup
+app.get('/api/repo-files', (req, res) => {
+  try {
+    const files = [];
+    const ignoreDirs = new Set(['node_modules', '.git', '.antigravity', '.aistudio']);
+    
+    function walk(dir, relPath = '') {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (ignoreDirs.has(entry.name)) continue;
+        const entryRel = relPath ? `${relPath}/${entry.name}` : entry.name;
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(fullPath, entryRel);
+        } else if (entry.isFile()) {
+          let category = 'Configuration';
+          if (entry.name.endsWith('.swift')) category = 'iOS (Swift)';
+          else if (entry.name.endsWith('.kt') || entry.name.endsWith('.kts')) category = 'Android (Kotlin)';
+          else if (entry.name.endsWith('.js') || entry.name.endsWith('.html') || entry.name.endsWith('.css')) category = 'Web Application';
+          else if (entry.name.endsWith('.md')) category = 'Documentation';
+          
+          const stat = fs.statSync(fullPath);
+          files.push({
+            path: entryRel,
+            name: entry.name,
+            category,
+            size: stat.size,
+            updatedAt: stat.mtime.toISOString()
+          });
+        }
+      }
+    }
+    
+    walk(__dirname);
+    res.json({ files, count: files.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get content of a specific repo file
+app.get('/api/repo-file', (req, res) => {
+  try {
+    const target = req.query.path;
+    if (!target) return res.status(400).json({ error: 'Path required' });
+    const full = path.resolve(__dirname, target);
+    if (!full.startsWith(__dirname)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    if (!fs.existsSync(full) || !fs.statSync(full).isFile()) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    const content = fs.readFileSync(full, 'utf-8');
+    res.json({ path: target, content });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get complete JSON bundle of all repo files
+app.get('/api/repo-bundle', (req, res) => {
+  try {
+    const files = [];
+    const ignoreDirs = new Set(['node_modules', '.git', '.antigravity', '.aistudio']);
+    
+    function walk(dir, relPath = '') {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (ignoreDirs.has(entry.name)) continue;
+        const entryRel = relPath ? `${relPath}/${entry.name}` : entry.name;
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(fullPath, entryRel);
+        } else if (entry.isFile()) {
+          if (entry.name.endsWith('.png') || entry.name.endsWith('.jpg') || entry.name.endsWith('.jar')) continue;
+          let category = 'Config';
+          if (entry.name.endsWith('.swift')) category = 'iOS';
+          else if (entry.name.endsWith('.kt') || entry.name.endsWith('.kts')) category = 'Android';
+          else if (entry.name.endsWith('.js') || entry.name.endsWith('.html')) category = 'Web';
+          else if (entry.name.endsWith('.md')) category = 'Doc';
+
+          try {
+            const content = fs.readFileSync(fullPath, 'utf-8');
+            files.push({
+              path: entryRel,
+              category,
+              content
+            });
+          } catch (readErr) {
+            // ignore binary/unreadable
+          }
+        }
+      }
+    }
+    
+    walk(__dirname);
+    res.json({
+      repo: 'VaultETH',
+      description: 'Complete VaultETH repository snapshot for Google Drive backup',
+      exportedAt: new Date().toISOString(),
+      fileCount: files.length,
+      files
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Serve static client assets

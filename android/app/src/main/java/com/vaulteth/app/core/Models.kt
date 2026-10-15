@@ -245,6 +245,11 @@ val DefaultTokenAssets: List<TokenItem> = listOf(
     TokenItem("btc", "BTC", "Bitcoin", "$83,222.52", "+1.17%", true, "0.1850 BTC", "$15,396.17", 0xFFF7931A),
     TokenItem("sol", "SOL", "Solana", "$107.03", "+2.03%", true, "24.50 SOL", "$2,622.24", 0xFF14F195),
     TokenItem("usdc", "USDC", "USD Coin", "$1.00", "0.00%", true, "1,430.00 USDC", "$1,430.00", 0xFF2775CA),
+    TokenItem("usdt", "USDT", "Tether USD", "$1.00", "+0.01%", true, "500.00 USDT", "$500.00", 0xFF26A17B),
+    TokenItem("dai", "DAI", "Dai Stablecoin", "$1.00", "0.00%", true, "250.00 DAI", "$250.00", 0xFFF5AC37),
+    TokenItem("usde", "USDe", "Ethena USDe", "$1.00", "+0.02%", true, "350.00 USDe", "$350.00", 0xFFA855F7),
+    TokenItem("pyusd", "PYUSD", "PayPal USD", "$1.00", "0.00%", true, "100.00 PYUSD", "$100.00", 0xFF0079C1),
+    TokenItem("eurc", "EURC", "Euro Coin", "$1.08", "-0.15%", true, "150.00 EURC", "$162.00", 0xFF1E40AF),
     TokenItem("arb", "ARB", "Arbitrum", "$0.1907", "+5.59%", true, "1,500.00 ARB", "$286.05", 0xFF28A0F0)
 )
 
