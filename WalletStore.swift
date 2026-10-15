@@ -17,14 +17,18 @@ final class WalletStore: ObservableObject {
         activeBannerAlert = nil
     }
 
-    func toggleAlertStatus(_ alert: PriceAlertItem) {
-        if let idx = priceAlerts.firstIndex(where: { $0.id == alert.id }) {
+    func toggleAlert(id: String) {
+        if let idx = priceAlerts.firstIndex(where: { $0.id == id }) {
             switch priceAlerts[idx].status {
             case .active: priceAlerts[idx].status = .paused
             case .paused: priceAlerts[idx].status = .active
             case .triggered: priceAlerts[idx].status = .active
             }
         }
+    }
+
+    func toggleAlertStatus(_ alert: PriceAlertItem) {
+        toggleAlert(id: alert.id)
     }
 
     var totalPortfolioUSD: Double {

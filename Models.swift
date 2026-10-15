@@ -430,6 +430,13 @@ struct PriceAlertItem: Identifiable, Codable, Hashable, Sendable {
         case paused = "paused"
     }
 
+    var accentHex: String { colorHex }
+
+    var isEnabled: Bool {
+        get { status != .paused }
+        set { status = newValue ? .active : .paused }
+    }
+
     var formattedTarget: String {
         targetPrice >= 1000 ? String(format: "$%.2f", targetPrice) : String(format: "$%.2f", targetPrice)
     }
@@ -475,4 +482,41 @@ struct PriceAlertItem: Identifiable, Codable, Hashable, Sendable {
             colorHex: "#14F195"
         )
     ]
+}
+
+extension PriceAlertItem {
+    init(
+        id: String = UUID().uuidString,
+        symbol: String,
+        name: String,
+        targetPrice: Double,
+        condition: AlertCondition,
+        createdPrice: Double,
+        createdAt: Date = Date(),
+        status: AlertStatus = .active,
+        note: String,
+        soundEnabled: Bool = true,
+        accentHex: String,
+        isEnabled: Bool? = nil
+    ) {
+        let finalStatus: AlertStatus
+        if let isEnabled = isEnabled {
+            finalStatus = isEnabled ? status : .paused
+        } else {
+            finalStatus = status
+        }
+        self.init(
+            id: id,
+            symbol: symbol,
+            name: name,
+            targetPrice: targetPrice,
+            condition: condition,
+            createdPrice: createdPrice,
+            createdAt: createdAt,
+            status: finalStatus,
+            note: note,
+            soundEnabled: soundEnabled,
+            colorHex: accentHex
+        )
+    }
 }
