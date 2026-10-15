@@ -47,12 +47,36 @@ struct RootView: View {
             }
             .tag(VaultTab.settings)
         }
-        .tint(.vaultCyan)
+        .tint(.vaultMint)
         .overlay {
             if store.accounts.isEmpty {
                 WelcomeView()
                     .background(Color.vaultBackground.ignoresSafeArea())
             }
+        }
+    }
+}
+
+// MARK: - Pulsing Alert Badge Component
+
+struct PulsingAlertBadge: View {
+    @State private var isPulsing = false
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.vaultDanger)
+                .frame(width: 8, height: 8)
+                .scaleEffect(isPulsing ? 1.6 : 1.0)
+                .opacity(isPulsing ? 0.25 : 0.9)
+                .animation(Animation.easeInOut(duration: 1.1).repeatForever(autoreverses: true), value: isPulsing)
+
+            Circle()
+                .fill(Color.vaultDanger)
+                .frame(width: 7, height: 7)
+        }
+        .onAppear {
+            isPulsing = true
         }
     }
 }
@@ -73,6 +97,7 @@ struct HomeView: View {
     @State private var showScanner = false
     @State private var showNetworkPicker = false
     @State private var showENSManager = false
+    @State private var showAlertsSheet = false
     @State private var selectedTokenForDetail: TokenAsset? = nil
     @State private var tokenFilter: String = "all"
     @State private var copiedToast = false
@@ -83,6 +108,11 @@ struct HomeView: View {
                 // Interactive Multi-Chain Network Selector
                 networkSelectorButton
 
+                // Autonomous Price Alert Notification Banner (when active)
+                if let alert = store.activeBannerAlert {
+                    priceAlertBanner(alert: alert)
+                }
+
                 // Hero Portfolio & Vault Card
                 vaultHeroCard
 
@@ -91,6 +121,9 @@ struct HomeView: View {
 
                 // Token Assets Section
                 tokensSection
+
+                // Autonomous Price Alerts Section
+                priceAlertsSection
 
                 // Backup Status Banner
                 if let account = store.selectedAccount, !account.backedUp {
@@ -128,10 +161,25 @@ struct HomeView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 12) {
                     Button {
+                        showAlertsSheet = true
+                    } label: {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "bell.fill")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(store.activeBannerAlert != nil ? Color.vaultMint : Color.secondary)
+
+                            if store.priceAlerts.contains(where: { $0.isEnabled }) {
+                                PulsingAlertBadge()
+                                    .offset(x: 4, y: -4)
+                            }
+                        }
+                    }
+
+                    Button {
                         showScanner = true
                     } label: {
                         Image(systemName: "qrcode.viewfinder")
-                            .foregroundStyle(Color.vaultCyan)
+                            .foregroundStyle(Color.vaultMint)
                     }
 
                     if store.accounts.count > 1 {
@@ -139,6 +187,9 @@ struct HomeView: View {
                     }
                 }
             }
+        }
+        .sheet(isPresented: $showAlertsSheet) {
+            NavigationStack { PriceAlertsSheet() }
         }
         .sheet(isPresented: $showSendSheet) {
             NavigationStack {
@@ -178,13 +229,13 @@ struct HomeView: View {
         .overlay(alignment: .bottom) {
             if copiedToast {
                 HStack(spacing: 8) {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.vaultEmerald)
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.vaultMint)
                     Text("Address copied to clipboard").font(.footnote.weight(.medium))
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(.ultraThinMaterial, in: Capsule())
-                .overlay(Capsule().strokeBorder(Color.vaultEmerald.opacity(0.4), lineWidth: 1))
+                .overlay(Capsule().strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1))
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .padding(.bottom, 24)
             }
@@ -259,10 +310,10 @@ struct HomeView: View {
                             HStack(spacing: 4) {
                                 Text(ens)
                                     .font(.subheadline.bold())
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.caption2)
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                             }
                         }
                         .buttonStyle(.plain)
@@ -276,10 +327,10 @@ struct HomeView: View {
                                 Text("Buy or Link ENS")
                                     .font(.caption2.weight(.medium))
                             }
-                            .foregroundStyle(Color.vaultCyan)
+                            .foregroundStyle(Color.vaultMint)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(Color.vaultCyan.opacity(0.12), in: Capsule())
+                            .background(Color.vaultMint.opacity(0.12), in: Capsule())
                         }
                         .buttonStyle(.plain)
                     }
@@ -320,7 +371,7 @@ struct HomeView: View {
                 if isDiscreetMode {
                     Text("••••••••")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color.vaultMint)
                 } else {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(store.formattedTotalPortfolioUSD)
@@ -333,10 +384,11 @@ struct HomeView: View {
                             Text("Demo +4.82%")
                         }
                         .font(.caption.bold())
-                        .foregroundStyle(Color.vaultEmerald)
+                        .foregroundStyle(Color.vaultMint)
                         .padding(.horizontal, 7)
                         .padding(.vertical, 3)
-                        .background(Color.vaultEmerald.opacity(0.15), in: Capsule())
+                        .background(Color.vaultMint.opacity(0.15), in: Capsule())
+                        .overlay(Capsule().strokeBorder(Color.vaultMint.opacity(0.35), lineWidth: 0.5))
                     }
                 }
 
@@ -362,7 +414,7 @@ struct HomeView: View {
 
     private var coreActionButtons: some View {
         HStack(spacing: 12) {
-            coreActionButton(title: "Buy", systemImage: "plus", color: Color.vaultCyan, isProminent: true) {
+            coreActionButton(title: "Buy", systemImage: "plus", color: Color.vaultMint, isProminent: true) {
                 showBuySheet = true
             }
 
@@ -387,12 +439,15 @@ struct HomeView: View {
             VStack(spacing: 7) {
                 ZStack {
                     Circle()
-                        .fill(isProminent ? Color.vaultCyan.opacity(0.18) : Color.white.opacity(0.06))
+                        .fill(isProminent ? Color.vaultMint.opacity(0.18) : Color.white.opacity(0.06))
                         .frame(width: 48, height: 48)
+                        .overlay(
+                            isProminent ? Circle().strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1) : nil
+                        )
 
                     Image(systemName: systemImage)
                         .font(.title3.weight(.semibold))
-                        .foregroundStyle(isProminent ? Color.vaultCyan : color)
+                        .foregroundStyle(isProminent ? Color.vaultMint : color)
                 }
 
                 Text(title)
@@ -404,6 +459,172 @@ struct HomeView: View {
             .vaultGlass(cornerRadius: 18)
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Price Alert Notification Banner Component
+
+    private func priceAlertBanner(alert: PriceAlertItem) -> some View {
+        HStack(alignment: .top, spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(Color.vaultMint.opacity(0.18))
+                    .frame(width: 42, height: 42)
+                    .overlay(
+                        Circle().strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1)
+                    )
+
+                Image(systemName: "bell.badge.fill")
+                    .font(.system(size: 18))
+                    .foregroundStyle(Color.vaultMint)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
+                    Text("Price Alert Triggered")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(Color.vaultMint)
+                        .textCase(.uppercase)
+
+                    Text(alert.condition == .above ? "▲ Rose above" : "▼ Dropped below")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(alert.condition == .above ? Color.vaultMint : Color.vaultDanger)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            (alert.condition == .above ? Color.vaultMint : Color.vaultDanger).opacity(0.15),
+                            in: Capsule()
+                        )
+                }
+
+                Text("\(alert.name) (\(alert.symbol)) hit target price of \(alert.formattedTarget)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+
+                Text(alert.note)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    store.dismissBannerAlert()
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                    .padding(8)
+                    .background(Color.white.opacity(0.06), in: Circle())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [Color.vaultSurfaceElevated, Color.vaultSurfaceVariant],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Color.vaultMint.opacity(0.55), lineWidth: 1.5)
+        )
+        .shadow(color: Color.vaultMint.opacity(0.2), radius: 14, x: 0, y: 6)
+    }
+
+    // MARK: - Price Alerts Section
+
+    private var priceAlertsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                HStack(spacing: 6) {
+                    Text("Price Alerts")
+                        .font(.headline.weight(.bold))
+
+                    Text("\(store.priceAlerts.filter { $0.isEnabled }.count) Active")
+                        .font(.caption2.bold())
+                        .foregroundStyle(Color.vaultMint)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.vaultMint.opacity(0.15), in: Capsule())
+                        .overlay(Capsule().strokeBorder(Color.vaultMint.opacity(0.35), lineWidth: 0.5))
+                }
+
+                Spacer()
+
+                Button {
+                    showAlertsSheet = true
+                } label: {
+                    Text("Manage")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.vaultMint)
+                }
+            }
+
+            VStack(spacing: 8) {
+                ForEach(store.priceAlerts) { alert in
+                    priceAlertRow(alert: alert)
+                }
+            }
+        }
+    }
+
+    private func priceAlertRow(alert: PriceAlertItem) -> some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(Color(hex: alert.accentHex).opacity(0.2))
+                .frame(width: 38, height: 38)
+                .overlay(
+                    Text(alert.symbol.prefix(3))
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .foregroundStyle(Color(hex: alert.accentHex))
+                )
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(alert.symbol)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.primary)
+
+                    Text(alert.condition == .above ? "▲ Above" : "▼ Below")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(alert.condition == .above ? Color.vaultMint : Color.vaultDanger)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1.5)
+                        .background((alert.condition == .above ? Color.vaultMint : Color.vaultDanger).opacity(0.12), in: Capsule())
+                }
+
+                Text(alert.note)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 3) {
+                Text(alert.formattedTarget)
+                    .font(.subheadline.monospacedDigit().bold())
+                    .foregroundStyle(.primary)
+
+                Toggle("", isOn: Binding(
+                    get: { alert.isEnabled },
+                    set: { _ in store.toggleAlert(id: alert.id) }
+                ))
+                .labelsHidden()
+                .tint(Color.vaultMint)
+                .scaleEffect(0.8)
+            }
+        }
+        .padding(12)
+        .vaultGlass(cornerRadius: 16)
     }
 
     private var tokensSection: some View {
@@ -468,7 +689,11 @@ struct HomeView: View {
 
                                     Text(token.formattedChange)
                                         .font(.caption2.weight(.bold))
-                                        .foregroundStyle(token.change24h >= 0 ? Color.vaultEmerald : Color.red)
+                                        .foregroundStyle(token.change24h >= 0 ? Color.vaultMint : Color.vaultDanger)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background((token.change24h >= 0 ? Color.vaultMint : Color.vaultDanger).opacity(0.12), in: Capsule())
+                                        .overlay(Capsule().strokeBorder((token.change24h >= 0 ? Color.vaultMint : Color.vaultDanger).opacity(0.3), lineWidth: 0.5))
                                 }
                             }
 
@@ -487,8 +712,8 @@ struct HomeView: View {
                                         .font(.subheadline.weight(.semibold))
                                         .foregroundStyle(.primary)
                                     Text(token.formattedFiat)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.caption.weight(.medium))
+                                        .foregroundStyle(Color.vaultMint)
                                 }
                             }
                         }
@@ -576,7 +801,7 @@ struct HomeView: View {
                     selectedTab = .activity
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Color.vaultCyan)
+                .foregroundStyle(Color.vaultMint)
             }
 
             let recentTxs = Array(store.sentTransactions.prefix(3))
@@ -712,7 +937,7 @@ struct NetworkPickerSheet: View {
 
                             if net.id == store.selectedNetwork.id {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                             }
                         }
                     }
@@ -724,7 +949,7 @@ struct NetworkPickerSheet: View {
                     showAddCustom = true
                 } label: {
                     Label("Add Custom EVM Chain", systemImage: "plus.circle.fill")
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color.vaultMint)
                 }
             }
         }
@@ -846,7 +1071,7 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Image(systemName: "at")
-                            .foregroundStyle(Color.vaultCyan)
+                            .foregroundStyle(Color.vaultMint)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Buy or Import ENS (.eth)")
                                 .font(.headline)
@@ -854,7 +1079,7 @@ struct SettingsView: View {
                             if let ens = store.selectedENSName {
                                 Text("Linked: \(ens)")
                                     .font(.caption)
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                             } else {
                                 Text("Register a .eth name or bind existing ENS")
                                     .font(.caption)
@@ -1069,7 +1294,7 @@ struct WelcomeView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [Color.vaultCyan.opacity(0.3), Color.vaultViolet.opacity(0.1), .clear],
+                            colors: [Color.vaultMint.opacity(0.3), Color.vaultViolet.opacity(0.1), .clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 100
@@ -1081,7 +1306,7 @@ struct WelcomeView: View {
                     .font(.system(size: 72))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color.vaultCyan, Color.vaultViolet],
+                            colors: [Color.vaultMint, Color.vaultViolet],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -1094,7 +1319,7 @@ struct WelcomeView: View {
 
                 Text("The Sovereign Multi-Chain Vault")
                     .font(.title3.weight(.medium))
-                    .foregroundStyle(Color.vaultCyan)
+                    .foregroundStyle(Color.vaultMint)
 
                 Text("Send native assets on supported EVM networks. Solana and Bitcoin addresses are receive-only.")
                     .font(.subheadline)
@@ -1105,7 +1330,7 @@ struct WelcomeView: View {
 
             // Pillar Highlights
             VStack(spacing: 12) {
-                featureRow(icon: "network", color: Color.vaultCyan, title: "Universal Multi-Chain", subtitle: "Seamlessly switch between Ethereum, L2s, and alternate chains")
+                featureRow(icon: "network", color: Color.vaultMint, title: "Universal Multi-Chain", subtitle: "Seamlessly switch between Ethereum, L2s, and alternate chains")
                 featureRow(icon: "lock.shield.fill", color: Color.vaultEmerald, title: "Hardware-Protected", subtitle: "Keys sealed in iOS Keychain with Face ID")
                 featureRow(icon: "eye.slash.fill", color: Color.vaultViolet, title: "Zero Tracking", subtitle: "No analytics, no data collection, no telemetry")
             }
@@ -1239,7 +1464,7 @@ struct TokenDetailSheet: View {
                         Spacer()
                         Text(token.formattedFiat)
                             .font(.title3.weight(.semibold))
-                            .foregroundStyle(Color.vaultCyan)
+                            .foregroundStyle(Color.vaultMint)
                     }
 
                     HStack {
@@ -1266,9 +1491,9 @@ struct TokenDetailSheet: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color.vaultCyan.opacity(0.18), in: RoundedRectangle(cornerRadius: 14))
-                        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.vaultCyan.opacity(0.4), lineWidth: 1))
-                        .foregroundStyle(Color.vaultCyan)
+                        .background(Color.vaultMint.opacity(0.18), in: RoundedRectangle(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1))
+                        .foregroundStyle(Color.vaultMint)
                     }
                     .disabled(true)
 
@@ -1348,6 +1573,145 @@ struct TokenDetailSheet: View {
     }
 }
 
+// MARK: - Dedicated Price Alerts Sheet
+
+struct PriceAlertsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: WalletStore
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                // Header badge
+                VStack(spacing: 8) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.vaultMint.opacity(0.18))
+                            .frame(width: 58, height: 58)
+                            .overlay(Circle().strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1))
+                        Image(systemName: "bell.badge.fill")
+                            .font(.system(size: 26))
+                            .foregroundStyle(Color.vaultMint)
+                    }
+
+                    Text("Obsidian Price Alerts")
+                        .font(.title2.bold())
+
+                    Text("Smart autonomous volatility alerts trigger directly on-device with zero tracking or external notification servers.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+                .padding(.top, 12)
+
+                // Active alerts list
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Configured Alerts")
+                            .font(.headline)
+                        Spacer()
+                        Text("\(store.priceAlerts.filter { $0.isEnabled }.count) Active")
+                            .font(.caption.bold())
+                            .foregroundStyle(Color.vaultMint)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.vaultMint.opacity(0.15), in: Capsule())
+                            .overlay(Capsule().strokeBorder(Color.vaultMint.opacity(0.35), lineWidth: 0.5))
+                    }
+
+                    VStack(spacing: 12) {
+                        ForEach(store.priceAlerts) { alert in
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack(spacing: 12) {
+                                    Circle()
+                                        .fill(Color(hex: alert.accentHex).opacity(0.2))
+                                        .frame(width: 40, height: 40)
+                                        .overlay(
+                                            Text(alert.symbol.prefix(3))
+                                                .font(.system(size: 11, weight: .black, design: .rounded))
+                                                .foregroundStyle(Color(hex: alert.accentHex))
+                                        )
+
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        HStack(spacing: 6) {
+                                            Text(alert.name)
+                                                .font(.subheadline.bold())
+                                            Text(alert.symbol)
+                                                .font(.caption.monospaced())
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        Text(alert.note)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    Toggle("", isOn: Binding(
+                                        get: { alert.isEnabled },
+                                        set: { _ in store.toggleAlert(id: alert.id) }
+                                    ))
+                                    .labelsHidden()
+                                    .tint(Color.vaultMint)
+                                }
+
+                                Divider()
+                                    .background(Color.white.opacity(0.06))
+
+                                HStack {
+                                    HStack(spacing: 4) {
+                                        Text("Target:")
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                        Text(alert.formattedTarget)
+                                            .font(.caption.bold().monospacedDigit())
+                                            .foregroundStyle(.primary)
+                                    }
+
+                                    Spacer()
+
+                                    Text(alert.condition == .above ? "▲ ABOVE TARGET" : "▼ BELOW TARGET")
+                                        .font(.system(size: 10, weight: .heavy))
+                                        .foregroundStyle(alert.condition == .above ? Color.vaultMint : Color.vaultDanger)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background((alert.condition == .above ? Color.vaultMint : Color.vaultDanger).opacity(0.15), in: Capsule())
+                                }
+                            }
+                            .padding(14)
+                            .vaultGlass(cornerRadius: 18)
+                        }
+                    }
+                }
+
+                // Info Box
+                HStack(spacing: 10) {
+                    Image(systemName: "info.circle.fill")
+                        .foregroundStyle(Color.vaultMint)
+                    Text("Alerts evaluate on every RPC sync and portfolio refresh against decentralized oracle data.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(14)
+                .background(Color.white.opacity(0.03), in: RoundedRectangle(cornerRadius: 14))
+            }
+            .padding(18)
+        }
+        .background(Color.vaultBackground.ignoresSafeArea())
+        .navigationTitle("Price Alerts")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") { dismiss() }
+                    .font(.body.bold())
+                    .foregroundStyle(Color.vaultMint)
+            }
+        }
+    }
+}
+
 // MARK: - Color Hex Helper
 
 extension Color {
@@ -1360,7 +1724,7 @@ extension Color {
         case 6:
             (r, g, b) = (int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
         default:
-            (r, g, b) = (0, 240, 255)
+            (r, g, b) = (0, 214, 50)
         }
         self.init(
             red: Double(r) / 255.0,

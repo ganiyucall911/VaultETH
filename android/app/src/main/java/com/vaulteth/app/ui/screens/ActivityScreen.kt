@@ -87,7 +87,7 @@ fun ActivityScreen(
             TabRow(
                 selectedTabIndex = filterIndex,
                 containerColor = VaultSurface,
-                contentColor = VaultCyan,
+                contentColor = VaultMint,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
@@ -101,7 +101,7 @@ fun ActivityScreen(
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                color = if (filterIndex == index) VaultCyan else VaultTextMuted
+                                color = if (filterIndex == index) VaultMint else VaultTextMuted
                             )
                         }
                     )

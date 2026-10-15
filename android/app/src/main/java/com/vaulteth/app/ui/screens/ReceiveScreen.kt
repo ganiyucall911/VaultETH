@@ -85,7 +85,7 @@ fun ReceiveScreen(
             TabRow(
                 selectedTabIndex = selectedChainIndex,
                 containerColor = VaultSurface,
-                contentColor = VaultCyan,
+                contentColor = VaultMint,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
@@ -99,7 +99,7 @@ fun ReceiveScreen(
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                color = if (selectedChainIndex == index) VaultCyan else VaultTextMuted
+                                color = if (selectedChainIndex == index) VaultMint else VaultTextMuted
                             )
                         }
                     )
@@ -175,7 +175,7 @@ fun ReceiveScreen(
                         Toast.makeText(context, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.weight(1f).height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = VaultCyan),
+                    colors = ButtonDefaults.buttonColors(containerColor = VaultMint),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(imageVector = Icons.Default.ContentCopy, contentDescription = null, tint = Color.Black)

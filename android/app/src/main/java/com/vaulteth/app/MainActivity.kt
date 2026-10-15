@@ -292,7 +292,7 @@ fun VaultApp(viewModel: VaultViewModel) {
             if (activeScreen == ActiveScreen.HOME) {
                 NavigationBar(
                     containerColor = VaultSurface,
-                    contentColor = VaultCyan
+                    contentColor = VaultMint
                 ) {
                     NavigationTab.values().forEach { tab ->
                         val isSelected = currentTab == tab
@@ -303,8 +303,8 @@ fun VaultApp(viewModel: VaultViewModel) {
                             label = { Text(tab.title) },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = Color.Black,
-                                selectedTextColor = VaultCyan,
-                                indicatorColor = VaultCyan,
+                                selectedTextColor = VaultMint,
+                                indicatorColor = VaultMint,
                                 unselectedIconColor = VaultTextMuted,
                                 unselectedTextColor = VaultTextMuted
                             )

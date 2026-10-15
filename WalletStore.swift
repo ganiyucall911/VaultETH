@@ -10,6 +10,22 @@ final class WalletStore: ObservableObject {
     @Published private(set) var selectedENSName: String?
     @Published private(set) var sentTransactions: [SentTransaction] = []
     @Published var tokens: [TokenAsset] = TokenAsset.defaultAssets
+    @Published var priceAlerts: [PriceAlertItem] = PriceAlertItem.defaultAlerts
+    @Published var activeBannerAlert: PriceAlertItem? = PriceAlertItem.defaultAlerts.first(where: { $0.status == .triggered })
+
+    func dismissBannerAlert() {
+        activeBannerAlert = nil
+    }
+
+    func toggleAlertStatus(_ alert: PriceAlertItem) {
+        if let idx = priceAlerts.firstIndex(where: { $0.id == alert.id }) {
+            switch priceAlerts[idx].status {
+            case .active: priceAlerts[idx].status = .paused
+            case .paused: priceAlerts[idx].status = .active
+            case .triggered: priceAlerts[idx].status = .active
+            }
+        }
+    }
 
     var totalPortfolioUSD: Double {
         tokens.reduce(0) { $0 + $1.fiatValueUSD }

@@ -26,7 +26,7 @@ struct WalletsView: View {
                         Label("New Vault", systemImage: "plus.circle.fill")
                             .font(.subheadline.bold())
                     }
-                    .foregroundStyle(Color.vaultCyan)
+                    .foregroundStyle(Color.vaultMint)
                 }
                 .padding(.horizontal, 4)
 
@@ -57,7 +57,7 @@ struct WalletsView: View {
                     showAdd = true
                 } label: {
                     Image(systemName: "plus")
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color.vaultMint)
                 }
             }
         }
@@ -128,10 +128,10 @@ private struct VaultCardRow: View {
                             if isSelected {
                                 Text("Active")
                                     .font(.caption2.bold())
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 2)
-                                    .background(Color.vaultCyan.opacity(0.15), in: Capsule())
+                                    .background(Color.vaultMint.opacity(0.15), in: Capsule())
                             }
                         }
 
@@ -139,10 +139,10 @@ private struct VaultCardRow: View {
                             HStack(spacing: 4) {
                                 Text(ens)
                                     .font(.caption.bold())
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.caption2)
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                             }
                         }
 
@@ -225,13 +225,13 @@ private struct VaultCardRow: View {
                             Text(account.importedENSName != nil ? "Manage ENS" : "Buy / Link ENS")
                                 .font(.caption2.weight(.medium))
                         }
-                        .foregroundStyle(Color.vaultCyan)
+                        .foregroundStyle(Color.vaultMint)
                     }
                 }
             }
             .padding(18)
             .vaultCard(cornerRadius: 22, highlight: isSelected ? LinearGradient(
-                colors: [Color.vaultCyan.opacity(0.6), Color.vaultViolet.opacity(0.4)],
+                colors: [Color.vaultMint.opacity(0.8), Color.vaultMint.opacity(0.2)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             ) : nil)
@@ -297,7 +297,7 @@ struct AddWalletView: View {
                         VStack(spacing: 12) {
                             Image(systemName: "key.viewfinder")
                                 .font(.system(size: 42))
-                                .foregroundStyle(Color.vaultCyan)
+                                .foregroundStyle(Color.vaultMint)
                                 .padding(.top, 12)
 
                             Text("Cryptographically Secure Generation")
@@ -433,7 +433,7 @@ struct RecoveryPhraseView: View {
                             HStack(spacing: 8) {
                                 Text("\(index + 1)")
                                     .font(.caption2.monospacedDigit())
-                                    .foregroundStyle(Color.vaultCyan)
+                                    .foregroundStyle(Color.vaultMint)
                                     .frame(width: 20, alignment: .trailing)
                                 Text(word)
                                     .font(.subheadline.monospaced().weight(.semibold))

@@ -403,3 +403,76 @@ struct TokenAsset: Identifiable, Hashable, Sendable {
         TokenAsset(id: "bnb", symbol: "BNB", name: "BNB", networkID: "bsc", networkName: "BNB Smart Chain", priceUSD: 742.43, change24h: 1.04, balance: 2.10, accentHex: "#F3BA2F")
     ]
 }
+
+// MARK: - Price Alert System
+
+struct PriceAlertItem: Identifiable, Codable, Hashable, Sendable {
+    let id: String
+    let symbol: String
+    let name: String
+    let targetPrice: Double
+    let condition: AlertCondition
+    let createdPrice: Double
+    let createdAt: Date
+    var status: AlertStatus
+    let note: String
+    let soundEnabled: Bool
+    let colorHex: String
+
+    enum AlertCondition: String, Codable, Sendable {
+        case above = "ABOVE"
+        case below = "BELOW"
+    }
+
+    enum AlertStatus: String, Codable, Sendable {
+        case active = "active"
+        case triggered = "triggered"
+        case paused = "paused"
+    }
+
+    var formattedTarget: String {
+        targetPrice >= 1000 ? String(format: "$%.2f", targetPrice) : String(format: "$%.2f", targetPrice)
+    }
+
+    static let defaultAlerts: [PriceAlertItem] = [
+        PriceAlertItem(
+            id: "alert_eth_target",
+            symbol: "ETH",
+            name: "Ethereum",
+            targetPrice: 2800.00,
+            condition: .above,
+            createdPrice: 2645.20,
+            createdAt: Date(timeIntervalSince1970: 1729000000),
+            status: .triggered,
+            note: "Key resistance breakout target",
+            soundEnabled: true,
+            colorHex: "#627EEA"
+        ),
+        PriceAlertItem(
+            id: "alert_btc_dip",
+            symbol: "BTC",
+            name: "Bitcoin",
+            targetPrice: 65000.00,
+            condition: .below,
+            createdPrice: 67840.00,
+            createdAt: Date(timeIntervalSince1970: 1729000000 - 3600),
+            status: .active,
+            note: "Support retest & accumulation dip",
+            soundEnabled: true,
+            colorHex: "#F7931A"
+        ),
+        PriceAlertItem(
+            id: "alert_sol_surge",
+            symbol: "SOL",
+            name: "Solana",
+            targetPrice: 175.00,
+            condition: .above,
+            createdPrice: 154.60,
+            createdAt: Date(timeIntervalSince1970: 1729000000 - 7200),
+            status: .active,
+            note: "DeFi momentum surge target",
+            soundEnabled: true,
+            colorHex: "#14F195"
+        )
+    ]
+}

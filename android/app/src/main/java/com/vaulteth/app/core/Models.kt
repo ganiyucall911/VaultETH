@@ -249,7 +249,60 @@ val DefaultTokenAssets: List<TokenItem> = listOf(
     TokenItem("dai", "DAI", "Dai Stablecoin", "$1.00", "0.00%", true, "250.00 DAI", "$250.00", 0xFFF5AC37),
     TokenItem("usde", "USDe", "Ethena USDe", "$1.00", "+0.02%", true, "350.00 USDe", "$350.00", 0xFFA855F7),
     TokenItem("pyusd", "PYUSD", "PayPal USD", "$1.00", "0.00%", true, "100.00 PYUSD", "$100.00", 0xFF0079C1),
-    TokenItem("eurc", "EURC", "Euro Coin", "$1.08", "-0.15%", true, "150.00 EURC", "$162.00", 0xFF1E40AF),
+    TokenItem("eurc", "EURC", "Euro Coin", "$1.08", "-0.15%", false, "150.00 EURC", "$162.00", 0xFF1E40AF),
     TokenItem("arb", "ARB", "Arbitrum", "$0.1907", "+5.59%", true, "1,500.00 ARB", "$286.05", 0xFF28A0F0)
 )
+
+enum class AlertCondition(val label: String) {
+    RISES_ABOVE("Rises above"),
+    DROPS_BELOW("Drops below")
+}
+
+enum class AlertStatus(val label: String) {
+    ACTIVE("Active"),
+    TRIGGERED("Triggered"),
+    MUTED("Muted")
+}
+
+data class PriceAlertItem(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val symbol: String,
+    val targetPriceFormatted: String,
+    val condition: AlertCondition,
+    val currentPriceFormatted: String,
+    val isEnabled: Boolean = true,
+    val status: AlertStatus = AlertStatus.ACTIVE,
+    val note: String? = null
+)
+
+val DefaultPriceAlerts: List<PriceAlertItem> = listOf(
+    PriceAlertItem(
+        symbol = "ETH",
+        targetPriceFormatted = "$2,800.00",
+        condition = AlertCondition.RISES_ABOVE,
+        currentPriceFormatted = "$2,501.10",
+        isEnabled = true,
+        status = AlertStatus.ACTIVE,
+        note = "Resistance breakout target"
+    ),
+    PriceAlertItem(
+        symbol = "BTC",
+        targetPriceFormatted = "$80,000.00",
+        condition = AlertCondition.DROPS_BELOW,
+        currentPriceFormatted = "$83,222.52",
+        isEnabled = true,
+        status = AlertStatus.ACTIVE,
+        note = "Key support level"
+    ),
+    PriceAlertItem(
+        symbol = "SOL",
+        targetPriceFormatted = "$120.00",
+        condition = AlertCondition.RISES_ABOVE,
+        currentPriceFormatted = "$107.03",
+        isEnabled = false,
+        status = AlertStatus.MUTED,
+        note = "Take-profit threshold"
+    )
+)
+
 
