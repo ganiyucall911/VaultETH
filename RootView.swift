@@ -147,6 +147,20 @@ struct HomeView: View {
         .navigationTitle(store.selectedAccount?.name ?? "VaultETH")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 7) {
+                    Image("VaultLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 25, height: 25)
+                        .clipShape(RoundedRectangle(cornerRadius: 7))
+                    Text("VaultETH")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(Color.primary)
+                }
+                .accessibilityElement(children: .combine)
+            }
+
             ToolbarItem(placement: .topBarLeading) {
                 Button {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -160,6 +174,20 @@ struct HomeView: View {
 
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 12) {
+                    Button {
+                        Task {
+                            await store.refreshBalance()
+                            if store.selectedNetwork.chainID == 1 {
+                                await store.refreshENS()
+                            }
+                            await store.refreshPendingTransactions()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundStyle(Color.vaultMint)
+                    }
+                    .accessibilityLabel("Refresh wallet")
+
                     Button {
                         showAlertsSheet = true
                     } label: {

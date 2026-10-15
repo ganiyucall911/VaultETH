@@ -3,6 +3,7 @@ package com.vaulteth.app.ui.screens
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,12 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vaulteth.app.R
 import com.vaulteth.app.core.AlertCondition
 import com.vaulteth.app.core.AlertStatus
 import com.vaulteth.app.core.BlockchainNetwork
@@ -73,31 +77,18 @@ fun VaultHomeScreen(
                 title = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(VaultSurfaceVariant)
-                            .border(1.dp, VaultBorder, RoundedCornerShape(20.dp))
-                            .clickable { showNetworkDialog = true }
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(CircleShape)
-                                .background(Color(selectedNetwork.accentHex))
+                        Image(
+                            painter = painterResource(R.mipmap.ic_launcher),
+                            contentDescription = "VaultETH logo",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(30.dp).clip(RoundedCornerShape(8.dp))
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(9.dp))
                         Text(
-                            text = selectedNetwork.name,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                            text = "VaultETH",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                             color = VaultTextPrimary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Select Network",
-                            tint = VaultTextSecondary,
-                            modifier = Modifier.size(18.dp)
                         )
                     }
                 },
@@ -131,6 +122,38 @@ fun VaultHomeScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(VaultSurfaceVariant)
+                        .border(1.dp, VaultBorder, RoundedCornerShape(20.dp))
+                        .clickable { showNetworkDialog = true }
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(Color(selectedNetwork.accentHex))
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = selectedNetwork.name,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = VaultTextPrimary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Select Network",
+                        tint = VaultTextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
             // Price Alert Notification Banner (Obsidian Mint Design)
             if (activeBannerAlert != null) {
                 item {
