@@ -434,6 +434,15 @@ struct PriceAlertItem: Identifiable, Codable, Hashable, Sendable {
         targetPrice >= 1000 ? String(format: "$%.2f", targetPrice) : String(format: "$%.2f", targetPrice)
     }
 
+    var isEnabled: Bool {
+        get { status == .active }
+        set { status = newValue ? .active : .paused }
+    }
+
+    var accentHex: String {
+        colorHex
+    }
+
     static let defaultAlerts: [PriceAlertItem] = [
         PriceAlertItem(
             id: "alert_eth_target",

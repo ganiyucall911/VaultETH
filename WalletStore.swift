@@ -27,6 +27,12 @@ final class WalletStore: ObservableObject {
         }
     }
 
+    func toggleAlert(id: String) {
+        if let alert = priceAlerts.first(where: { $0.id == id }) {
+            toggleAlertStatus(alert)
+        }
+    }
+
     var totalPortfolioUSD: Double {
         tokens.reduce(0) { $0 + $1.fiatValueUSD }
     }
