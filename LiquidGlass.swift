@@ -11,6 +11,8 @@ extension Color {
     static let vaultSurfaceElevated = Color(red: 20/255.0, green: 26/255.0, blue: 36/255.0)
     /// Surface tone for frosted glass cards (#121822)
     static let vaultCardSurface = Color(red: 18/255.0, green: 24/255.0, blue: 34/255.0)
+    /// Obsidian secondary card / surface tone (#121822)
+    static let vaultSurfaceVariant = Color(red: 18/255.0, green: 24/255.0, blue: 34/255.0)
     /// Obsidian card hover surface tone (#18202D)
     static let vaultCardHover = Color(red: 24/255.0, green: 32/255.0, blue: 45/255.0)
     /// Specular hairline border highlight (8% opacity)
