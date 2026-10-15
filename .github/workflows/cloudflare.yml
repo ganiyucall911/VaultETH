@@ -28,8 +28,8 @@ jobs:
       - name: Deploy to Cloudflare Pages
         run: |
           if [ -z "$CF_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::error::Cloudflare deployment requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
-            exit 1
+            echo "::warning::Cloudflare deployment skipped: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets are not configured."
+            exit 0
           fi
           test -s docs/index.html
           npx wrangler pages deploy docs --project-name=vaulteth --account-id="$CLOUDFLARE_ACCOUNT_ID" --commit-dirty=true
