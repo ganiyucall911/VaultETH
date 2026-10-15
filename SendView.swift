@@ -452,7 +452,7 @@ struct ReviewTransferView: View {
                 }
                 detailRow(title: "Network", value: "\(network.name) (ID \(network.chainID))", isMonospace: false)
                 detailRow(title: "Estimated Gas Fee", value: ETHAmount.format(wei: transfer.fee.maxFeeWei) + " " + network.symbol, isMonospace: true)
-                detailRow(title: transfer.isProtocolFeeTransparent ? "Max Total Outlay" : "Total Execution Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
+                detailRow(title: "Max Total Outlay", value: ETHAmount.format(wei: transfer.maxTotalWei) + " " + network.symbol, isMonospace: true)
             }
         }
         .padding(20)
