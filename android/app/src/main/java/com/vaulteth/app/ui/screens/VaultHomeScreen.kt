@@ -9,6 +9,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -178,30 +180,61 @@ fun VaultHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.Start
                     ) {
                         if (wallet != null) {
+                            // Cash App-style hero: big monospace balance first
+                            Text(
+                                text = "VAULT BALANCE",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.5.sp
+                                ),
+                                color = VaultTextMuted
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            if (isLoadingBalance) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(28.dp),
+                                    color = VaultMint,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text(
+                                    text = if (isDiscreetMode) "•••••••• ${selectedNetwork.symbol}" else "$balance ${selectedNetwork.symbol}",
+                                    style = MaterialTheme.typography.headlineLarge.copy(
+                                        fontSize = 32.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontFamily = FontFamily.Monospace,
+                                        letterSpacing = (-0.5).sp
+                                    ),
+                                    color = VaultTextPrimary
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            // Compact account strip
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.clickable { onNavigateToWallets() }
                                 ) {
-                                    VaultIdenticon(address = wallet.address, size = 38.dp)
+                                    VaultIdenticon(address = wallet.address, size = 34.dp)
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
                                             text = wallet.name,
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                             color = VaultTextPrimary
                                         )
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(
                                                 text = "${wallet.address.take(6)}...${wallet.address.takeLast(4)}",
-                                                style = MaterialTheme.typography.bodySmall,
+                                                style = MaterialTheme.typography.labelSmall,
                                                 color = VaultTextSecondary
                                             )
                                             if (wallet.importedEnsName != null) {
@@ -219,6 +252,36 @@ fun VaultHomeScreen(
                                     }
                                 }
 
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                // Interactive ENS Identity Pill
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(if (wallet.importedEnsName != null) VaultMint.copy(alpha = 0.12f) else VaultSurfaceVariant)
+                                        .border(
+                                            1.dp,
+                                            if (wallet.importedEnsName != null) VaultMint.copy(alpha = 0.35f) else VaultBorder,
+                                            RoundedCornerShape(20.dp)
+                                        )
+                                        .clickable { onNavigateToWallets() }
+                                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AlternateEmail,
+                                        contentDescription = "ENS",
+                                        tint = if (wallet.importedEnsName != null) VaultMint else VaultTextMuted,
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = if (wallet.importedEnsName != null) "@${wallet.importedEnsName}" else "ENS",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                        color = if (wallet.importedEnsName != null) VaultMint else VaultTextSecondary
+                                    )
+                                }
+
                                 IconButton(
                                     onClick = {
                                         clipboardManager.setText(AnnotatedString(wallet.address))
@@ -234,91 +297,43 @@ fun VaultHomeScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // Balance Display
-                            Text(
-                                text = "Vault Balance",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = VaultTextMuted
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            if (isLoadingBalance) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(28.dp),
-                                    color = VaultMint,
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Text(
-                                    text = if (isDiscreetMode) "•••••••• ${selectedNetwork.symbol}" else "$balance ${selectedNetwork.symbol}",
-                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                        fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = (-0.5).sp
-                                    ),
-                                    color = VaultTextPrimary
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // Interactive ENS Identity Pill
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(if (wallet.importedEnsName != null) VaultMint.copy(alpha = 0.12f) else VaultSurfaceVariant)
-                                    .border(
-                                        1.dp,
-                                        if (wallet.importedEnsName != null) VaultMint.copy(alpha = 0.35f) else VaultBorder,
-                                        RoundedCornerShape(20.dp)
-                                    )
-                                    .clickable { onNavigateToWallets() }
-                                    .padding(horizontal = 12.dp, vertical = 5.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.AlternateEmail,
-                                    contentDescription = "ENS",
-                                    tint = if (wallet.importedEnsName != null) VaultMint else VaultTextMuted,
-                                    modifier = Modifier.size(13.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (wallet.importedEnsName != null) "@${wallet.importedEnsName}" else "Buy / Link ENS",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = if (wallet.importedEnsName != null) VaultMint else VaultTextSecondary
-                                )
-                            }
-
                             Spacer(modifier = Modifier.height(18.dp))
 
-                            // Action Buttons
+                            // Action Tiles
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                QuickActionButton(
+                                QuickActionTile(
                                     icon = Icons.Default.Add,
                                     label = "Buy",
                                     color = VaultMint,
+                                    prominent = true,
+                                    modifier = Modifier.weight(1f),
                                     onClick = { showBuyDialog = true }
                                 )
-                                QuickActionButton(
+                                QuickActionTile(
                                     icon = Icons.Default.ArrowUpward,
                                     label = "Send",
-                                    color = Color.White,
+                                    color = VaultTextPrimary,
+                                    prominent = false,
+                                    modifier = Modifier.weight(1f),
                                     onClick = onNavigateToSend
                                 )
-                                QuickActionButton(
+                                QuickActionTile(
                                     icon = Icons.Default.ArrowDownward,
                                     label = "Receive",
-                                    color = Color.White,
+                                    color = VaultTextPrimary,
+                                    prominent = false,
+                                    modifier = Modifier.weight(1f),
                                     onClick = onNavigateToReceive
                                 )
-                                QuickActionButton(
+                                QuickActionTile(
                                     icon = Icons.Default.QrCodeScanner,
                                     label = "Scan",
-                                    color = Color.White,
+                                    color = VaultTextPrimary,
+                                    prominent = false,
+                                    modifier = Modifier.weight(1f),
                                     onClick = onNavigateToScan
                                 )
                             }
@@ -341,6 +356,75 @@ fun VaultHomeScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = VaultMint)
                             ) {
                                 Text("Open Vault Manager", color = Color.Black, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Trending Tokens Row
+            item {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "TRENDING",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 2.sp
+                        ),
+                        color = VaultTextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(DefaultTokenAssets) { token ->
+                            Column(
+                                modifier = Modifier
+                                    .width(150.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(VaultSurface)
+                                    .border(1.dp, VaultBorder, RoundedCornerShape(18.dp))
+                                    .padding(12.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(token.accentHex)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = token.symbol.take(2),
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
+                                            color = Color.White
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = token.symbol,
+                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = VaultTextPrimary
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = token.priceFormatted,
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    color = VaultTextPrimary
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = token.changeFormatted,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    color = if (token.isPositive) VaultMint else VaultDanger
+                                )
                             }
                         }
                     }
@@ -880,36 +964,42 @@ fun PriceAlertBanner(
 }
 
 @Composable
-fun QuickActionButton(
+fun QuickActionTile(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     color: Color,
+    prominent: Boolean,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() }
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(VaultSurfaceVariant)
+            .border(1.dp, VaultBorder, RoundedCornerShape(20.dp))
+            .clickable { onClick() }
+            .padding(vertical = 14.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(54.dp)
+                .size(46.dp)
                 .clip(CircleShape)
-                .background(VaultSurfaceVariant)
-                .border(1.dp, VaultBorder, CircleShape),
+                .background(if (prominent) VaultMint.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.07f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
                 tint = color,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(22.dp)
             )
         }
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = label,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-            color = VaultTextSecondary
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = VaultTextPrimary
         )
     }
 }
