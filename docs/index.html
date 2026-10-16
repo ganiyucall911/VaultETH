@@ -102,9 +102,10 @@
       color: #fff;
     }
 
-    .brand-mark svg {
+    .brand-mark img {
       width: 28px;
       height: 28px;
+      border-radius: 8px;
     }
 
     .brand-title {
@@ -1462,11 +1463,7 @@
   <header class="topbar">
     <div class="topbar-left">
       <a href="#" class="brand-mark" onclick="switchNavTab('wallet'); return false;">
-        <svg viewBox="0 0 32 32" fill="none">
-          <rect width="32" height="32" rx="8" fill="#121822"/>
-          <path d="M16 4L6 16L16 22L26 16L16 4Z" fill="#00D632" fill-opacity="0.9"/>
-          <path d="M6 16L16 22L26 16L16 28L6 16Z" fill="#00D632" fill-opacity="0.5"/>
-        </svg>
+        <img src="assets/app-icon.png" alt="VaultETH logo">
         <span class="brand-title">VaultETH</span>
       </a>
       <span class="brand-badge tabular-nums" id="appVersionBadge">v1.2 · Web3 Live</span>
@@ -1574,11 +1571,7 @@
     <!-- Screen 1: Onboarding View (shown if no wallet exists) -->
     <div id="onboardingScreen" class="onboarding-screen" style="display: none;">
       <div class="onboarding-logo">
-        <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-          <rect width="32" height="32" rx="8" fill="#121822"/>
-          <path d="M16 4L6 16L16 22L26 16L16 4Z" fill="#00D632" fill-opacity="0.9"/>
-          <path d="M6 16L16 22L26 16L16 28L6 16Z" fill="#00D632" fill-opacity="0.5"/>
-        </svg>
+        <img src="assets/app-icon.png" alt="VaultETH logo" width="56" height="56" style="border-radius: 14px;">
       </div>
       <h1 class="onboarding-title">Welcome to VaultETH</h1>
       <p class="onboarding-sub">Self-custodial multi-chain Ethereum & EVM wallet. Your keys are generated locally and securely stored inside your browser.</p>
