@@ -1,23 +1,17 @@
 import XCTest
 import UIKit
+import CryptoKit
 
 /// Captures App Store screenshots from the real app running on CI (GitHub Actions
-/// macOS runner) and uploads them as JPEG to the VaultETH screenshot intake endpoint.
-/// Each CI run refreshes the same screen names, keeping the captures current.
+/// macOS runner) and uploads them as JPEG to a temp file host (72h retention),
+/// printing the returned URLs into the CI log tagged SHOTURL for collection.
 final class VaultETHUITests: XCTestCase {
-
-    private let endpoint = URL(string: "https://superagent-e3b33393.base44.app/functions/captureAppScreenshot")!
-    private let shotToken = "vaulteth-shots-2F8A1C"
 
     private var deviceName: String {
         ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] ?? UIDevice.current.model
     }
 
-    private func upload(name: String, image: UIImage) {
-        guard let data = image.jpegData(compressionQuality: 0.92) else {
-            XCTFail("Could not encode screenshot \(name)")
-            return
-        }
+    private func upload(name: String, data: Data) -> String? {
         // Upload to litterbox (72h temp host) so the shots are reachable without
         // authenticated backend access; the returned URL is printed into the CI
         // log so it can be collected afterwards.
@@ -54,19 +48,10 @@ final class VaultETHUITests: XCTestCase {
             }
             semaphore.signal()
         }.resume()
-        if semaphore.wait(timeout: .now() + 90) == .timedOut || result == nil {
-            XCTFail("Screenshot upload failed for \(name)")
-        } else {
-            print("SHOTURL \(name) \(result!) (\(deviceName))")
+        if semaphore.wait(timeout: .now() + 90) == .timedOut {
+            return nil
         }
-    }
-
-    private func snap(_ name: String) {
-        guard let image = UIImage(data: XCUIScreen.main.screenshot().pngRepresentation) else {
-            XCTFail("Could not decode screenshot \(name)")
-            return
-        }
-        upload(name: name, image: image)
+        return result
     }
 
     func testCaptureAppStoreScreenshots() throws {
@@ -74,23 +59,52 @@ final class VaultETHUITests: XCTestCase {
         app.launchArguments += ["--vaulteth-demo-vault"]
         app.launch()
 
-        // Wait for the demo vault to import and the dashboard tab bar to appear.
-        let tabBar = app.tabBars.firstMatch
-        XCTAssertTrue(tabBar.waitForExistence(timeout: 45), "Dashboard did not appear after demo vault import")
+        // In CI mode the store seeds the demo account within moments of launch,
+        // which dismisses the first-launch welcome overlay. Wait until the demo
+        // account ("Main Vault") is visible, which proves the overlay is gone
+        // and the tab bar is tappable.
+        let demoAccountLabel = app.staticTexts["Main Vault"]
+        XCTAssertTrue(demoAccountLabel.waitForExistence(timeout: 60), "Demo vault did not appear; welcome overlay may still be up")
+
+        var lastDigest = ""
+
+        func snap(_ name: String) {
+            guard let image = UIImage(data: XCUIScreen.main.screenshot().pngRepresentation),
+                  let data = image.jpegData(compressionQuality: 0.92) else {
+                XCTFail("Could not encode screenshot \(name)")
+                return
+            }
+            let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+            if digest == lastDigest {
+                print("SHOTDUP \(name) — screen did not change after the last tap")
+                print("SHOTHIERARCHY-BEGIN")
+                print(app.debugDescription)
+                print("SHOTHIERARCHY-END")
+                XCTFail("Screen did not change after tapping to \(name)")
+            }
+            lastDigest = digest
+
+            if let url = upload(name: name, data: data) {
+                print("SHOTURL \(name) \(url) (\(deviceName))")
+            } else {
+                XCTFail("Screenshot upload failed for \(name)")
+            }
+        }
 
         sleep(6) // let balances settle
         snap("01-vault-home")
 
-        tabBar.buttons["Wallets"].tap()
-        sleep(2)
-        snap("02-wallets")
-
-        tabBar.buttons["Activity"].tap()
-        sleep(2)
-        snap("03-activity")
-
-        tabBar.buttons["Settings"].tap()
-        sleep(2)
-        snap("04-settings")
+        let tabs: [(String, String)] = [
+            ("Wallets", "02-wallets"),
+            ("Activity", "03-activity"),
+            ("Settings", "04-settings")
+        ]
+        for (tabName, shotName) in tabs {
+            let button = app.tabBars.firstMatch.buttons[tabName]
+            XCTAssertTrue(button.waitForExistence(timeout: 10), "Missing tab \(tabName)")
+            button.tap()
+            sleep(2)
+            snap(shotName)
+        }
     }
 }
