@@ -1459,6 +1459,33 @@
     .alert-oracle-card:hover {
       border-color: var(--border-highlight);
     }
+
+    /* Official App Store / Google Play badges */
+    .store-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .store-badge-link {
+      display: inline-flex;
+      border-radius: 8px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .store-badge-link:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+    .store-badge-link img {
+      display: block;
+      height: 46px;
+      width: auto;
+    }
+    @media (max-width: 480px) {
+      .store-badge-link img { height: 40px; }
+    }
   </style>
 </head>
 <body>
@@ -1601,6 +1628,20 @@
           Instant Pre-Funded Demo Vault
         </button>
       </div>
+
+      <!-- Official Store Download Badges -->
+      <div style="max-width: 420px; margin: 22px auto 0; text-align: center;">
+        <div style="font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px;">Get the mobile app</div>
+        <div class="store-badges">
+          <!-- Replace hrefs with the live store listings once published -->
+          <a class="store-badge-link" href="https://apps.apple.com" target="_blank" rel="noopener" aria-label="Download VaultETH on the App Store" title="Download on the App Store">
+            <img src="assets/app-store-badge.svg" alt="Download on the App Store">
+          </a>
+          <a class="store-badge-link" href="https://play.google.com/store/apps/details?id=com.vaulteth.app" target="_blank" rel="noopener" aria-label="Get VaultETH on Google Play" title="Get it on Google Play">
+            <img src="assets/google-play-badge.png" alt="Get it on Google Play">
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Screen 2: Active Wallet Dashboard View -->
@@ -1643,6 +1684,13 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m16 6-4 4-4-4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
                 Faucet
               </button>
+            </div>            <div class="store-badges" style="margin-top: 14px; justify-content: flex-start;">
+              <a class="store-badge-link" href="https://apps.apple.com" target="_blank" rel="noopener" aria-label="Download VaultETH on the App Store" title="Download on the App Store">
+                <img src="assets/app-store-badge.svg" alt="Download on the App Store">
+              </a>
+              <a class="store-badge-link" href="https://play.google.com/store/apps/details?id=com.vaulteth.app" target="_blank" rel="noopener" aria-label="Get VaultETH on Google Play" title="Get it on Google Play">
+                <img src="assets/google-play-badge.png" alt="Get it on Google Play">
+              </a>
             </div>
           </div>
 
