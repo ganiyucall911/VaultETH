@@ -11,10 +11,7 @@ final class VaultETHUITests: XCTestCase {
         ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] ?? UIDevice.current.model
     }
 
-    private func upload(name: String, data: Data) -> String? {
-        // Upload to litterbox (72h temp host) so the shots are reachable without
-        // authenticated backend access; the returned URL is printed into the CI
-        // log so it can be collected afterwards.
+    private func postMultipart(to url: URL, fileField: String, fileName: String, data: Data) -> (Int, String)? {
         let boundary = "VaultETH-\(UUID().uuidString)"
         var body = Data()
         func append(_ string: String) { body.append(string.data(using: .utf8)!) }
@@ -26,32 +23,62 @@ final class VaultETHUITests: XCTestCase {
         field("reqtype", "fileupload")
         field("time", "72h")
         append("--\(boundary)\r\n")
-        append("Content-Disposition: form-data; name=\"fileToUpload\"; filename=\"\(name).jpg\"\r\n")
+        append("Content-Disposition: form-data; name=\"\(fileField)\"; filename=\"\(fileName)\"\r\n")
         append("Content-Type: image/jpeg\r\n\r\n")
         body.append(data)
         append("\r\n--\(boundary)--\r\n")
 
-        var request = URLRequest(url: URL(string: "https://litterbox.catbox.moe/resources/internals/api.php")!, timeoutInterval: 60)
+        var request = URLRequest(url: url, timeoutInterval: 60)
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("VaultETH-CI/1.0", forHTTPHeaderField: "User-Agent")
         request.httpBody = body
 
         let semaphore = DispatchSemaphore(value: 0)
-        var result: String?
+        var status = 0
+        var responseBody = ""
         URLSession.shared.dataTask(with: request) { data, response, _ in
-            if let http = response as? HTTPURLResponse, http.statusCode == 200,
-               let text = data.flatMap({ String(data: $0, encoding: .utf8) })?
-                   .trimmingCharacters(in: .whitespacesAndNewlines),
-               text.hasPrefix("https://") {
-                result = text
-            }
+            status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            responseBody = data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
             semaphore.signal()
         }.resume()
         if semaphore.wait(timeout: .now() + 90) == .timedOut {
             return nil
         }
-        return result
+        return (status, responseBody)
+    }
+
+    private func upload(name: String, data: Data) -> String? {
+        // Upload to a public temp file host so the shots are reachable without
+        // authenticated backend access; the returned URL is printed into the CI
+        // log (tagged SHOTURL) for collection afterwards. Litterbox keeps files
+        // 72h; tmpfiles keeps them 60 minutes but serves as a fallback when the
+        // primary host is rate-limiting or briefly down.
+        let hosts: [(url: URL, field: String)] = [
+            (URL(string: "https://litterbox.catbox.moe/resources/internals/api.php")!, "fileToUpload"),
+            (URL(string: "https://tmpfiles.org/api/v1/upload")!, "file")
+        ]
+        for host in hosts {
+            for _ in 0..<2 {
+                guard let (status, body) = postMultipart(to: host.url, fileField: host.field, fileName: "\(name).jpg", data: data) else { break }
+                if status != 200 { continue }
+                let text = body.trimmingCharacters(in: .whitespacesAndNewlines)
+                if text.hasPrefix("https://") {
+                    return text
+                }
+                if let dataRange = text.range(of: "\"url\":\"https://tmpfiles.org/"),
+                   let lineEnd = text[text.index(after: dataRange.upperBound)...].firstIndex(of: "\"") {
+                    // tmpfiles returns a page URL; direct download is /dl/
+                    let page = String(text[dataRange.upperBound..<lineEnd])
+                    let parts = page.split(separator: "/", omittingEmptySubsequences: true)
+                    if parts.count >= 2 {
+                        return "https://tmpfiles.org/dl/\(parts[0])/\(parts[1])"
+                    }
+                }
+                sleep(3)
+            }
+        }
+        return nil
     }
 
     func testCaptureAppStoreScreenshots() throws {
