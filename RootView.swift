@@ -102,6 +102,14 @@ struct HomeView: View {
     @State private var tokenFilter: String = "all"
     @State private var copiedToast = false
 
+    private func refreshWalletData() async {
+        await store.refreshBalance()
+        if store.selectedNetwork.chainID == 1 {
+            await store.refreshENS()
+        }
+        await store.refreshPendingTransactions()
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -138,11 +146,7 @@ struct HomeView: View {
         }
         .background(Color.vaultBackground.ignoresSafeArea())
         .refreshable {
-            await store.refreshBalance()
-            if store.selectedNetwork.chainID == 1 {
-                await store.refreshENS()
-            }
-            await store.refreshPendingTransactions()
+            await refreshWalletData()
         }
         .navigationTitle(store.selectedAccount?.name ?? "VaultETH")
         .navigationBarTitleDisplayMode(.inline)
@@ -158,13 +162,7 @@ struct HomeView: View {
                         .font(.headline.weight(.bold))
                         .foregroundStyle(Color.primary)
                     Button {
-                        Task {
-                            await store.refreshBalance()
-                            if store.selectedNetwork.chainID == 1 {
-                                await store.refreshENS()
-                            }
-                            await store.refreshPendingTransactions()
-                        }
+                        Task { await refreshWalletData() }
                     } label: {
                         Image(systemName: "arrow.clockwise")
                             .foregroundStyle(Color.vaultMint)
