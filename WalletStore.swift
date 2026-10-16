@@ -83,6 +83,18 @@ final class WalletStore: ObservableObject {
             selectedNetwork = match
             rpc = EthereumRPC(network: match)
         }
+
+        // CI screenshot hook: seed a deterministic demo vault when launched with this
+        // launch argument so App Store screenshots can be captured on GitHub Actions
+        // without a manual onboarding flow. Harmless in production: it only imports
+        // the canonical BIP39 test mnemonic, which anyone can already do via Import.
+        if accounts.isEmpty,
+           ProcessInfo.processInfo.arguments.contains("--vaulteth-demo-vault") {
+            let demoMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
+            Task { [weak self] in
+                try? await self?.importWallet(name: "Main Vault", mnemonic: demoMnemonic)
+            }
+        }
     }
 
     // MARK: - Network Selection & Custom Chains
