@@ -124,8 +124,11 @@ struct HomeView: View {
                 // Hero Portfolio & Vault Card
                 vaultHeroCard
 
-                // Core Action Buttons (Buy, Send, Receive, Swap)
+                // Core Action Tiles (Send, Receive, Buy)
                 coreActionButtons
+
+                // Trending tokens row (Cash App-style cards)
+                trendingTokensSection
 
                 // Token Assets Section
                 tokensSection
@@ -304,24 +307,54 @@ struct HomeView: View {
     }
 
     private var vaultHeroCard: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top) {
-                if let account = store.selectedAccount {
-                    VaultIdenticon(address: account.address, size: 52, showGlow: false)
+        VStack(alignment: .leading, spacing: 14) {
+            // Cash App-style hero: giant tabular balance straight on the background
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Vault Balance")
+                    .font(.caption2.weight(.bold))
+                    .tracking(1.2)
+                    .textCase(.uppercase)
+                    .foregroundStyle(.secondary)
+
+                if isDiscreetMode {
+                    Text("••••••••")
+                        .font(.system(size: 40, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(Color.vaultMint)
                 } else {
-                    Circle()
-                        .fill(Color.vaultCardSurface)
-                        .frame(width: 52, height: 52)
+                    Text(store.formattedTotalPortfolioUSD)
+                        .font(.system(size: 40, weight: .heavy, design: .monospaced))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
                 }
 
-                VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 8) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "arrow.up.right")
+                        Text("Demo +4.82%")
+                    }
+                    .font(.caption.bold())
+                    .foregroundStyle(Color.vaultMint)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(Color.vaultMint.opacity(0.15), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Color.vaultMint.opacity(0.35), lineWidth: 0.5))
+                }
+            }
+
+            // Compact account strip
+            HStack(alignment: .center, spacing: 10) {
+                if let account = store.selectedAccount {
+                    VaultIdenticon(address: account.address, size: 36, showGlow: false)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
                         Text(store.selectedAccount?.name ?? "No Wallet")
-                            .font(.headline.weight(.semibold))
+                            .font(.subheadline.weight(.semibold))
 
                         if store.selectedAccount?.backedUp == true {
                             Image(systemName: "checkmark.shield.fill")
-                                .font(.caption)
+                                .font(.caption2)
                                 .foregroundStyle(Color.vaultEmerald)
                         }
                     }
@@ -332,7 +365,7 @@ struct HomeView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Text(ens)
-                                    .font(.subheadline.bold())
+                                    .font(.caption.bold())
                                     .foregroundStyle(Color.vaultMint)
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.caption2)
@@ -351,8 +384,8 @@ struct HomeView: View {
                                     .font(.caption2.weight(.medium))
                             }
                             .foregroundStyle(Color.vaultMint)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2)
                             .background(Color.vaultMint.opacity(0.12), in: Capsule())
                         }
                         .buttonStyle(.plain)
@@ -364,20 +397,28 @@ struct HomeView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Text(shortAddress(addr))
-                                    .font(.caption.monospaced())
+                                    .font(.caption2.monospaced())
                                     .foregroundStyle(.secondary)
                                 Image(systemName: "doc.on.doc")
-                                    .font(.caption2)
+                                    .font(.system(size: 9))
                                     .foregroundStyle(.tertiary)
                             }
                         }
                         .buttonStyle(.plain)
                     }
+
+                    HStack(spacing: 5) {
+                        Text(store.selectedNetwork.name)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Text(isDiscreetMode ? "••••" : store.balanceETH)
+                            .font(.caption2.monospaced().weight(.medium))
+                            .foregroundStyle(.primary)
+                    }
                 }
 
                 Spacer()
 
-                // Network Tag Badge
                 Text(store.selectedNetwork.symbol)
                     .font(.caption2.bold())
                     .padding(.horizontal, 8)
@@ -386,102 +427,122 @@ struct HomeView: View {
                     .overlay(Capsule().strokeBorder(Color(hex: store.selectedNetwork.accentColorHex).opacity(0.4), lineWidth: 1))
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Demo Portfolio Value")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-
-                if isDiscreetMode {
-                    Text("••••••••")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.vaultMint)
-                } else {
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text(store.formattedTotalPortfolioUSD)
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
-                            .minimumScaleFactor(0.4)
-                            .lineLimit(1)
-
-                        HStack(spacing: 3) {
-                            Image(systemName: "arrow.up.right")
-                            Text("Demo +4.82%")
-                        }
-                        .font(.caption.bold())
-                        .foregroundStyle(Color.vaultMint)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(Color.vaultMint.opacity(0.15), in: Capsule())
-                        .overlay(Capsule().strokeBorder(Color.vaultMint.opacity(0.35), lineWidth: 0.5))
-                    }
-                }
-
-                HStack(spacing: 6) {
-                    Text("On \(store.selectedNetwork.name):")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(isDiscreetMode ? "••••" : store.balanceETH)
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.primary)
-                }
-
-                if let error = store.balanceError {
-                    Label(error, systemImage: "exclamationmark.triangle")
-                        .font(.caption)
-                        .foregroundStyle(Color.red)
-                }
+            if let error = store.balanceError {
+                Label(error, systemImage: "exclamationmark.triangle")
+                    .font(.caption2)
+                    .foregroundStyle(Color.red)
             }
         }
-        .padding(22)
-        .vaultCard(cornerRadius: 24)
     }
 
     private var coreActionButtons: some View {
         HStack(spacing: 12) {
-            coreActionButton(title: "Buy", systemImage: "plus", color: Color.vaultMint, isProminent: true) {
-                showBuySheet = true
-            }
-
-            coreActionButton(title: "Send", systemImage: "arrow.up.right", color: .white, isProminent: false) {
+            bigActionButton(title: "Send", systemImage: "arrow.up.right", isProminent: false) {
                 sendInitialRecipient = ""
                 sendInitialAmount = ""
                 showSendSheet = true
             }
 
-            coreActionButton(title: "Receive", systemImage: "arrow.down.left", color: .white, isProminent: false) {
+            bigActionButton(title: "Receive", systemImage: "arrow.down.left", isProminent: false) {
                 showReceiveSheet = true
             }
 
-            coreActionButton(title: "Swap Soon", systemImage: "arrow.triangle.2.circlepath", color: .white, isProminent: false) {
-                showSwapSheet = true
+            bigActionButton(title: "Buy", systemImage: "plus", isProminent: true) {
+                showBuySheet = true
             }
         }
     }
 
-    private func coreActionButton(title: String, systemImage: String, color: Color, isProminent: Bool, action: @escaping () -> Void) -> some View {
+    private func bigActionButton(title: String, systemImage: String, isProminent: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 7) {
-                ZStack {
-                    Circle()
-                        .fill(isProminent ? Color.vaultMint.opacity(0.18) : Color.white.opacity(0.06))
-                        .frame(width: 48, height: 48)
-                        .overlay(
-                            isProminent ? Circle().strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1) : nil
-                        )
-
-                    Image(systemName: systemImage)
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(isProminent ? Color.vaultMint : color)
-                }
+            VStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(isProminent ? Color.vaultMint : .primary)
+                    .frame(width: 46, height: 46)
+                    .background(
+                        Circle().fill(isProminent ? Color.vaultMint.opacity(0.18) : Color.white.opacity(0.07))
+                    )
+                    .overlay(
+                        Circle().strokeBorder(isProminent ? Color.vaultMint.opacity(0.4) : Color.white.opacity(0.12), lineWidth: 1)
+                    )
 
                 Text(title)
-                    .font(.caption.weight(.semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundStyle(.primary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .vaultGlass(cornerRadius: 18)
+            .padding(.vertical, 16)
+            .vaultGlass(cornerRadius: 22)
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Trending Tokens Row
+
+    private var trendingTokensSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("TRENDING")
+                    .font(.footnote.weight(.heavy))
+                    .tracking(1.5)
+                    .foregroundStyle(.primary)
+
+                Spacer()
+
+                Button {
+                    showSwapSheet = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                        Text("Swap")
+                    }
+                    .font(.caption.bold())
+                    .foregroundStyle(Color.vaultMint)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Color.vaultMint.opacity(0.12), in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(store.tokens.sorted { $0.change24h > $1.change24h }) { token in
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(Color(hex: token.accentHex))
+                                    .frame(width: 30, height: 30)
+                                    .overlay(
+                                        Text(token.symbol.prefix(2))
+                                            .font(.system(size: 10, weight: .black, design: .rounded))
+                                            .foregroundStyle(.white)
+                                    )
+
+                                Text(token.symbol)
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.primary)
+                            }
+
+                            Text(token.formattedPrice)
+                                .font(.caption.monospaced().weight(.semibold))
+                                .foregroundStyle(.primary)
+
+                            HStack(spacing: 4) {
+                                Image(systemName: token.change24h >= 0 ? "arrow.up.right" : "arrow.down.right")
+                                Text(String(format: "%+.2f%%", token.change24h))
+                            }
+                            .font(.caption2.bold().monospaced())
+                            .foregroundStyle(token.change24h >= 0 ? Color.vaultMint : Color.vaultDanger)
+                        }
+                        .padding(12)
+                        .frame(width: 150, alignment: .leading)
+                        .vaultGlass(cornerRadius: 18)
+                    }
+                }
+            }
+        }
     }
 
     // MARK: - Price Alert Notification Banner Component
