@@ -270,44 +270,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Real Token Icons
-
-/// Renders a bundled real token logo when one exists for the symbol, falling
-/// back to the accent monogram for anything else.
-struct TokenIconView: View {
-    let symbol: String
-    let accentHex: String
-    var size: CGFloat = 28
-
-    private var assetName: String? {
-        let candidates = ["token-\(symbol.lowercased())", "token-usd\(symbol.lowercased())"]
-        for name in candidates where UIImage(named: name) != nil {
-            return name
-        }
-        return nil
-    }
-
-    var body: some View {
-        if let name = assetName {
-            Image(name)
-                .resizable()
-                .interpolation(.high)
-                .frame(width: size, height: size)
-                .clipShape(Circle())
-        } else {
-            Circle()
-                .fill(Color(hex: accentHex))
-                .frame(width: size, height: size)
-                .overlay(
-                    Text(symbol.prefix(2))
-                        .font(.system(size: size * 0.36, weight: .black, design: .rounded))
-                        .foregroundStyle(.white)
-                )
-        }
-    }
-}
-
-// MARK: - Subviews
+    // MARK: - Subviews
 
     private var networkSelectorButton: some View {
         Button {
@@ -599,7 +562,7 @@ struct TokenIconView: View {
                 }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 10, weight: .bold()))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
@@ -1780,5 +1743,42 @@ extension Color {
             green: Double(g) / 255.0,
             blue: Double(b) / 255.0
         )
+    }
+}
+
+// MARK: - Real Token Icons
+
+/// Renders a bundled real token logo when one exists for the symbol, falling
+/// back to the accent monogram for anything else.
+struct TokenIconView: View {
+    let symbol: String
+    let accentHex: String
+    var size: CGFloat = 28
+
+    private var assetName: String? {
+        let candidates = ["token-\(symbol.lowercased())", "token-usd\(symbol.lowercased())"]
+        for name in candidates where UIImage(named: name) != nil {
+            return name
+        }
+        return nil
+    }
+
+    var body: some View {
+        if let name = assetName {
+            Image(name)
+                .resizable()
+                .interpolation(.high)
+                .frame(width: size, height: size)
+                .clipShape(Circle())
+        } else {
+            Circle()
+                .fill(Color(hex: accentHex))
+                .frame(width: size, height: size)
+                .overlay(
+                    Text(symbol.prefix(2))
+                        .font(.system(size: size * 0.36, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                )
+        }
     }
 }
