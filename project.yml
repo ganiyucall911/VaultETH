@@ -60,6 +60,16 @@ targets:
       - package: WalletCore
         product: SwiftProtobuf
 
+  VaultETHUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: .
+        includes:
+          - "*UITests.swift"
+    dependencies:
+      - target: VaultETH
+
   VaultETHTests:
     type: bundle.unit-test
     platform: iOS
@@ -68,6 +78,7 @@ targets:
         includes:
           - "*Tests.swift"
         excludes:
+          - "*UITests.swift"
           - .antigravity
           - .github
           - .build
@@ -92,3 +103,4 @@ schemes:
     test:
       targets:
         - VaultETHTests
+        - VaultETHUITests
