@@ -41,16 +41,6 @@ fun VaultIdenticon(
             val center = Offset(this.size.width / 2f, this.size.height / 2f)
             val radius = this.size.minDimension / 2f
 
-            // Outer subtle glow
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(primaryColor.copy(alpha = 0.25f), Color.Transparent),
-                    center = center,
-                    radius = radius
-                ),
-                radius = radius
-            )
-
             // Outer titanium rim
             drawCircle(
                 color = titanium,
