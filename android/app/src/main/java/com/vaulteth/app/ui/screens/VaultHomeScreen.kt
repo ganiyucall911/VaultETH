@@ -1,5 +1,7 @@
 package com.vaulteth.app.ui.screens
 
+import com.vaulteth.app.ui.components.TokenIcon
+
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
@@ -367,11 +369,11 @@ fun VaultHomeScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "TRENDING",
-                        style = MaterialTheme.typography.labelLarge.copy(
+                        style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 2.sp
                         ),
-                        color = VaultTextPrimary
+                        color = VaultTextSecondary
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     LazyRow(
@@ -380,34 +382,26 @@ fun VaultHomeScreen(
                         items(DefaultTokenAssets) { token ->
                             Column(
                                 modifier = Modifier
-                                    .width(150.dp)
-                                    .clip(RoundedCornerShape(18.dp))
+                                    .width(124.dp)
+                                    .clip(RoundedCornerShape(14.dp))
                                     .background(VaultSurface)
-                                    .border(1.dp, VaultBorder, RoundedCornerShape(18.dp))
-                                    .padding(12.dp)
+                                    .border(1.dp, VaultBorder, RoundedCornerShape(14.dp))
+                                    .padding(10.dp)
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(28.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(token.accentHex)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = token.symbol.take(2),
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
-                                            color = Color.White
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    TokenIcon(
+                                        symbol = token.symbol,
+                                        accentHex = token.accentHex,
+                                        size = 22.dp
+                                    )
+                                    Spacer(modifier = Modifier.width(7.dp))
                                     Text(
                                         text = token.symbol,
-                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                         color = VaultTextPrimary
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = token.priceFormatted,
                                     style = MaterialTheme.typography.labelMedium.copy(
@@ -474,19 +468,11 @@ fun VaultHomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(token.accentHex)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = token.symbol.take(3),
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
-                                    color = Color.White
-                                )
-                            }
+                            TokenIcon(
+                                symbol = token.symbol,
+                                accentHex = token.accentHex,
+                                size = 32.dp
+                            )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
