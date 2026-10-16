@@ -369,9 +369,13 @@
 
     /* Content Section Container */
     .section-card {
-      background: var(--bg-surface);
+      /* Liquid glass: translucent obsidian over blurred backdrop, specular top edge */
+      background: rgba(18, 21, 26, 0.55);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 12px 32px rgba(0, 0, 0, 0.35);
       padding: 24px;
       margin-bottom: 24px;
     }
