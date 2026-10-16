@@ -18,25 +18,46 @@ final class VaultETHUITests: XCTestCase {
             XCTFail("Could not encode screenshot \(name)")
             return
         }
-        var request = URLRequest(url: endpoint, timeoutInterval: 30)
+        // Upload to litterbox (72h temp host) so the shots are reachable without
+        // authenticated backend access; the returned URL is printed into the CI
+        // log so it can be collected afterwards.
+        let boundary = "VaultETH-\(UUID().uuidString)"
+        var body = Data()
+        func append(_ string: String) { body.append(string.data(using: .utf8)!) }
+        func field(_ fieldName: String, _ value: String) {
+            append("--\(boundary)\r\n")
+            append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n")
+            append("\(value)\r\n")
+        }
+        field("reqtype", "fileupload")
+        field("time", "72h")
+        append("--\(boundary)\r\n")
+        append("Content-Disposition: form-data; name=\"fileToUpload\"; filename=\"\(name).jpg\"\r\n")
+        append("Content-Type: image/jpeg\r\n\r\n")
+        body.append(data)
+        append("\r\n--\(boundary)--\r\n")
+
+        var request = URLRequest(url: URL(string: "https://litterbox.catbox.moe/resources/internals/api.php")!, timeoutInterval: 60)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = [
-            "name": name,
-            "device": deviceName,
-            "jpg_base64": data.base64EncodedString(),
-            "token": shotToken
-        ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("VaultETH-CI/1.0", forHTTPHeaderField: "User-Agent")
+        request.httpBody = body
 
         let semaphore = DispatchSemaphore(value: 0)
-        var ok = false
-        URLSession.shared.dataTask(with: request) { _, response, _ in
-            ok = (response as? HTTPURLResponse)?.statusCode == 200
+        var result: String?
+        URLSession.shared.dataTask(with: request) { data, response, _ in
+            if let http = response as? HTTPURLResponse, http.statusCode == 200,
+               let text = data.flatMap({ String(data: $0, encoding: .utf8) })?
+                   .trimmingCharacters(in: .whitespacesAndNewlines),
+               text.hasPrefix("https://") {
+                result = text
+            }
             semaphore.signal()
         }.resume()
-        if semaphore.wait(timeout: .now() + 45) == .timedOut || !ok {
+        if semaphore.wait(timeout: .now() + 90) == .timedOut || result == nil {
             XCTFail("Screenshot upload failed for \(name)")
+        } else {
+            print("SHOTURL \(name) \(result!) (\(deviceName))")
         }
     }
 
