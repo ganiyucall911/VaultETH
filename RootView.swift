@@ -276,7 +276,6 @@ struct HomeView: View {
                 Circle()
                     .fill(Color(hex: store.selectedNetwork.accentColorHex))
                     .frame(width: 8, height: 8)
-                    .shadow(color: Color(hex: store.selectedNetwork.accentColorHex).opacity(0.8), radius: 4)
 
                 Text(store.selectedNetwork.name)
                     .font(.caption.weight(.semibold))
@@ -308,7 +307,7 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .top) {
                 if let account = store.selectedAccount {
-                    VaultIdenticon(address: account.address, size: 52, showGlow: true)
+                    VaultIdenticon(address: account.address, size: 52, showGlow: false)
                 } else {
                     Circle()
                         .fill(Color.vaultCardSurface)
@@ -560,7 +559,6 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .strokeBorder(Color.vaultMint.opacity(0.55), lineWidth: 1.5)
         )
-        .shadow(color: Color.vaultMint.opacity(0.2), radius: 14, x: 0, y: 6)
     }
 
     // MARK: - Price Alerts Section
