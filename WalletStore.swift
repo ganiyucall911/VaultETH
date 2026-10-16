@@ -90,11 +90,25 @@ final class WalletStore: ObservableObject {
         // the canonical BIP39 test mnemonic, which anyone can already do via Import.
         if accounts.isEmpty,
            ProcessInfo.processInfo.arguments.contains("--vaulteth-demo-vault") {
-            let demoMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
             Task { [weak self] in
-                try? await self?.importWallet(name: "Main Vault", mnemonic: demoMnemonic)
+                await self?.seedDemoAccountForCI()
             }
         }
+    }
+
+    /// CI screenshot mode only (launch argument --vaulteth-demo-vault): seeds a
+    /// display-only demo account so the app is fully populated for App Store
+    /// captures. The address is derived purely from the canonical BIP39 test
+    /// mnemonic; the full import path also writes the encrypted vault to the
+    /// keychain, which can fail on headless CI simulators and previously left
+    /// the first-launch overlay covering the UI during capture.
+    func seedDemoAccountForCI() async {
+        let demoMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
+        let address = WalletEngine.address(forMnemonic: demoMnemonic)
+            ?? "0x9858EfFD232B4033E47d90003D41Da465A2B6c94"
+        let demo = WalletAccount(id: UUID(), name: "Main Vault", address: address, backedUp: true)
+        accounts.append(demo)
+        selectedAccountID = demo.id
     }
 
     // MARK: - Network Selection & Custom Chains
