@@ -58,16 +58,33 @@ struct VaultGlass: ViewModifier {
 
     private func fallback(_ content: Content) -> some View {
         content
-            .background(shape.fill(Color.vaultCardSurface))
+            .background(
+                shape
+                    .fill(Color.vaultCardSurface.opacity(0.55))
+                    .background(.ultraThinMaterial, in: shape)
+            )
             .overlay(
                 Group {
                     if specularBorder {
-                        shape.strokeBorder(Color.vaultBorderHighlight, lineWidth: 1)
+                        // Specular edge: light catches the top-left of the glass
+                        shape.strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.18),
+                                    Color.white.opacity(0.04),
+                                    Color.white.opacity(0.10)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
                     } else {
                         shape.strokeBorder(Color.vaultBorder, lineWidth: 1)
                     }
                 }
             )
+            .shadow(color: Color.black.opacity(0.30), radius: 10, x: 0, y: 4)
     }
 }
 
@@ -81,17 +98,22 @@ struct VaultCardModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(shape.fill(Color.vaultCardSurface))
+            .background(
+                shape
+                    .fill(Color.vaultCardSurface.opacity(0.65))
+                    .background(.ultraThinMaterial, in: shape)
+            )
             .overlay(
                 shape.strokeBorder(
                     highlightGradient ?? LinearGradient(
-                        colors: [Color.vaultBorder, Color.vaultBorder],
+                        colors: [Color.vaultBorderHighlight, Color.vaultBorder],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
                     lineWidth: 1
                 )
             )
+            .shadow(color: Color.black.opacity(0.35), radius: 12, x: 0, y: 6)
     }
 }
 
@@ -125,7 +147,8 @@ struct VaultButtonStyle: ButtonStyle {
         case .prominent:
             shape.fill(Color.vaultMint.opacity(isPressed ? 0.85 : 1.0))
         case .glass:
-            shape.fill(Color.vaultCardSurface)
+            shape.fill(Color.vaultCardSurface.opacity(0.55))
+                .background(.ultraThinMaterial, in: shape)
                 .overlay(shape.strokeBorder(Color.vaultBorderHighlight, lineWidth: 1))
         case .danger:
             shape.fill(Color.vaultDanger.opacity(0.15))
