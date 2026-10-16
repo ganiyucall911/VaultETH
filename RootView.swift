@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct RootView: View {
     @EnvironmentObject private var store: WalletStore
@@ -112,7 +113,7 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 14) {
                 // Interactive Multi-Chain Network Selector
                 networkSelectorButton
 
@@ -269,7 +270,44 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Real Token Icons
+
+/// Renders a bundled real token logo when one exists for the symbol, falling
+/// back to the accent monogram for anything else.
+struct TokenIconView: View {
+    let symbol: String
+    let accentHex: String
+    var size: CGFloat = 28
+
+    private var assetName: String? {
+        let candidates = ["token-\(symbol.lowercased())", "token-usd\(symbol.lowercased())"]
+        for name in candidates where UIImage(named: name) != nil {
+            return name
+        }
+        return nil
+    }
+
+    var body: some View {
+        if let name = assetName {
+            Image(name)
+                .resizable()
+                .interpolation(.high)
+                .frame(width: size, height: size)
+                .clipShape(Circle())
+        } else {
+            Circle()
+                .fill(Color(hex: accentHex))
+                .frame(width: size, height: size)
+                .overlay(
+                    Text(symbol.prefix(2))
+                        .font(.system(size: size * 0.36, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                )
+        }
+    }
+}
+
+// MARK: - Subviews
 
     private var networkSelectorButton: some View {
         Button {
@@ -307,7 +345,7 @@ struct HomeView: View {
     }
 
     private var vaultHeroCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             // Cash App-style hero: giant tabular balance straight on the background
             VStack(alignment: .leading, spacing: 6) {
                 Text("Vault Balance")
@@ -318,11 +356,11 @@ struct HomeView: View {
 
                 if isDiscreetMode {
                     Text("••••••••")
-                        .font(.system(size: 40, weight: .heavy, design: .monospaced))
+                        .font(.system(size: 34, weight: .heavy, design: .monospaced))
                         .foregroundStyle(Color.vaultMint)
                 } else {
                     Text(store.formattedTotalPortfolioUSD)
-                        .font(.system(size: 40, weight: .heavy, design: .monospaced))
+                        .font(.system(size: 34, weight: .heavy, design: .monospaced))
                         .minimumScaleFactor(0.4)
                         .lineLimit(1)
                 }
@@ -344,7 +382,7 @@ struct HomeView: View {
             // Compact account strip
             HStack(alignment: .center, spacing: 10) {
                 if let account = store.selectedAccount {
-                    VaultIdenticon(address: account.address, size: 36, showGlow: false)
+                    VaultIdenticon(address: account.address, size: 28, showGlow: false)
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -436,7 +474,7 @@ struct HomeView: View {
     }
 
     private var coreActionButtons: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             bigActionButton(title: "Send", systemImage: "arrow.up.right", isProminent: false) {
                 sendInitialRecipient = ""
                 sendInitialAmount = ""
@@ -455,11 +493,11 @@ struct HomeView: View {
 
     private func bigActionButton(title: String, systemImage: String, isProminent: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 10) {
+            VStack(spacing: 7) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(isProminent ? Color.vaultMint : .primary)
-                    .frame(width: 46, height: 46)
+                    .frame(width: 36, height: 36)
                     .background(
                         Circle().fill(isProminent ? Color.vaultMint.opacity(0.18) : Color.white.opacity(0.07))
                     )
@@ -468,12 +506,12 @@ struct HomeView: View {
                     )
 
                 Text(title)
-                    .font(.footnote.weight(.semibold))
+                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(.primary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .vaultGlass(cornerRadius: 22)
+            .padding(.vertical, 10)
+            .vaultGlass(cornerRadius: 16)
         }
         .buttonStyle(.plain)
     }
@@ -481,12 +519,12 @@ struct HomeView: View {
     // MARK: - Trending Tokens Row
 
     private var trendingTokensSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 9) {
             HStack {
                 Text("TRENDING")
-                    .font(.footnote.weight(.heavy))
+                    .font(.caption2.weight(.heavy))
                     .tracking(1.5)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.secondary)
 
                 Spacer()
 
@@ -509,19 +547,12 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(store.tokens.sorted { $0.change24h > $1.change24h }) { token in
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Circle()
-                                    .fill(Color(hex: token.accentHex))
-                                    .frame(width: 30, height: 30)
-                                    .overlay(
-                                        Text(token.symbol.prefix(2))
-                                            .font(.system(size: 10, weight: .black, design: .rounded))
-                                            .foregroundStyle(.white)
-                                    )
+                        VStack(alignment: .leading, spacing: 5) {
+                            HStack(spacing: 7) {
+                                TokenIconView(symbol: token.symbol, accentHex: token.accentHex, size: 24)
 
                                 Text(token.symbol)
-                                    .font(.subheadline.weight(.bold))
+                                    .font(.footnote.weight(.bold))
                                     .foregroundStyle(.primary)
                             }
 
@@ -536,9 +567,9 @@ struct HomeView: View {
                             .font(.caption2.bold().monospaced())
                             .foregroundStyle(token.change24h >= 0 ? Color.vaultMint : Color.vaultDanger)
                         }
-                        .padding(12)
-                        .frame(width: 150, alignment: .leading)
-                        .vaultGlass(cornerRadius: 18)
+                        .padding(10)
+                        .frame(width: 124, alignment: .leading)
+                        .vaultGlass(cornerRadius: 14)
                     }
                 }
             }
@@ -548,49 +579,19 @@ struct HomeView: View {
     // MARK: - Price Alert Notification Banner Component
 
     private func priceAlertBanner(alert: PriceAlertItem) -> some View {
-        HStack(alignment: .top, spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(Color.vaultMint.opacity(0.18))
-                    .frame(width: 42, height: 42)
-                    .overlay(
-                        Circle().strokeBorder(Color.vaultMint.opacity(0.4), lineWidth: 1)
-                    )
+        HStack(spacing: 10) {
+            Image(systemName: "bell.badge.fill")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.vaultMint)
 
-                Image(systemName: "bell.badge.fill")
-                    .font(.system(size: 18))
-                    .foregroundStyle(Color.vaultMint)
-            }
+            TokenIconView(symbol: alert.symbol, accentHex: "#627EEA", size: 20)
 
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 8) {
-                    Text("Price Alert Triggered")
-                        .font(.caption.weight(.heavy))
-                        .foregroundStyle(Color.vaultMint)
-                        .textCase(.uppercase)
+            Text("\(alert.symbol) \(alert.condition == .above ? "rose above" : "dropped below") \(alert.formattedTarget)")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
 
-                    Text(alert.condition == .above ? "▲ Rose above" : "▼ Dropped below")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(alert.condition == .above ? Color.vaultMint : Color.vaultDanger)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            (alert.condition == .above ? Color.vaultMint : Color.vaultDanger).opacity(0.15),
-                            in: Capsule()
-                        )
-                }
-
-                Text("\(alert.name) (\(alert.symbol)) hit target price of \(alert.formattedTarget)")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
-
-                Text(alert.note)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
+            Spacer(minLength: 4)
 
             Button {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -598,27 +599,20 @@ struct HomeView: View {
                 }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.caption.bold())
+                    .font(.system(size: 10, weight: .bold()))
                     .foregroundStyle(.secondary)
-                    .padding(8)
-                    .background(Color.white.opacity(0.06), in: Circle())
             }
             .buttonStyle(.plain)
         }
-        .padding(16)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [Color.vaultSurfaceElevated, Color.vaultSurfaceVariant],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.vaultSurfaceElevated)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(Color.vaultMint.opacity(0.55), lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color.vaultMint.opacity(0.45), lineWidth: 1)
         )
     }
 
@@ -661,14 +655,7 @@ struct HomeView: View {
 
     private func priceAlertRow(alert: PriceAlertItem) -> some View {
         HStack(spacing: 12) {
-            Circle()
-                .fill(Color(hex: alert.accentHex).opacity(0.2))
-                .frame(width: 38, height: 38)
-                .overlay(
-                    Text(alert.symbol.prefix(3))
-                        .font(.system(size: 10, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: alert.accentHex))
-                )
+            TokenIconView(symbol: alert.symbol, accentHex: alert.accentHex, size: 30)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
@@ -750,15 +737,8 @@ struct HomeView: View {
                     Button {
                         selectedTokenForDetail = token
                     } label: {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color(hex: token.accentHex))
-                                .frame(width: 40, height: 40)
-                                .overlay(
-                                    Text(token.symbol.prefix(3))
-                                        .font(.system(size: 11, weight: .black, design: .rounded))
-                                        .foregroundStyle(.white)
-                                )
+                        HStack(spacing: 11) {
+                            TokenIconView(symbol: token.symbol, accentHex: token.accentHex, size: 32)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(token.name)
@@ -1473,14 +1453,7 @@ struct TokenDetailSheet: View {
             VStack(spacing: 20) {
                 // Token Hero Header
                 VStack(spacing: 6) {
-                    Circle()
-                        .fill(Color(hex: token.accentHex))
-                        .frame(width: 54, height: 54)
-                        .overlay(
-                            Text(token.symbol.prefix(3))
-                                .font(.system(size: 15, weight: .black, design: .rounded))
-                                .foregroundStyle(.white)
-                        )
+                    TokenIconView(symbol: token.symbol, accentHex: token.accentHex, size: 48)
 
                     Text("\(token.name) • Demo data")
                         .font(.headline)
@@ -1707,14 +1680,7 @@ struct PriceAlertsSheet: View {
                         ForEach(store.priceAlerts) { alert in
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(Color(hex: alert.accentHex).opacity(0.2))
-                                        .frame(width: 40, height: 40)
-                                        .overlay(
-                                            Text(alert.symbol.prefix(3))
-                                                .font(.system(size: 11, weight: .black, design: .rounded))
-                                                .foregroundStyle(Color(hex: alert.accentHex))
-                                        )
+                                    TokenIconView(symbol: alert.symbol, accentHex: alert.accentHex, size: 30)
 
                                     VStack(alignment: .leading, spacing: 2) {
                                         HStack(spacing: 6) {
