@@ -41,7 +41,11 @@ final class VaultETHUITests: XCTestCase {
     }
 
     private func snap(_ name: String) {
-        upload(name: name, image: XCUIScreen.main.screenshot().imageRepresentation)
+        guard let image = UIImage(data: XCUIScreen.main.screenshot().pngRepresentation) else {
+            XCTFail("Could not decode screenshot \(name)")
+            return
+        }
+        upload(name: name, image: image)
     }
 
     func testCaptureAppStoreScreenshots() throws {
