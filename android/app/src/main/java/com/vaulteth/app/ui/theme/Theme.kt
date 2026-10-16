@@ -7,13 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 // Obsidian Matte FinTech Palette matching web showcase
-val VaultBackground = Color(0xFF080A0E)
-val VaultSurface = Color(0xFF0E1219)
-val VaultSurfaceElevated = Color(0xFF141A24)
-val VaultSurfaceVariant = Color(0xFF121822)
-val VaultCardHover = Color(0xFF18202D)
-val VaultBorder = Color(0x14FFFFFF) // rgba(255, 255, 255, 0.08)
-val VaultBorderHighlight = Color(0x29FFFFFF) // rgba(255, 255, 255, 0.16)
+val VaultBackground = Color(0xFF0B0D10)
+val VaultSurface = Color(0xFF12151A)
+val VaultSurfaceElevated = Color(0xFF181C23)
+val VaultSurfaceVariant = Color(0xFF14181D)
+val VaultCardHover = Color(0xFF1C2129)
+val VaultBorder = Color(0x1AFFFFFF) // rgba(255, 255, 255, 0.10)
+val VaultBorderHighlight = Color(0x33FFFFFF) // rgba(255, 255, 255, 0.20)
 
 // Cash App / Rainbow Signature Mint (#00D632)
 val VaultMint = Color(0xFF00D632)
@@ -22,17 +22,17 @@ val VaultPrimary = VaultMint
 val VaultCyan = VaultMint // Aliased for backward compatibility
 
 // Accents and Semantic Status
-val VaultViolet = Color(0xFF8A2BE2)
+val VaultViolet = Color(0xFF6B7380) // neutral slate (monochrome system)
 val VaultEmerald = Color(0xFF00D632)
-val VaultDanger = Color(0xFFFF4757)
+val VaultDanger = Color(0xFFE5484D)
 val VaultRose = VaultDanger
-val VaultAmber = Color(0xFFFFA502)
-val VaultBlue = Color(0xFF3867D6)
+val VaultAmber = Color(0xFFD99E42)
+val VaultBlue = Color(0xFF6B7380) // neutral slate (monochrome system)
 
 // Text Tones
-val VaultTextPrimary = Color(0xFFF8FAFC)
-val VaultTextSecondary = Color(0xFF94A3B8)
-val VaultTextMuted = Color(0xFF64748B)
+val VaultTextPrimary = Color(0xFFE8EAED)
+val VaultTextSecondary = Color(0xFF8A919C)
+val VaultTextMuted = Color(0xFF6B7280)
 
 private val DarkColorScheme = darkColorScheme(
     primary = VaultMint,
