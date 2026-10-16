@@ -7,50 +7,50 @@
   <meta name="description" content="Production-grade self-custodial multi-chain crypto wallet with live RPC integration, real key management, instant swaps, and multi-network management.">
   <link rel="icon" type="image/svg+xml" href="assets/vault-logo.svg">
 
-  <!-- Google Fonts: Outfit for executive UI & JetBrains Mono for cryptographic precision -->
+  <!-- Google Fonts: Space Grotesk for editorial UI & JetBrains Mono for cryptographic precision -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* Obsidian Matte FinTech Palette */
-      --bg: #080A0E;
-      --bg-surface: #0E1219;
-      --bg-surface-elevated: #141A24;
-      --bg-card: #121822;
-      --bg-card-hover: #18202D;
+      /* Vault Monochrome System: obsidian from the app icon, mint as the single accent */
+      --bg: #0B0D10;
+      --bg-surface: #12151A;
+      --bg-surface-elevated: #181C23;
+      --bg-card: #14181D;
+      --bg-card-hover: #1C2129;
       --bg-subtle: rgba(255, 255, 255, 0.04);
       --bg-active: rgba(255, 255, 255, 0.08);
 
       /* Hairline Borders */
-      --border: rgba(255, 255, 255, 0.08);
-      --border-highlight: rgba(255, 255, 255, 0.16);
-      --border-subtle: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.10);
+      --border-highlight: rgba(255, 255, 255, 0.20);
+      --border-subtle: rgba(255, 255, 255, 0.05);
 
-      /* Cash App / Rainbow Signature Mint */
+      /* VaultETH Signature Mint (app icon accent; the only color in the system) */
       --primary: #00D632;
       --primary-hover: #00EB37;
       --primary-dim: rgba(0, 214, 50, 0.12);
-      --primary-glow: rgba(0, 214, 50, 0.22);
+      --primary-glow: transparent; /* flat system: no glow */
 
-      --danger: #FF4757;
-      --danger-dim: rgba(255, 71, 87, 0.12);
-      --warning: #FFA502;
-      --warning-dim: rgba(255, 165, 2, 0.12);
-      --blue: #3867D6;
-      --blue-dim: rgba(56, 103, 214, 0.12);
+      --danger: #E5484D;
+      --danger-dim: rgba(229, 72, 77, 0.12);
+      --warning: #D99E42;
+      --warning-dim: rgba(217, 158, 66, 0.12);
+      --blue: #6B7380; /* neutral slate (monochrome system) */
+      --blue-dim: rgba(107, 115, 128, 0.12);
 
-      --text: #F8FAFC;
-      --text-muted: #94A3B8;
-      --text-dim: #64748B;
+      --text: #E8EAED;
+      --text-muted: #8A919C;
+      --text-dim: #6B7280;
 
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 18px;
-      --radius-xl: 24px;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 10px;
+      --radius-xl: 14px;
 
-      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --transition: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -1192,7 +1192,7 @@
       background: var(--primary-dim);
       border-color: var(--primary);
       color: var(--primary);
-      box-shadow: 0 2px 8px var(--primary-dim);
+      box-shadow: none;
     }
     .token-btn-action.is-added {
       background: var(--primary-dim);
@@ -1256,7 +1256,7 @@
       height: 8px;
       border-radius: 50%;
       background: var(--danger);
-      box-shadow: 0 0 8px var(--danger);
+      box-shadow: none;
       animation: alertPulse 1.8s infinite;
     }
     @keyframes alertPulse {
@@ -1270,7 +1270,7 @@
       background: linear-gradient(90deg, rgba(20, 26, 36, 0.98), rgba(14, 18, 25, 0.98));
       backdrop-filter: blur(16px);
       border-bottom: 2px solid var(--primary);
-      box-shadow: 0 8px 32px rgba(0, 214, 50, 0.15);
+      box-shadow: none;
       animation: slideDownBanner 0.25s ease-out;
     }
     @keyframes slideDownBanner {
