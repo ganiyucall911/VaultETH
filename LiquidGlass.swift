@@ -4,21 +4,21 @@ import SwiftUI
 
 extension Color {
     /// Deep obsidian matte background tone (#080A0E)
-    static let vaultBackground = Color(red: 8/255.0, green: 10/255.0, blue: 14/255.0)
+    static let vaultBackground = Color(red: 11/255.0, green: 13/255.0, blue: 16/255.0)
     /// Obsidian secondary surface tone (#0E1219)
-    static let vaultSurface = Color(red: 14/255.0, green: 18/255.0, blue: 25/255.0)
+    static let vaultSurface = Color(red: 18/255.0, green: 21/255.0, blue: 26/255.0)
     /// Obsidian elevated surface tone (#141A24)
-    static let vaultSurfaceElevated = Color(red: 20/255.0, green: 26/255.0, blue: 36/255.0)
+    static let vaultSurfaceElevated = Color(red: 24/255.0, green: 28/255.0, blue: 35/255.0)
     /// Surface tone for frosted glass cards (#121822)
-    static let vaultCardSurface = Color(red: 18/255.0, green: 24/255.0, blue: 34/255.0)
+    static let vaultCardSurface = Color(red: 20/255.0, green: 24/255.0, blue: 29/255.0)
     /// Obsidian secondary card / surface tone (#121822)
-    static let vaultSurfaceVariant = Color(red: 18/255.0, green: 24/255.0, blue: 34/255.0)
+    static let vaultSurfaceVariant = Color(red: 20/255.0, green: 24/255.0, blue: 29/255.0)
     /// Obsidian card hover surface tone (#18202D)
-    static let vaultCardHover = Color(red: 24/255.0, green: 32/255.0, blue: 45/255.0)
+    static let vaultCardHover = Color(red: 28/255.0, green: 33/255.0, blue: 40/255.0)
     /// Specular hairline border highlight (8% opacity)
-    static let vaultBorder = Color.white.opacity(0.08)
+    static let vaultBorder = Color.white.opacity(0.10)
     /// Hairline border specular highlight (16% opacity)
-    static let vaultBorderHighlight = Color.white.opacity(0.16)
+    static let vaultBorderHighlight = Color.white.opacity(0.20)
     /// Cash App Mint Green Signature Accent (#00D632)
     static let vaultMint = Color(red: 0.0, green: 214/255.0, blue: 50/255.0)
     /// Primary Brand Accent
@@ -26,21 +26,21 @@ extension Color {
     /// Electric Cyan aliased to Cash App Mint Green for full backwards-compatibility
     static let vaultCyan = vaultMint
     /// Royal Ethereum Violet (#8A2BE2)
-    static let vaultViolet = Color(red: 0.54, green: 0.17, blue: 0.89)
+    static let vaultViolet = Color(red: 0.42, green: 0.45, blue: 0.49) // neutral slate (monochrome system)
     /// Semantic Danger Red (#FF4757)
-    static let vaultDanger = Color(red: 255/255.0, green: 71/255.0, blue: 87/255.0)
+    static let vaultDanger = Color(red: 229/255.0, green: 72/255.0, blue: 77/255.0)
     /// Security Warning Amber (#FFA502)
-    static let vaultAmber = Color(red: 255/255.0, green: 165/255.0, blue: 2/255.0)
+    static let vaultAmber = Color(red: 217/255.0, green: 158/255.0, blue: 66/255.0)
     /// Confirmation Emerald / Trend Positive (#00D632)
     static let vaultEmerald = vaultMint
     /// Accent Blue (#3867D6)
-    static let vaultBlue = Color(red: 56/255.0, green: 103/255.0, blue: 214/255.0)
+    static let vaultBlue = Color(red: 0.42, green: 0.45, blue: 0.49) // neutral slate (monochrome system)
     /// Text Primary (#F8FAFC)
-    static let vaultText = Color(red: 248/255.0, green: 250/255.0, blue: 252/255.0)
+    static let vaultText = Color(red: 232/255.0, green: 234/255.0, blue: 237/255.0)
     /// Text Muted (#94A3B8)
-    static let vaultTextMuted = Color(red: 148/255.0, green: 163/255.0, blue: 184/255.0)
+    static let vaultTextMuted = Color(red: 138/255.0, green: 145/255.0, blue: 156/255.0)
     /// Text Dim (#64748B)
-    static let vaultTextDim = Color(red: 100/255.0, green: 116/255.0, blue: 139/255.0)
+    static let vaultTextDim = Color(red: 107/255.0, green: 114/255.0, blue: 128/255.0)
 }
 
 // MARK: - Liquid Glass Modifier
@@ -58,28 +58,13 @@ struct VaultGlass: ViewModifier {
 
     private func fallback(_ content: Content) -> some View {
         content
-            .background(
-                shape
-                    .fill(Color.vaultCardSurface.opacity(0.72))
-                    .background(.ultraThinMaterial, in: shape)
-            )
+            .background(shape.fill(Color.vaultCardSurface))
             .overlay(
                 Group {
                     if specularBorder {
-                        shape.strokeBorder(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.24),
-                                    Color.white.opacity(0.04),
-                                    Color.white.opacity(0.12)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 1
-                        )
+                        shape.strokeBorder(Color.vaultBorderHighlight, lineWidth: 1)
                     } else {
-                        shape.strokeBorder(Color.white.opacity(0.08), lineWidth: 0.5)
+                        shape.strokeBorder(Color.vaultBorder, lineWidth: 1)
                     }
                 }
             )
@@ -96,22 +81,17 @@ struct VaultCardModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(
-                shape
-                    .fill(Color.vaultCardSurface.opacity(0.85))
-                    .background(.ultraThinMaterial, in: shape)
-            )
+            .background(shape.fill(Color.vaultCardSurface))
             .overlay(
                 shape.strokeBorder(
                     highlightGradient ?? LinearGradient(
-                        colors: [Color.white.opacity(0.22), Color.white.opacity(0.05)],
+                        colors: [Color.vaultBorder, Color.vaultBorder],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
                     lineWidth: 1
                 )
             )
-            .shadow(color: Color.black.opacity(0.35), radius: 16, x: 0, y: 8)
     }
 }
 
@@ -143,21 +123,13 @@ struct VaultButtonStyle: ButtonStyle {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         switch variant {
         case .prominent:
-            shape.fill(
-                LinearGradient(
-                    colors: [Color.vaultMint, Color(red: 0.0, green: 235/255.0, blue: 55/255.0)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .shadow(color: Color.vaultMint.opacity(isPressed ? 0.25 : 0.45), radius: 12, y: 4)
+            shape.fill(Color.vaultMint.opacity(isPressed ? 0.85 : 1.0))
         case .glass:
-            shape.fill(Color.vaultCardSurface.opacity(0.8))
-                .background(.ultraThinMaterial, in: shape)
-                .overlay(shape.strokeBorder(Color.white.opacity(0.18), lineWidth: 1))
+            shape.fill(Color.vaultCardSurface)
+                .overlay(shape.strokeBorder(Color.vaultBorderHighlight, lineWidth: 1))
         case .danger:
-            shape.fill(Color.red.opacity(0.15))
-                .overlay(shape.strokeBorder(Color.red.opacity(0.4), lineWidth: 1))
+            shape.fill(Color.vaultDanger.opacity(0.15))
+                .overlay(shape.strokeBorder(Color.vaultDanger.opacity(0.4), lineWidth: 1))
         }
     }
 
@@ -231,8 +203,8 @@ struct VaultGlow: ViewModifier {
     var opacity: Double = 0.35
 
     func body(content: Content) -> some View {
+        // Flat monochrome design system: glow effects are intentionally disabled.
         content
-            .shadow(color: color.opacity(opacity), radius: radius)
     }
 }
 
